@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2017 Mattia Panzeri <mattia.panzeri93@gmail.com>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0'
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+
+    lintOptions {
+        abortOnError false
+        warning 'InvalidPackage'
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url  "http://dl.bintray.com/catt-stefano/maven"
+    }
+}
+
+dependencies {
+    compile "com.facebook.react:react-native:0.20.1"
+    compile 'it.near.sdk.core:nearit:2.1.12'
+}
