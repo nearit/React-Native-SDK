@@ -42,13 +42,13 @@ export class NearItManager {
     return NearItSdk.stopRadar()
   }
 
-  static sendTracking (recipeId, status) {
-    return NearItSdk.sendTracking(recipeId, status)
+  static sendTracking (trackingInfo, status) {
+    return NearItSdk.sendTracking(trackingInfo, status)
   }
 
-  static sendFeedback (recipeId, feedbackId, rating, comment = '') {
+  /*static sendFeedback (recipeId, feedbackId, rating, comment = '') {
     return NearItSdk.sendFeedback(recipeId, feedbackId, rating, comment)
-  }
+  }*/
 
   static getUserProfileId () {
     return NearItSdk.getUserProfileId()

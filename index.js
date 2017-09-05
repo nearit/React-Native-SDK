@@ -6,4 +6,4 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export * from './src/NearItManager'
+export { NearItManager as default, constants as NearItConstants } from './src/NearItManager'

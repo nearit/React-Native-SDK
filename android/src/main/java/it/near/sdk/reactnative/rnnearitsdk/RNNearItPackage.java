@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-package com.gmail.mattiapanzeri93.rnnearitsdk;
+package it.near.sdk.reactnative.rnnearitsdk;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;

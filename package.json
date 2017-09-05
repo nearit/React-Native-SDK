@@ -1,15 +1,14 @@
 {
   "private": true,
-  "name": "react-native-nearit-sdk",
-  "version": "0.0.1",
+  "name": "react-native-nearit",
+  "version": "0.0.1-alpha.1",
   "author": "Mattia Panzeri <mattia.panzeri93@gmail.com>",
   "license": "MPL-2.0",
-  "description": "The (un)official NearIT SDK plugin for React Native",
+  "description": "The official NearIT SDK plugin for React Native",
   "keywords": [
     "react-native",
-    "react",
-    "native",
-    "nearit"
+    "nearit",
+    "proximity"
   ],
   "repository": {
     "type": "git",
@@ -20,16 +19,18 @@
   },
   "homepage": "https://github.com/panz3r/react-native-nearit-sdk#readme",
   "main": "index.js",
+  "files": [
+    ".babelrc",
+    "src",
+    "android",
+    "ios"
+  ],
   "nativePackage": true,
   "peerDependencies": {
-    "react": ">=15.4.0",
     "react-native": ">=0.40"
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
-    "del": "^2.2.2",
-    "react": "~15.4.1",
-    "react-native": "^0.42.0",
     "snazzy": "^7.0.0",
     "standard": "*"
   },

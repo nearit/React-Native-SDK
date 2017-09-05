@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">RNNearItSdk</string>
 
-    <string name="nearit_api_key">NEARIT_API_KEY</string>
+    <string name="nearit_api_key">Your.API.Key</string>
 </resources>

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gmail.mattiapanzeri93.rnnearitsdk">
+    package="it.near.sdk.reactnative.rnnearitsdk">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -19,5 +19,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
+        <meta-data
+            android:name="near_api_key"
+            android:value="@string/nearit_api_key" />
     </application>
 </manifest>
