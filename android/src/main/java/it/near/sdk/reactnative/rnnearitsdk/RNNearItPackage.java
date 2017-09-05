@@ -24,7 +24,8 @@ public class RNNearItPackage implements ReactPackage {
         return Collections.<NativeModule>singletonList(new RNNearItModule(reactContext));
     }
 
-    @Override
+    // Deprecated. Kept for backward-compatibility
+    // https://github.com/facebook/react-native/issues/15232
     public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();
     }
