@@ -18,6 +18,14 @@ class App extends React.Component {
     this._toggleBanner = this._toggleBanner.bind(this)
 
     console.log({NearItConstants})
+
+    NearIT.startRadar()
+      .then(() => {
+        console.log('NearIT Radar Started!')
+      })
+      .catch(() => {
+        console.log('Could NOT start NearIT Radar...')
+      })
   }
 
   componentWillUnmount () {

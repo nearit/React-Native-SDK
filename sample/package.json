@@ -7,7 +7,8 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "test": "node node_modules/jest/bin/jest.js --watch",
-    "update-nearit": "yarn add file:../ && rm -rf node_modules/react-native-nearit/sample && react-native link"
+    "clean:nearit": "rm -rf node_modules/react-native-nearit/sample && rm -rf node_modules/react-native-nearit/node_modules",
+    "update:nearit": "yarn add file:../ && yarn clean:nearit && react-native link"
   },
   "dependencies": {
     "react": "16.0.0-alpha.12",
