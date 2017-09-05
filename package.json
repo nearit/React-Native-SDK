@@ -19,12 +19,6 @@
   },
   "homepage": "https://github.com/panz3r/react-native-nearit-sdk#readme",
   "main": "index.js",
-  "files": [
-    ".babelrc",
-    "src",
-    "android",
-    "ios"
-  ],
   "nativePackage": true,
   "peerDependencies": {
     "react-native": ">=0.40"

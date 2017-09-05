@@ -1,0 +1,10 @@
+# All
+*
+
+# But not
+# JS code
+!./index.js
+!./src/
+
+# iOS
+!./ios/

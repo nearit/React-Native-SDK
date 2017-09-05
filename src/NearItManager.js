@@ -18,14 +18,15 @@ const NearItSdk = NativeModules.RNNearIt
 export class NearItManager {
   static constants = {
     Events: NearItSdk.Events,
+    EventContent: NearItSdk.EventContent,
     Statuses: NearItSdk.Statuses
   }
 
   static setContentsListener (listener) {
     if (listener) {
       Platform.select({
-        ios: NativeAppEventEmitter.addListener('NearItContent', listener),
-        android: DeviceEventEmitter.addListener('NearItContent', listener)
+        ios: NativeAppEventEmitter.addListener(NearItSdk.NativeEventsTopic, listener),
+        android: DeviceEventEmitter.addListener(NearItSdk.NativeEventsTopic, listener)
       })
     }
   }

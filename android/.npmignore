@@ -1,0 +1,6 @@
+# All
+*
+
+# But not
+!/build.gradle
+!/src/**

@@ -8,10 +8,11 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.util.Base64;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -19,9 +20,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.google.gson.Gson;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,25 +29,35 @@ import java.util.Map;
 import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.UserDataNotifier;
-import it.near.sdk.reactions.contentplugin.model.Content;
-import it.near.sdk.reactions.couponplugin.model.Coupon;
-import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
-import it.near.sdk.reactions.feedbackplugin.model.Feedback;
-import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
-import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearUtils;
 
-public class RNNearItModule extends ReactContextBaseJavaModule implements ProximityListener, LifecycleEventListener {
+public class RNNearItModule extends ReactContextBaseJavaModule implements ActivityEventListener,
+        LifecycleEventListener,
+        ProximityListener {
 
   // Module name
   private static final String MODULE_NAME = "RNNearIt";
 
+  // Event types (used by JS to subscribe to generated events)
+  public static final String NATIVE_EVENTS_TOPIC = "RNNearItEvent";
+
   // Module Constants
-  private static final String EVENT_SIMPLE = "NearIt.Events.SimpleNotification";
-  private static final String EVENT_CUSTOM_JSON = "NearIt.Events.CustomJSON";
+  // Events type
+  public static final String EVENT_TYPE_SIMPLE = "NearIt.Events.SimpleNotification";
+  public static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
+
+  // Events content
+  public static final String EVENT_TYPE = "type";
+  public static final String EVENT_TRACKING_INFO = "trackingInfo";
+  public static final String EVENT_CONTENT = "content";
+  public static final String EVENT_CONTENT_MESSAGE = "message";
+  public static final String EVENT_CONTENT_DATA = "data";
+  public static final String EVENT_FROM_USER_ACTION = "fromUserAction";
+
+  // Recipe Statuses
   private static final String RECIPE_STATUS_ENGAGED = "RECIPE_STATUS_ENGAGED";
   private static final String RECIPE_STATUS_NOTIFIED = "RECIPE_STATUS_NOTIFIED";
 
@@ -64,12 +73,12 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
   private static final String E_USER_PROFILE_CREATE_ERROR = "E_USER_PROFILE_CREATE_ERROR";
   private static final String E_USER_PROFILE_DATA_ERROR = "E_USER_PROFILE_DATA_ERROR";
 
-  // Event types (used by JS to subscribe to generated events)
-  private static final String EVENT_TYPE_CONTENT = "NearItContent";
-
 
   public RNNearItModule(ReactApplicationContext reactContext) {
     super(reactContext);
+
+    // Listen for onNewIntent event
+    reactContext.addActivityEventListener(this);
 
     // Listen for Resume, Pause, Destroy events
     reactContext.addLifecycleEventListener(this);
@@ -85,15 +94,29 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
   public Map<String, Object> getConstants() {
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
+        put("NativeEventsTopic", NATIVE_EVENTS_TOPIC);
         put("Events", getEventsConstants());
+        put("EventContent", getEventContentConstants());
         put("Statuses", getStatusConstants());
       }
 
       private Map<String, Object> getEventsConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put("SimpleNotification", EVENT_SIMPLE);
-            put("CustomJson", EVENT_CUSTOM_JSON);
+            put("SimpleNotification", EVENT_TYPE_SIMPLE);
+            put("CustomJson", EVENT_TYPE_CUSTOM_JSON);
+          }
+        });
+      }
+
+      private Map<String, Object> getEventContentConstants() {
+        return Collections.unmodifiableMap(new HashMap<String, Object>() {
+          {
+            put(EVENT_TYPE, EVENT_TYPE);
+            put(EVENT_TRACKING_INFO, EVENT_TRACKING_INFO);
+            put(EVENT_CONTENT, EVENT_CONTENT);
+            put(EVENT_CONTENT_MESSAGE, EVENT_CONTENT_MESSAGE);
+            put(EVENT_CONTENT_DATA, EVENT_CONTENT_DATA);
           }
         });
       }
@@ -109,6 +132,21 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
     });
   }
 
+  // ReactApp Activity methods
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    // Empty
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (intent != null && NearUtils.carriesNearItContent(intent)) {
+      // we got a NearIT intent
+      // coming from a notification tap
+      NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getRCTDeviceEventEmitter(), true));
+    }
+  }
+
   // ReactApp Lifecycle methods
   @Override
   public void onHostResume() {
@@ -122,39 +160,12 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
 
   @Override
   public void onHostDestroy() {
-
   }
 
   // NearIT SDK Listeners
   @Override
   public void foregroundEvent(Parcelable parcelable, TrackingInfo trackingInfo) {
-    NearUtils.parseCoreContents(parcelable, trackingInfo, new CoreContentsListener() {
-
-      @Override
-      public void gotContentNotification(Content content, TrackingInfo trackingInfo) {
-        // TODO emit ContentEvent
-      }
-
-      @Override
-      public void gotCouponNotification(Coupon coupon, TrackingInfo trackingInfo) {
-        // TODO emit CouponEvent
-      }
-
-      @Override
-      public void gotCustomJSONNotification(CustomJSON customJSON, TrackingInfo trackingInfo) {
-        // TODO emit CustomJSONEvent
-      }
-
-      @Override
-      public void gotSimpleNotification(SimpleNotification simpleNotification, TrackingInfo trackingInfo) {
-        // TODO emit SimpleNotificationEvent
-      }
-
-      @Override
-      public void gotFeedbackNotification(Feedback feedback, TrackingInfo trackingInfo) {
-        // TODO emit FeedbackNotification
-      }
-    });
+    NearUtils.parseCoreContents(parcelable, trackingInfo, new RNNearItCoreContentsListener(getRCTDeviceEventEmitter(), false));
   }
 
   // NearIT Config
@@ -198,7 +209,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
   @ReactMethod
   public void sendTracking(final String trackinInfoData, final String status, final Promise promise) {
     try {
-      NearItManager.getInstance().getRecipesManager().sendTracking(trackingInfoFromBase64(trackinInfoData), status);
+      NearItManager.getInstance().getRecipesManager()
+              .sendTracking(RNNearItUtils.trackingInfoFromBase64(trackinInfoData), status);
+
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(E_SEND_TRACKING_ERROR, e);
@@ -284,27 +297,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
   }
 
   // Private methods
-  private void sendContentEvent(@Nullable WritableMap params) {
-    this.getReactApplicationContext()
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(EVENT_TYPE_CONTENT, params);
+  private DeviceEventManagerModule.RCTDeviceEventEmitter getRCTDeviceEventEmitter() {
+    return this.getReactApplicationContext()
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
   }
 
-
-  // Utils
-  static String trackingInfoToBase64(final TrackingInfo trackingInfo) throws Exception {
-    // JSONify trackingInfo
-    final String trackingInfoJson = new Gson().toJson(trackingInfo);
-
-    // Encode to base64
-    return Base64.encodeToString(trackingInfoJson.getBytes("UTF-8"), Base64.DEFAULT);
-  }
-
-  static TrackingInfo trackingInfoFromBase64(final String trackingInfoBase64) throws Exception {
-    // Decode from base64
-    final String trackingInfoJsonString = new String(Base64.decode(trackingInfoBase64, Base64.DEFAULT), "UTF-8");
-
-    // DeJSONify trackingInfo
-    return new Gson().fromJson(trackingInfoJsonString, TrackingInfo.class);
-  }
 }
