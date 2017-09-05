@@ -47,8 +47,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
   private static final String MODULE_NAME = "RNNearIt";
 
   // Module Constants
-  private static final String GEO_MESSAGE_ACTION = "GEO_MESSAGE";
-  private static final String PUSH_MESSAGE_ACTION = "PUSH_MESSAGE";
+  private static final String EVENT_SIMPLE = "NearIt.Events.SimpleNotification";
+  private static final String EVENT_CUSTOM_JSON = "NearIt.Events.CustomJSON";
   private static final String RECIPE_STATUS_ENGAGED = "RECIPE_STATUS_ENGAGED";
   private static final String RECIPE_STATUS_NOTIFIED = "RECIPE_STATUS_NOTIFIED";
 
@@ -85,15 +85,15 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Proxim
   public Map<String, Object> getConstants() {
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
-        put("Actions", getActionConstants());
+        put("Events", getEventsConstants());
         put("Statuses", getStatusConstants());
       }
 
-      private Map<String, Object> getActionConstants() {
+      private Map<String, Object> getEventsConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put(GEO_MESSAGE_ACTION, NearItManager.GEO_MESSAGE_ACTION);
-            put(PUSH_MESSAGE_ACTION, NearItManager.PUSH_MESSAGE_ACTION);
+            put("SimpleNotification", EVENT_SIMPLE);
+            put("CustomJson", EVENT_CUSTOM_JSON);
           }
         });
       }

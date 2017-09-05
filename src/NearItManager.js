@@ -17,7 +17,7 @@ const NearItSdk = NativeModules.RNNearIt
 
 export class NearItManager {
   static constants = {
-    Actions: NearItSdk.Actions,
+    Events: NearItSdk.Events,
     Statuses: NearItSdk.Statuses
   }
 
