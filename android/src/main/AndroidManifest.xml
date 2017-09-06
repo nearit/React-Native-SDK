@@ -6,7 +6,7 @@
     <application>
         <!-- built-in background receiver -->
         <receiver
-            android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
+            android:name="it.near.sdk.reactnative.rnnearitsdk.RNNearItBroadcastReceiver"
             android:exported="false">
 
             <intent-filter>

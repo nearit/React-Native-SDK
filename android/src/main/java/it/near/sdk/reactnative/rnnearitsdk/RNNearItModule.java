@@ -9,8 +9,12 @@
 package it.near.sdk.reactnative.rnnearitsdk;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Parcelable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -41,8 +45,11 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   // Module name
   private static final String MODULE_NAME = "RNNearIt";
 
-  // Event types (used by JS to subscribe to generated events)
+  // Event topic (used by JS to subscribe to generated events)
   public static final String NATIVE_EVENTS_TOPIC = "RNNearItEvent";
+
+  // Local Events topic (used by LocalBroadcastReceiver to handle foreground notifications)
+  public static final String LOCAL_EVENTS_TOPIC = "RNNearItLocalEvents";
 
   // Module Constants
   // Events type
@@ -82,6 +89,10 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
     // Listen for Resume, Pause, Destroy events
     reactContext.addLifecycleEventListener(this);
+
+    // Register LocalBroadcastReceiver to be used for Foreground notification handling
+    final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(reactContext);
+    localBroadcastManager.registerReceiver(new LocalBroadcastReceiver(), new IntentFilter(LOCAL_EVENTS_TOPIC));
   }
 
   // Module definition
@@ -302,4 +313,13 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
   }
 
+  // LocalBroadcastReceiver
+  public class LocalBroadcastReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      if (intent != null && NearUtils.carriesNearItContent(intent)) {
+        NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getRCTDeviceEventEmitter(), false));
+      }
+    }
+  }
 }
