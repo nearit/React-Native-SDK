@@ -15,3 +15,6 @@ sample/
 # Integrity files
 package-lock.json
 yarn.lock
+
+# Sample (Temp)
+sample/
