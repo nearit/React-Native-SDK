@@ -1,10 +1,17 @@
-# All
-*
+# Docs
+.github
+docs/
 
-# But not
-# JS code
-!./index.js
-!./src/
+# NodeModules
+node_modules/
 
-# iOS
-!./ios/
+# Sample App
+sample/
+
+# Build settings
+.babelrc
+.editorconfig
+
+# Integrity files
+package-lock.json
+yarn.lock
