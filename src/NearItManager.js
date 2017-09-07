@@ -7,8 +7,7 @@
  */
 
 import {
-  DeviceEventEmitter, // android
-  NativeAppEventEmitter, // ios
+  NativeEventEmitter,
   NativeModules,
   Platform
 } from 'react-native'
@@ -22,13 +21,10 @@ export class NearItManager {
     Statuses: NearItSdk.Statuses
   }
 
+  static _eventSource = new NativeEventEmitter(NearItSdk)
+
   static setContentsListener (listener) {
-    if (listener) {
-      Platform.select({
-        ios: NativeAppEventEmitter.addListener(NearItSdk.NativeEventsTopic, listener),
-        android: DeviceEventEmitter.addListener(NearItSdk.NativeEventsTopic, listener)
-      })
-    }
+      return NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
   }
 
   static refreshConfig () {
