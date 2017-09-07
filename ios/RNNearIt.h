@@ -6,14 +6,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
- #if __has_include("RCTBridgeModule.h")
- #import "RCTBridgeModule.h"
- #else
  #import <React/RCTBridgeModule.h>
+ #import <React/RCTEventEmitter.h>
+ #import <UserNotifications/UserNotifications.h>
+ 
+ @interface RNNearIt : RCTEventEmitter <RCTBridgeModule>
+ 
+ #if !TARGET_OS_TV
+     + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo;
+     + (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification;
+     + (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler;
  #endif
  
- @interface RNNearIt : NSObject <RCTBridgeModule>
- 
  @end
-   
- 
+

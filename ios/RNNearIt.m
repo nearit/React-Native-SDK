@@ -15,6 +15,9 @@
 
 NSString* const RN_NATIVE_EVENTS_TOPIC = @"RNNearItEvent";
 
+// Local Events topic (used by NotificationCenter to handle incoming notifications)
+NSString* const RN_LOCAL_EVENTS_TOPIC = @"RNNearItLocalEvents";
+
 NSString* const EVENT_TYPE_SIMPLE = @"NearIt.Events.SimpleNotification";
 NSString* const EVENT_TYPE_CUSTOM_JSON = @"NearIt.Events.CustomJSON";
 
@@ -51,6 +54,21 @@ NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
 }
 RCT_EXPORT_MODULE()
 
+- (instancetype) init
+{
+    self = [super init];
+
+    if (self != nil) {
+    // Set up internal listener to send notification over bridge
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleNotificationReceived:)
+                                                 name:RN_LOCAL_EVENTS_TOPIC
+                                               object:nil];
+    }
+
+    return self;
+}
+
 - (NSDictionary *)constantsToExport
 {
     return @{
@@ -71,6 +89,18 @@ RCT_EXPORT_MODULE()
                         RECIPE_STATUS_ENGAGED: NITRecipeEngaged
                      }
             };
+}
+
+// MARK: RCT_EventEmitter
+
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[RN_NATIVE_EVENTS_TOPIC];
+}
+
+- (void) sendEventWithContent: (NSDictionary* _Nonnull) content
+{
+    [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC body:content];
 }
 
 // MARK: NearIT Config
@@ -166,5 +196,47 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
     }];
 }
 
+// MARK: Internal notification handling
+
+- (void)handleNotificationReceived:(NSNotification *) notification
+{
+    NSLog(@"handleNotificationReceived: %@", notification);
+    
+    // Send event to ReactJS
+    [self sendEventWithContent:@{@"Content": @"I'm an event from RNNearIT"}];
+}
+
+// MARK: Push Notification handling
+
++ (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo
+{
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
+    [data setValue:@YES forKey:@"fromUserAction"];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
+                                                        object:self
+                                                      userInfo:@{@"data": data}];
+}
+
++ (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification
+{
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.userInfo];
+    [data setValue:@YES forKey:@"fromUserAction"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
+                                                        object:self
+                                                      userInfo:@{@"data": data}];
+}
+
++ (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler
+{
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
+    [data setValue:@YES forKey:@"fromUserAction"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
+                                                        object:self
+                                                      userInfo:@{@"data": data, @"completionHandler": completionHandler}];
+}
+
 @end
-  
+
