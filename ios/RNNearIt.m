@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2017 Mattia Panzeri <mattia.panzeri93@gmail.com>
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 #import "RNNearIt.h"
 #import <NearITSDK/NearITSDK.h>
+
+#define TAG @"RNNearIT"
+
+#define IS_EMPTY(v) (v == nil || [v length] <= 0)
 
 NSString* const RN_NATIVE_EVENTS_TOPIC = @"RNNearItEvent";
 
@@ -19,6 +30,18 @@ NSString* const EVENT_FROM_USER_ACTION = @"fromUserAction";
 // Recipe Statuses
 NSString* const RECIPE_STATUS_NOTIFIED = @"RECIPE_STATUS_NOTIFIED";
 NSString* const RECIPE_STATUS_ENGAGED = @"RECIPE_STATUS_ENGAGED";
+
+// Error codes
+NSString* const E_REFRESH_CONFIG_ERROR = @"E_REFRESH_CONFIG_ERROR";
+NSString* const E_START_RADAR_ERROR = @"E_START_RADAR_ERROR";
+NSString* const E_STOP_RADAR_ERROR = @"E_STOP_RADAR_ERROR";
+NSString* const E_SEND_TRACKING_ERROR = @"E_SEND_TRACKING_ERROR";
+NSString* const E_SEND_FEEDBACK_ERROR = @"E_SEND_FEEDBACK_ERROR";
+NSString* const E_USER_PROFILE_GET_ERROR = @"E_USER_PROFILE_GET_ERROR";
+NSString* const E_USER_PROFILE_SET_ERROR = @"E_USER_PROFILE_SET_ERROR";
+NSString* const E_USER_PROFILE_RESET_ERROR = @"E_USER_PROFILE_RESET_ERROR";
+NSString* const E_USER_PROFILE_CREATE_ERROR = @"E_USER_PROFILE_CREATE_ERROR";
+NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
 
 @implementation RNNearIt
 
@@ -48,6 +71,99 @@ RCT_EXPORT_MODULE()
                         RECIPE_STATUS_ENGAGED: NITRecipeEngaged
                      }
             };
+}
+
+// MARK: NearIT Config
+
+RCT_EXPORT_METHOD(refreshConfig: (RCTPromiseResolveBlock) resolve
+                       rejecter: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] refreshConfigWithCompletionHandler:^(NSError * _Nullable error) {
+        if (!error) {
+            resolve([NSNull null]);
+        } else {
+            reject(E_REFRESH_CONFIG_ERROR, @"refreshConfig failed", nil);
+        }
+    }];
+}
+
+// MARK: NearIT Radar
+
+RCT_EXPORT_METHOD(startRadar: (RCTPromiseResolveBlock) resolve
+                   rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] start];
+    resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(stopRadar: (RCTPromiseResolveBlock) resolve
+                  rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] stop];
+    resolve([NSNull null]);
+}
+
+// MARK: NearIT Trackings
+
+RCT_EXPORT_METHOD(sendTracking: (NSString* _Nonnull) trackingInfoB64
+                        status: (NSString* _Nonnull) status
+                    resolution: (RCTPromiseResolveBlock) resolve
+                     rejection: (RCTPromiseRejectBlock) reject)
+{
+    
+    if (IS_EMPTY(trackingInfoB64)) {
+        reject(E_SEND_TRACKING_ERROR, @"Missing trackingInfo parameter", nil);
+    } else {
+        NSData* trackingInfoData = [[NSData alloc] initWithBase64EncodedString:trackingInfoB64
+                                                                       options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        
+        NITTrackingInfo *trackingInfo = [NSKeyedUnarchiver unarchiveObjectWithData:trackingInfoData];
+        
+        if (trackingInfo) {
+            NITLogD(TAG, @"NITManager :: track event (%@) with trackingInfo (%@)", status, trackingInfo);
+            [[NITManager defaultManager] sendTrackingWithTrackingInfo:trackingInfo event:status];
+            resolve([NSNull null]);
+        } else {
+            NITLogD(TAG, @"NITManager :: failed to send tracking for event (%@) with trackingInfo (%@)", status, trackingInfo);
+            reject(E_SEND_TRACKING_ERROR, @"Failed to send tracking", nil);
+        }
+    }
+}
+
+// MARK: NearIT UserProfiling
+
+RCT_EXPORT_METHOD(getUserProfileId: (RCTPromiseResolveBlock) resolve
+                         rejection: (RCTPromiseRejectBlock) reject)
+{
+    resolve([[NITManager defaultManager] profileId]);
+}
+
+RCT_EXPORT_METHOD(setUserProfileId: (NSString* _Nonnull) profileId
+                        resolution: (RCTPromiseResolveBlock) resolve
+                         rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] setProfileId:profileId];
+    resolve(profileId);
+}
+
+RCT_EXPORT_METHOD(resetUserProfile: (RCTPromiseResolveBlock) resolve
+                         rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] resetProfile];
+    resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
+                   resolution: (RCTPromiseResolveBlock) resolve
+                    rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] setBatchUserDataWithDictionary:userData completionHandler:^(NSError * _Nullable error) {
+        if (!error) {
+            resolve([NSNull null]);
+        } else {
+            reject(E_USER_PROFILE_DATA_ERROR, @"Could NOT set UserData", error);
+        }
+    }];
 }
 
 @end
