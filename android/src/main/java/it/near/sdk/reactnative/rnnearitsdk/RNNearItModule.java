@@ -307,6 +307,13 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
     });
   }
 
+  // NearIT Permissions request
+
+  @ReactMethod
+  public void requestNotificationPermission(final Promise promise) {
+    promise.resolve(true);
+  }
+
   // Private methods
   private DeviceEventManagerModule.RCTDeviceEventEmitter getRCTDeviceEventEmitter() {
     return this.getReactApplicationContext()

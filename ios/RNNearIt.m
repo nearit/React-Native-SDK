@@ -7,7 +7,6 @@
  */
 
 #import "RNNearIt.h"
-#import <NearITSDK/NearITSDK.h>
 
 #define TAG @"RNNearIT"
 
@@ -59,11 +58,13 @@ RCT_EXPORT_MODULE()
     self = [super init];
 
     if (self != nil) {
-    // Set up internal listener to send notification over bridge
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleNotificationReceived:)
-                                                 name:RN_LOCAL_EVENTS_TOPIC
-                                               object:nil];
+        // Set up internal listener to send notification over bridge
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleNotificationReceived:)
+                                                     name:RN_LOCAL_EVENTS_TOPIC
+                                                   object:nil];
+        
+        [NITManager defaultManager].delegate = self;
     }
 
     return self;
@@ -98,10 +99,35 @@ RCT_EXPORT_MODULE()
     return @[RN_NATIVE_EVENTS_TOPIC];
 }
 
-- (void) sendEventWithContent: (NSDictionary* _Nonnull) content
+- (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nonnull) trackingInfo fromUserAction:(BOOL) fromUserAction
 {
-    [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC body:content];
+    NSData* trackingInfoData = [NSKeyedArchiver archivedDataWithRootObject:trackingInfo];
+    NSString* trackingInfoB64 = [trackingInfoData base64EncodedStringWithOptions:0];
+    
+    NSDictionary* event = @{
+                            EVENT_TYPE: eventType,
+                            EVENT_CONTENT: content,
+                            EVENT_TRACKING_INFO: trackingInfoB64,
+                            EVENT_FROM_USER_ACTION: [NSNumber numberWithBool:fromUserAction]
+                        };
+    
+    
+    [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
+                       body:event];
 }
+
+// MARK: NITManagerDelegate
+
+- (void)manager:(NITManager *)manager eventWithContent:(id)content trackingInfo:(NITTrackingInfo *)trackingInfo
+{
+    [self handleNearContent:content trackingInfo:trackingInfo fromUserAction:NO];
+}
+
+- (void)manager:(NITManager *)manager eventFailureWithError:(NSError *)error
+{
+    // handle errors (only for information purpose)
+}
+
 
 // MARK: NearIT Config
 
@@ -196,14 +222,116 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
     }];
 }
 
+// MARK: NearIT Permissions request
+
+RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
+                  rejection:(RCTPromiseRejectBlock)reject)
+{
+    if (RCTRunningInAppExtension()) {
+        return;
+    }
+    
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+        UIUserNotificationType allNotificationTypes = (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+        
+        [RCTSharedApplication() registerUserNotificationSettings:settings];
+        
+        // Unfortunately on iOS 9 or below, there's no way to tell whether the user accepted or
+        // rejected the permissions popup
+        resolve(@(YES));
+    } else {
+        // iOS 10 or later
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        // For iOS 10 display notification (sent via APNS)
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+        UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+        
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            resolve(@(granted));
+        }];
+#endif
+    }
+    
+    [RCTSharedApplication() registerForRemoteNotifications];
+}
+
+// MARK: NearIT Recipes handling
+
+- (BOOL)handleNearContent: (id _Nonnull) content trackingInfo: (NITTrackingInfo* _Nonnull) trackingInfo fromUserAction: (BOOL) fromUserAction
+{
+    if ([content isKindOfClass:[NITSimpleNotification class]]) {
+        
+        // Simple notification
+        NITSimpleNotification *simple = (NITSimpleNotification*)content;
+        
+        NSString* message = [simple message];
+        if (!message) {
+            message = @"";
+        }
+        
+        NITLogI(TAG, @"simple message \"%@\" with trackingInfo %@", message, trackingInfo);
+        
+        NSDictionary* eventContent = @{
+                                       EVENT_CONTENT_MESSAGE: message
+                                    };
+        
+        [self sendEventWithContent:eventContent
+                      NITEventType:EVENT_TYPE_SIMPLE
+                      trackingInfo:trackingInfo
+                    fromUserAction:fromUserAction];
+        
+        return YES;
+        
+    } else if ([content isKindOfClass:[NITCustomJSON class]]) {
+        
+        // Custom JSON notification
+        NITCustomJSON *custom = (NITCustomJSON*)content;
+        NITLogI(TAG, @"JSON message %@ trackingInfo %@", [custom content], trackingInfo);
+        
+        NSString* message = @""; // TODO Update when SDK sends this field
+        
+        NSDictionary* eventContent = @{
+                                       EVENT_CONTENT_MESSAGE: message,
+                                       EVENT_CONTENT_DATA: [custom content]
+                                    };
+        
+        [self sendEventWithContent:eventContent
+                      NITEventType:EVENT_TYPE_CUSTOM_JSON
+                      trackingInfo:trackingInfo
+                    fromUserAction:fromUserAction];
+        
+        return YES;
+    } else {
+        // unhandled content type
+        NSString* message = [NSString stringWithFormat:@"unknown content type %@ trackingInfo %@", content, trackingInfo];
+        NITLogW(TAG, message);
+        
+        return NO;
+    }
+}
+
+
 // MARK: Internal notification handling
 
 - (void)handleNotificationReceived:(NSNotification *) notification
 {
     NSLog(@"handleNotificationReceived: %@", notification);
     
-    // Send event to ReactJS
-    [self sendEventWithContent:@{@"Content": @"I'm an event from RNNearIT"}];
+    NSMutableDictionary* data = notification.userInfo[@"data"];
+    
+    [[NITManager defaultManager] processRecipeWithUserInfo:data completion:^(id  _Nullable content, NITTrackingInfo * _Nullable trackingInfo, NSError * _Nullable error) {
+        // Handle push notification message
+        NITLogD(TAG, @"didReceiveRemoteNotification content=%@ trackingInfo=%@ error=%@", content, trackingInfo, error);
+        
+        if (error) {
+            [self manager:[NITManager defaultManager] eventFailureWithError:error];
+        } else {
+            [self handleNearContent:content trackingInfo:trackingInfo fromUserAction:@(RCTSharedApplication().applicationState == UIApplicationStateInactive)];
+        }
+        
+    }];
+    
 }
 
 // MARK: Push Notification handling

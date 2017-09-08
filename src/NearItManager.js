@@ -66,6 +66,10 @@ export class NearItManager {
   static setUserData (userDataObject) {
     return NearItSdk.setUserData(userDataObject)
   }
+
+  static requestNotificationPermission () {
+    return NearItSdk.requestNotificationPermission()
+  }
 }
 
 export const constants = NearItManager.constants

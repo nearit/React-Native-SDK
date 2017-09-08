@@ -8,9 +8,12 @@
 
  #import <React/RCTBridgeModule.h>
  #import <React/RCTEventEmitter.h>
- #import <UserNotifications/UserNotifications.h>
+ #import <React/RCTUtils.h>
  
- @interface RNNearIt : RCTEventEmitter <RCTBridgeModule>
+ #import <UserNotifications/UserNotifications.h>
+ #import <NearITSDK/NearITSDK.h>
+ 
+ @interface RNNearIt : RCTEventEmitter <RCTBridgeModule, NITManagerDelegate, UNUserNotificationCenterDelegate>
  
  #if !TARGET_OS_TV
      + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo;
@@ -19,4 +22,4 @@
  #endif
  
  @end
-
+ 
