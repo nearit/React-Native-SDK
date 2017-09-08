@@ -336,8 +336,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
   @ReactMethod
   public void requestLocationPermission(final Promise promise) {
-    promise.resolve(null);
-    sendEventWithLocationPermissionStatus(PERMISSION_LOCATION_GRANTED);
+    promise.resolve(true);
+    // sendEventWithLocationPermissionStatus(PERMISSION_LOCATION_GRANTED);
   }
 
   // Private methods

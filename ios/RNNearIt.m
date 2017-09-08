@@ -55,7 +55,9 @@ NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
 // CLLocationManager
 CLLocationManager *locationManager;
 
-@implementation RNNearIt
+@implementation RNNearIt {
+    BOOL hasListeners;
+}
 
 - (dispatch_queue_t)methodQueue
 {
@@ -81,6 +83,19 @@ RCT_EXPORT_MODULE()
     }
     
     return self;
+}
+
+
+// Will be called when this module's first listener is added.
+-(void)startObserving {
+    hasListeners = YES;
+    // Set up any upstream listeners or background tasks as necessary
+}
+
+// Will be called when this module's last listener is removed, or on dealloc.
+-(void)stopObserving {
+    hasListeners = NO;
+    // Remove upstream listeners, stop unnecessary background tasks
 }
 
 - (NSDictionary *)constantsToExport
@@ -129,9 +144,10 @@ RCT_EXPORT_MODULE()
                             EVENT_FROM_USER_ACTION: [NSNumber numberWithBool:fromUserAction]
                         };
     
-    
-    [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
-                       body:event];
+    if (hasListeners) {
+        [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
+                           body:event];
+    }
 }
 -(void) sendEventWithLocationPermissionStatus:(NSString* _Nonnull) permissionStatus
 {
@@ -139,10 +155,11 @@ RCT_EXPORT_MODULE()
                             EVENT_TYPE: EVENT_TYPE_PERMISSIONS,
                             EVENT_STATUS: permissionStatus
                         };
-    
-    
-    [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
-                       body:event];
+
+    if (hasListeners) {
+        [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
+                           body:event];
+    }
 }
 
 // MARK: NITManagerDelegate
@@ -292,8 +309,12 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
 {
     NITLogD(TAG, @"requestLocationPermission");
     
-    [locationManager requestAlwaysAuthorization];
-    resolve([NSNull null]);
+    if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
+        [locationManager requestAlwaysAuthorization];
+        resolve([NSNull null]);
+    } else {
+        resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
