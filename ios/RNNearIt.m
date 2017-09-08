@@ -104,8 +104,8 @@ RCT_EXPORT_MODULE()
                         RECIPE_STATUS_ENGAGED: NITRecipeEngaged
                      },
              @"Permissions": @{
-                        @"LocationPermissionGranted": PERMISSION_LOCATION_GRANTED,
-                        @"LocationPermissionDenied": PERMISSION_LOCATION_DENIED
+                        @"LocationGranted": PERMISSION_LOCATION_GRANTED,
+                        @"LocationDenied": PERMISSION_LOCATION_DENIED
                      }
             };
 }
@@ -260,6 +260,8 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
         return;
     }
     
+    NITLogD(TAG, @"requestNotificationPermission");
+    
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationType allNotificationTypes = (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
@@ -288,6 +290,8 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
 RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
+    NITLogD(TAG, @"requestLocationPermission");
+    
     [locationManager requestAlwaysAuthorization];
     resolve([NSNull null]);
 }
