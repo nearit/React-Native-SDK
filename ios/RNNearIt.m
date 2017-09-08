@@ -7,6 +7,7 @@
  */
 
 #import "RNNearIt.h"
+#import <CoreLocation/CoreLocation.h>
 
 #define TAG @"RNNearIT"
 
@@ -17,6 +18,8 @@ NSString* const RN_NATIVE_EVENTS_TOPIC = @"RNNearItEvent";
 // Local Events topic (used by NotificationCenter to handle incoming notifications)
 NSString* const RN_LOCAL_EVENTS_TOPIC = @"RNNearItLocalEvents";
 
+// Event types
+NSString* const EVENT_TYPE_PERMISSIONS = @"NearIt.Events.PermissionStatus";
 NSString* const EVENT_TYPE_SIMPLE = @"NearIt.Events.SimpleNotification";
 NSString* const EVENT_TYPE_CUSTOM_JSON = @"NearIt.Events.CustomJSON";
 
@@ -27,7 +30,11 @@ NSString* const EVENT_CONTENT = @"content";
 NSString* const EVENT_CONTENT_MESSAGE = @"message";
 NSString* const EVENT_CONTENT_DATA = @"data";
 NSString* const EVENT_FROM_USER_ACTION = @"fromUserAction";
+NSString* const EVENT_STATUS = @"status";
 
+// Location permission status
+NSString* const PERMISSION_LOCATION_GRANTED = @"NearIt.Permissions.Location.Granted";
+NSString* const PERMISSION_LOCATION_DENIED = @"NearIt.Permissions.Location.Denied";
 
 // Recipe Statuses
 NSString* const RECIPE_STATUS_NOTIFIED = @"RECIPE_STATUS_NOTIFIED";
@@ -44,6 +51,9 @@ NSString* const E_USER_PROFILE_SET_ERROR = @"E_USER_PROFILE_SET_ERROR";
 NSString* const E_USER_PROFILE_RESET_ERROR = @"E_USER_PROFILE_RESET_ERROR";
 NSString* const E_USER_PROFILE_CREATE_ERROR = @"E_USER_PROFILE_CREATE_ERROR";
 NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
+
+// CLLocationManager
+CLLocationManager *locationManager;
 
 @implementation RNNearIt
 
@@ -65,8 +75,11 @@ RCT_EXPORT_MODULE()
                                                    object:nil];
         
         [NITManager defaultManager].delegate = self;
-    }
 
+        locationManager = [[CLLocationManager alloc]init];
+        locationManager.delegate = self;
+    }
+    
     return self;
 }
 
@@ -75,6 +88,7 @@ RCT_EXPORT_MODULE()
     return @{
              @"NativeEventsTopic": RN_NATIVE_EVENTS_TOPIC,
              @"Events": @{
+                        @"PermissionStatus": EVENT_TYPE_PERMISSIONS,
                         @"SimpleNotification": EVENT_TYPE_SIMPLE,
                         @"CustomJson": EVENT_TYPE_CUSTOM_JSON
                      },
@@ -88,6 +102,10 @@ RCT_EXPORT_MODULE()
              @"Statuses": @{
                         RECIPE_STATUS_NOTIFIED: NITRecipeNotified,
                         RECIPE_STATUS_ENGAGED: NITRecipeEngaged
+                     },
+             @"Permissions": @{
+                        @"LocationPermissionGranted": PERMISSION_LOCATION_GRANTED,
+                        @"LocationPermissionDenied": PERMISSION_LOCATION_DENIED
                      }
             };
 }
@@ -109,6 +127,17 @@ RCT_EXPORT_MODULE()
                             EVENT_CONTENT: content,
                             EVENT_TRACKING_INFO: trackingInfoB64,
                             EVENT_FROM_USER_ACTION: [NSNumber numberWithBool:fromUserAction]
+                        };
+    
+    
+    [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
+                       body:event];
+}
+-(void) sendEventWithLocationPermissionStatus:(NSString* _Nonnull) permissionStatus
+{
+    NSDictionary* event = @{
+                            EVENT_TYPE: EVENT_TYPE_PERMISSIONS,
+                            EVENT_STATUS: permissionStatus
                         };
     
     
@@ -254,6 +283,30 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
     }
     
     [RCTSharedApplication() registerForRemoteNotifications];
+}
+
+RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
+                  rejection:(RCTPromiseRejectBlock)reject)
+{
+    [locationManager requestAlwaysAuthorization];
+    resolve([NSNull null]);
+}
+
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
+{
+    NITLogV(TAG, @"didChangeAuthorizationStatus status=%d", status);
+    
+    if (status == kCLAuthorizationStatusAuthorizedAlways) {
+        [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_GRANTED];
+        
+        NITLogI(TAG, @"NITManager start");
+        [[NITManager defaultManager] start];
+    } else {
+        [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_DENIED];
+        
+        NITLogI(TAG, @"NITManager stop");
+        [[NITManager defaultManager] stop];
+    }
 }
 
 // MARK: NearIT Recipes handling

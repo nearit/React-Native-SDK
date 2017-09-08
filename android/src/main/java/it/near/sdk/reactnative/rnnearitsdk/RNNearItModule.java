@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -24,6 +25,8 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.Collections;
@@ -53,6 +56,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
   // Module Constants
   // Events type
+  public static final String EVENT_TYPE_PERMISSIONS = "NearIt.Events.PermissionStatus";
   public static final String EVENT_TYPE_SIMPLE = "NearIt.Events.SimpleNotification";
   public static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
 
@@ -63,6 +67,11 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_CONTENT_MESSAGE = "message";
   public static final String EVENT_CONTENT_DATA = "data";
   public static final String EVENT_FROM_USER_ACTION = "fromUserAction";
+  public static final String EVENT_STATUS = "status";
+
+  // Location permission status
+  public static final String PERMISSION_LOCATION_GRANTED = "NearIt.Permissions.Location.Granted";
+  public static final String PERMISSION_LOCATION_DENIED = "NearIt.Permissions.Location.Denied";
 
   // Recipe Statuses
   private static final String RECIPE_STATUS_ENGAGED = "RECIPE_STATUS_ENGAGED";
@@ -109,11 +118,13 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
         put("Events", getEventsConstants());
         put("EventContent", getEventContentConstants());
         put("Statuses", getStatusConstants());
+        put("Permissions", getPermissionStatusConstants());
       }
 
       private Map<String, Object> getEventsConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
+            put("PermissionStatus", EVENT_TYPE_PERMISSIONS);
             put("SimpleNotification", EVENT_TYPE_SIMPLE);
             put("CustomJson", EVENT_TYPE_CUSTOM_JSON);
           }
@@ -137,6 +148,15 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
           {
             put(RECIPE_STATUS_ENGAGED, Recipe.ENGAGED_STATUS);
             put(RECIPE_STATUS_NOTIFIED, Recipe.NOTIFIED_STATUS);
+          }
+        });
+      }
+
+      private Map<String, Object> getPermissionStatusConstants() {
+        return Collections.unmodifiableMap(new HashMap<String, Object>() {
+          {
+            put("LocationGranted", PERMISSION_LOCATION_GRANTED);
+            put("LocationDenied", PERMISSION_LOCATION_DENIED);
           }
         });
       }
@@ -314,10 +334,30 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
     promise.resolve(true);
   }
 
+  @ReactMethod
+  public void requestLocationPermission(final Promise promise) {
+    promise.resolve(null);
+    sendEventWithLocationPermissionStatus(PERMISSION_LOCATION_GRANTED);
+  }
+
   // Private methods
   private DeviceEventManagerModule.RCTDeviceEventEmitter getRCTDeviceEventEmitter() {
     return this.getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+  }
+
+  private void sendEventWithLocationPermissionStatus(final String permissionStatus) {
+    try {
+      // Create Event map to send to JS
+      final WritableMap eventMap = new WritableNativeMap();
+      eventMap.putString(EVENT_TYPE, EVENT_TYPE_PERMISSIONS);
+      eventMap.putString(EVENT_STATUS, permissionStatus);
+
+      // Send event to JS
+      getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, eventMap);
+    } catch (Exception e) {
+      Log.e("RNNearItModule", "Error while sending event to JS");
+    }
   }
 
   // LocalBroadcastReceiver

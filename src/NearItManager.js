@@ -18,7 +18,8 @@ export class NearItManager {
   static constants = {
     Events: NearItSdk.Events,
     EventContent: NearItSdk.EventContent,
-    Statuses: NearItSdk.Statuses
+    Statuses: NearItSdk.Statuses,
+    Permissions: NearItSdk.Permissions
   }
 
   static _eventSource = new NativeEventEmitter(NearItSdk)
@@ -69,6 +70,10 @@ export class NearItManager {
 
   static requestNotificationPermission () {
     return NearItSdk.requestNotificationPermission()
+  }
+
+  static requestLocationPermission () {
+    return NearItSdk.requestLocationPermission()
   }
 }
 
