@@ -73,10 +73,6 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String PERMISSION_LOCATION_GRANTED = "NearIt.Permissions.Location.Granted";
   public static final String PERMISSION_LOCATION_DENIED = "NearIt.Permissions.Location.Denied";
 
-  // Recipe Statuses
-  private static final String RECIPE_STATUS_ENGAGED = "RECIPE_STATUS_ENGAGED";
-  private static final String RECIPE_STATUS_NOTIFIED = "RECIPE_STATUS_NOTIFIED";
-
   // Error codes
   private static final String E_REFRESH_CONFIG_ERROR = "E_REFRESH_CONFIG_ERROR";
   private static final String E_START_RADAR_ERROR = "E_START_RADAR_ERROR";
@@ -134,12 +130,13 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
       private Map<String, Object> getEventContentConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put(EVENT_TYPE, EVENT_TYPE);
-            put(EVENT_TRACKING_INFO, EVENT_TRACKING_INFO);
-            put(EVENT_CONTENT, EVENT_CONTENT);
-            put(EVENT_CONTENT_MESSAGE, EVENT_CONTENT_MESSAGE);
-            put(EVENT_CONTENT_DATA, EVENT_CONTENT_DATA);
-            put(EVENT_STATUS, EVENT_STATUS);
+            put("type", EVENT_TYPE);
+            put("trackingInfo", EVENT_TRACKING_INFO);
+            put("content", EVENT_CONTENT);
+            put("message", EVENT_CONTENT_MESSAGE);
+            put("data", EVENT_CONTENT_DATA);
+            put("fromUserAction", EVENT_FROM_USER_ACTION);
+            put("status", EVENT_STATUS);
           }
         });
       }
@@ -147,8 +144,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
       private Map<String, Object> getStatusConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put(RECIPE_STATUS_ENGAGED, Recipe.ENGAGED_STATUS);
-            put(RECIPE_STATUS_NOTIFIED, Recipe.NOTIFIED_STATUS);
+            put("notified", Recipe.NOTIFIED_STATUS);
+            put("engaged", Recipe.ENGAGED_STATUS);
           }
         });
       }

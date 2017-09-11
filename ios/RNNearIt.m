@@ -36,10 +36,6 @@ NSString* const EVENT_STATUS = @"status";
 NSString* const PERMISSION_LOCATION_GRANTED = @"NearIt.Permissions.Location.Granted";
 NSString* const PERMISSION_LOCATION_DENIED = @"NearIt.Permissions.Location.Denied";
 
-// Recipe Statuses
-NSString* const RECIPE_STATUS_NOTIFIED = @"RECIPE_STATUS_NOTIFIED";
-NSString* const RECIPE_STATUS_ENGAGED = @"RECIPE_STATUS_ENGAGED";
-
 // Error codes
 NSString* const E_REFRESH_CONFIG_ERROR = @"E_REFRESH_CONFIG_ERROR";
 NSString* const E_START_RADAR_ERROR = @"E_START_RADAR_ERROR";
@@ -108,16 +104,17 @@ RCT_EXPORT_MODULE()
                         @"CustomJson": EVENT_TYPE_CUSTOM_JSON
                      },
              @"EventContent": @{
-                        EVENT_TYPE: EVENT_TYPE,
-                        EVENT_TRACKING_INFO: EVENT_TRACKING_INFO,
-                        EVENT_CONTENT: EVENT_CONTENT,
-                        EVENT_CONTENT_MESSAGE: EVENT_CONTENT_MESSAGE,
-                        EVENT_CONTENT_DATA: EVENT_CONTENT_DATA,
-                        EVENT_STATUS: EVENT_STATUS
+                        @"type": EVENT_TYPE,
+                        @"trackingInfo": EVENT_TRACKING_INFO,
+                        @"content": EVENT_CONTENT,
+                        @"message": EVENT_CONTENT_MESSAGE,
+                        @"data": EVENT_CONTENT_DATA,
+                        @"fromUserAction": EVENT_FROM_USER_ACTION,
+                        @"status": EVENT_STATUS
                      },
              @"Statuses": @{
-                        RECIPE_STATUS_NOTIFIED: NITRecipeNotified,
-                        RECIPE_STATUS_ENGAGED: NITRecipeEngaged
+                        @"notified": NITRecipeNotified,
+                        @"engaged": NITRecipeEngaged
                      },
              @"Permissions": @{
                         @"LocationGranted": PERMISSION_LOCATION_GRANTED,
