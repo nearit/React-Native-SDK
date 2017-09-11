@@ -112,7 +112,8 @@ RCT_EXPORT_MODULE()
                         EVENT_TRACKING_INFO: EVENT_TRACKING_INFO,
                         EVENT_CONTENT: EVENT_CONTENT,
                         EVENT_CONTENT_MESSAGE: EVENT_CONTENT_MESSAGE,
-                        EVENT_CONTENT_DATA: EVENT_CONTENT_DATA
+                        EVENT_CONTENT_DATA: EVENT_CONTENT_DATA,
+                        EVENT_STATUS: EVENT_STATUS
                      },
              @"Statuses": @{
                         RECIPE_STATUS_NOTIFIED: NITRecipeNotified,

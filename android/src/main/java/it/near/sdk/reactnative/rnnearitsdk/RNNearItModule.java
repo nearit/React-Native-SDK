@@ -139,6 +139,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put(EVENT_CONTENT, EVENT_CONTENT);
             put(EVENT_CONTENT_MESSAGE, EVENT_CONTENT_MESSAGE);
             put(EVENT_CONTENT_DATA, EVENT_CONTENT_DATA);
+            put(EVENT_STATUS, EVENT_STATUS);
           }
         });
       }
