@@ -60,10 +60,6 @@ export class NearItManager {
     return NearItSdk.resetUserProfile()
   }
 
-  static createUserProfile () {
-    return NearItSdk.createUserProfile()
-  }
-
   static setUserData (userDataObject) {
     return NearItSdk.setUserData(userDataObject)
   }
