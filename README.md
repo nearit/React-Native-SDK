@@ -1,46 +1,60 @@
 # WARNING
 This project is currently in **pre-alpha stage**
 
-
 # React Native NearIT SDK
-
-[![License](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](LICENSE.md)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-
-![platforms](https://img.shields.io/badge/platforms-Android-yellowgreen.svg)
 > The official [NearIT](https://www.nearit.com) SDK plugin for [React Native](https://facebook.github.io/react-native/)
 
+[![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/panz3r/react-native-nearit-sdk.svg)](https://github.com/panz3r/react-native-nearit-sdk/releases)
+[![npm](https://img.shields.io/npm/v/react-native-nearit.svg)](https://www.npmjs.com/package/react-native-nearit)
+[![Documentation Status](https://readthedocs.org/projects/react-native-nearit-sdk/badge/?version=latest)](http://react-native-nearit-sdk.readthedocs.io/en/latest/?badge=latest)
 
-## Documentation
+[![React Native](https://img.shields.io/badge/RN-0.45.0+-green.svg)](https://facebook.github.io/react-native/)
+![platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS-brightgreen.svg)
+[![Android](https://img.shields.io/badge/Android-16-blue.svg)](https://developer.android.com/about/dashboards/index.html#Platform)
+[![iOS](https://img.shields.io/badge/iOS-9-blue.svg)](https://developer.apple.com/ios/)
 
-* [Getting Started](docs/getting-started.md)
+NearIT allows to engage app users by sending **context-aware targeted content**.
 
-## License
+## Recipes
+NearIT allows to manage apps by defining "recipes". Those are simple rules made of 3 ingredients:
 
-Copyright © 2017 Mattia Panzeri
+* **WHO**: define the target users
+* **WHAT**: define what action NearIT should do
+* **TRIGGER**: define when the action should be triggered
 
-This source code is licensed under the Mozilla Public License Version 2.0 license found in
-the [LICENSE](https://github.com/panz3r/react-native-nearit-sdk/blob/master/LICENSE.md) file.
+<br>
 
+## How it works
+[**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features quickly.
+Once the settings are configured, **everyone** - even people without technical skills - can manage context-aware mobile content.
 
+**NearIT SDK** synchronizes with servers and behaves accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
 
-## Credits
-Here is the list of the external libraries used by `React Native NearIT SDK`.
+## Features
+* User Segmentation
+* Beacon monitoring and ranging
+* Geofence monitoring
+* Notifications and in-app content
+* Analytics
 
-#### NearIT Android SDK
-https://github.com/nearit/Android-SDK
+<br>
 
-Copyright © 2016 Near Srl
+## Installation
+Minimum Requirements:
 
-###### Description:
-NearIT is the new Proximity Marketing platform
-https://www.nearit.com
+- **React Native**: 0.45.0+
+- **Android** Min SDK: ***16***
+- **iOS** Min Platform: ***iOS 9***
 
-######  Usage:
-`React Native NearIT SDK` uses the `NearIT Android SDK` to provide NearIT functionalities on the Android operation system
+To start using the SDK, add this plugin to your React Native project
 
-######  License:
-[![license](https://img.shields.io/github/license/nearit/Android-SDK.svg)](https://github.com/nearit/Android-SDK/blob/master/LICENSE)
+```bash
+$ yarn add react-native-nearit
+```
+
+## Integration guide
+For information on how to integrate all NearIT features in your app, visit the [documentation website](http://react-native-nearit-sdk.readthedocs.io/)
 
 ---
 Made with :sparkles: & :heart: by [Mattia Panzeri](https://github.com/panz3r) and [contributors](https://github.com/panz3r/react-native-nearit-sdk/graphs/contributors)

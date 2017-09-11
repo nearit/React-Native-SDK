@@ -1,0 +1,13 @@
+site_name: NearIT React Native
+theme: readthedocs
+extra_css : ["css/nearitdocs.css"]
+pages:
+  - 'Getting started' : 'index.md'
+  - 'User Guide' :
+    - 'Installation' : 'installation.md'
+    - 'Location Based Notifications' : 'location-based-notifications.md'
+    - 'Push Notifications' : 'push-notifications.md'
+    - 'Push Notifications - Android' : 'push-notifications-android.md'
+    - 'Push Notifications - iOS' : 'push-notifications-ios.md'
+    - 'In-app Content' : 'in-app-content.md'
+    - 'User Profiling' : 'user-profilation.md'
