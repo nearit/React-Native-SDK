@@ -4,7 +4,7 @@ This project is currently in **pre-alpha stage**
 # React Native NearIT SDK
 > The official [NearIT](https://www.nearit.com) SDK plugin for [React Native](https://facebook.github.io/react-native/)
 
-[![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](LICENSE.md)
+[![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](https://github.com/panz3r/react-native-nearit-sdk/blob/master/LICENSE.md)
 [![GitHub release](https://img.shields.io/github/release/nearit/React-Native-SDK.svg)](https://github.com/nearit/react-native-nearit-sdk/releases)
 [![npm](https://img.shields.io/npm/v/react-native-nearit.svg)](https://www.npmjs.com/package/react-native-nearit)
 

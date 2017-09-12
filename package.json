@@ -12,12 +12,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/panz3r/react-native-nearit-sdk"
+    "url": "git+https://github.com/nearit/React-Native-SDK"
   },
   "bugs": {
-    "url": "https://github.com/panz3r/react-native-nearit-sdk/issues"
+    "url": "https://github.com/nearit/React-Native-SDK/issues"
   },
-  "homepage": "https://github.com/panz3r/react-native-nearit-sdk#readme",
+  "homepage": "https://github.com/nearit/React-Native-SDK#readme",
   "main": "index.js",
   "nativePackage": true,
   "peerDependencies": {
