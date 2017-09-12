@@ -6,11 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-  NativeEventEmitter,
-  NativeModules,
-  Platform
-} from 'react-native'
+import { NativeEventEmitter, NativeModules } from 'react-native'
 
 const NearItSdk = NativeModules.RNNearIt
 
@@ -25,7 +21,7 @@ export class NearItManager {
   static _eventSource = new NativeEventEmitter(NearItSdk)
 
   static setContentsListener (listener) {
-      return NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+    return NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
   }
 
   static refreshConfig () {
@@ -44,9 +40,9 @@ export class NearItManager {
     return NearItSdk.sendTracking(trackingInfo, status)
   }
 
-  /*static sendFeedback (recipeId, feedbackId, rating, comment = '') {
+  /* static sendFeedback (recipeId, feedbackId, rating, comment = '') {
     return NearItSdk.sendFeedback(recipeId, feedbackId, rating, comment)
-  }*/
+  } */
 
   static getUserProfileId () {
     return NearItSdk.getUserProfileId()
