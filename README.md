@@ -4,15 +4,17 @@ This project is currently in **pre-alpha stage**
 # React Native NearIT SDK
 > The official [NearIT](https://www.nearit.com) SDK plugin for [React Native](https://facebook.github.io/react-native/)
 
-[![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](LICENSE)
-[![GitHub release](https://img.shields.io/github/release/panz3r/react-native-nearit-sdk.svg)](https://github.com/panz3r/react-native-nearit-sdk/releases)
+[![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](LICENSE.md)
+[![GitHub release](https://img.shields.io/github/release/nearit/React-Native-SDK.svg)](https://github.com/nearit/react-native-nearit-sdk/releases)
 [![npm](https://img.shields.io/npm/v/react-native-nearit.svg)](https://www.npmjs.com/package/react-native-nearit)
-[![Documentation Status](https://readthedocs.org/projects/react-native-nearit-sdk/badge/?version=latest)](http://react-native-nearit-sdk.readthedocs.io/en/latest/?badge=latest)
 
 [![React Native](https://img.shields.io/badge/RN-0.45.0+-green.svg)](https://facebook.github.io/react-native/)
 ![platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS-brightgreen.svg)
 [![Android](https://img.shields.io/badge/Android-16-blue.svg)](https://developer.android.com/about/dashboards/index.html#Platform)
 [![iOS](https://img.shields.io/badge/iOS-9-blue.svg)](https://developer.apple.com/ios/)
+
+[![Documentation Status](https://readthedocs.org/projects/nearit-react-native-sdk/badge/?version=latest)](https://nearit-react-native-sdk.readthedocs.io/en/latest/?badge=latest)
+[![Gitter](https://img.shields.io/gitter/room/nearit/Lobby.svg)](https://gitter.im/nearit/Lobby)
 
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
@@ -54,7 +56,7 @@ $ yarn add react-native-nearit
 ```
 
 ## Integration guide
-For information on how to integrate all NearIT features in your app, visit the [documentation website](http://react-native-nearit-sdk.readthedocs.io/)
+For information on how to integrate all NearIT features in your app, visit the [documentation website](https://nearit-react-native-sdk.readthedocs.io/)
 
 ---
-Made with :sparkles: & :heart: by [Mattia Panzeri](https://github.com/panz3r) and [contributors](https://github.com/panz3r/react-native-nearit-sdk/graphs/contributors)
+Made with :sparkles: & :heart: by [Mattia Panzeri](https://github.com/panz3r) and [contributors](https://github.com/nearit/React-Native-SDK/graphs/contributors)
