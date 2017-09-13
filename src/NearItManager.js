@@ -67,7 +67,7 @@ export class NearItManager {
     return NearItSdk.resetUserProfile()
   }
 
-  static setUserData (userDataObject: Object): Promise<null> {
+  static setUserData (userDataObject: { [string]: any }): Promise<null> {
     return NearItSdk.setUserData(userDataObject)
   }
 
