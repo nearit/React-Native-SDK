@@ -15,6 +15,17 @@ type NearItEvent = {
 
 type NearItContentsListener = (event: NearItEvent) => void
 
+type NearItCoupon = {
+  'name': string,
+  'description': string,
+  'value': string,
+  'expiresAt': string,
+  'redeemableFrom': string,
+  'serial': ?string,
+  'claimedAt': ?string,
+  'redeemedAt': ?string
+}
+
 type EmitterSubscription = {
   remove(): void
 }
@@ -77,6 +88,10 @@ export class NearItManager {
 
   static requestLocationPermission (): Promise<boolean | null> {
     return NearItSdk.requestLocationPermission()
+  }
+
+  static getCoupons (): Promise<NearItCoupon[]> {
+    return NearItSdk.getCoupons()
   }
 }
 

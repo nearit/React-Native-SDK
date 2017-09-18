@@ -19,6 +19,17 @@ declare module 'react-native-nearit' {
       status?: string
     }
 
+    interface NearItCoupon {
+      name: string,
+      description: string,
+      value: string,
+      expiresAt: string,
+      redeemableFrom: string,
+      serial?: string,
+      claimedAt?: string,
+      redeemedAt?: string
+    }
+
     interface EmitterSubscription {
       remove(): void
     }
@@ -48,6 +59,8 @@ declare module 'react-native-nearit' {
       static requestNotificationPermission(): Promise<boolean>
 
       static requestLocationPermission(): Promise<boolean | void>
+
+      static getCoupons(): Promise<NearItCoupon[]>
 
     }
 

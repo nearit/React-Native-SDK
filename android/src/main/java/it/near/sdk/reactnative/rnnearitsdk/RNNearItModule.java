@@ -25,17 +25,25 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.UserDataNotifier;
+import it.near.sdk.reactions.couponplugin.CouponListener;
+import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
@@ -84,6 +92,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   private static final String E_USER_PROFILE_RESET_ERROR = "E_USER_PROFILE_RESET_ERROR";
   private static final String E_USER_PROFILE_CREATE_ERROR = "E_USER_PROFILE_CREATE_ERROR";
   private static final String E_USER_PROFILE_DATA_ERROR = "E_USER_PROFILE_DATA_ERROR";
+  private static final String E_COUPONS_PARSING_ERROR = "E_COUPONS_PARSING_ERROR";
+  private static final String E_COUPONS_RETRIEVAL_ERROR = "E_COUPONS_RETRIEVAL_ERROR";
 
 
   public RNNearItModule(ReactApplicationContext reactContext) {
@@ -336,6 +346,44 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public void requestLocationPermission(final Promise promise) {
     promise.resolve(true);
     // sendEventWithLocationPermissionStatus(PERMISSION_LOCATION_GRANTED);
+  }
+
+  // NearIT Coupons
+
+  @ReactMethod
+  public void getCoupons(final Promise promise) {
+    NearItManager.getInstance().getCoupons(new CouponListener() {
+      @Override
+      public void onCouponsDownloaded(List<Coupon> list) {
+        try {
+          final WritableArray coupons = new WritableNativeArray();
+
+          for (Coupon c : list) {
+            // TODO: Extract utility method
+            final WritableMap coupon = new WritableNativeMap();
+            coupon.putString("name", c.name);
+            coupon.putString("description", c.description);
+            coupon.putString("value", c.value);
+            coupon.putString("expiresAt", c.expires_at);
+            coupon.putString("redeemableFrom", c.redeemable_from);
+            coupon.putString("serial", c.getSerial());
+            coupon.putString("claimedAt", c.getClaimedAt());
+            coupon.putString("redeemedAt", c.getRedeemedAt());
+            // TODO: Extraction end
+
+            coupons.pushMap(coupon);
+          }
+          promise.resolve(coupons);
+        } catch (Exception e) {
+          promise.reject(E_COUPONS_PARSING_ERROR, e);
+        }
+      }
+
+      @Override
+      public void onCouponDownloadError(String errorMessage) {
+        promise.reject(E_COUPONS_RETRIEVAL_ERROR, errorMessage);
+      }
+    });
   }
 
   // Private methods

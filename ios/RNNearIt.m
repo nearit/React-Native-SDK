@@ -47,6 +47,7 @@ NSString* const E_USER_PROFILE_SET_ERROR = @"E_USER_PROFILE_SET_ERROR";
 NSString* const E_USER_PROFILE_RESET_ERROR = @"E_USER_PROFILE_RESET_ERROR";
 NSString* const E_USER_PROFILE_CREATE_ERROR = @"E_USER_PROFILE_CREATE_ERROR";
 NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
+NSString* const E_COUPONS_RETRIEVAL_ERROR = @"E_COUPONS_RETRIEVAL_ERROR";
 
 // CLLocationManager
 CLLocationManager *locationManager;
@@ -330,6 +331,40 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
         NITLogI(TAG, @"NITManager stop");
         [[NITManager defaultManager] stop];
     }
+}
+
+// MARK: NearIT Coupons handling
+
+RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
+                  rejection:(RCTPromiseRejectBlock)reject)
+{
+    NSMutableArray *coupons = [NSMutableArray init];
+    
+    [[NITManager defaultManager] couponsWithCompletionHandler:^(NSArray<NITCoupon *> *coupones, NSError *error) {
+        if (!error) {
+            for(NITCoupon *c in coupones) {
+                NSMutableDictionary *coupon = [[NSMutableDictionary alloc] init];
+                [coupon setValue:c.name forKey:@"name"];
+                [coupon setValue:c.couponDescription forKey:@"description"];
+                [coupon setValue:c.value forKey:@"value"];
+                [coupon setValue:c.expiresAt forKey:@"expiresAt"];
+                [coupon setValue:c.redeemableFrom forKey:@"redeemableFrom"];
+                
+                if (c.claims.count > 0) {
+                    [coupon setValue:c.claims[0].serialNumber forKey:@"serial"];
+                    [coupon setValue:c.claims[0].claimedAt forKey:@"claimedAt"];
+                    [coupon setValue:c.claims[0].redeemedAt forKey:@"redeemedAt"];
+                }
+            
+                [coupons addObject:coupon];
+            }
+
+            resolve(coupons);
+        } else {
+            reject(E_COUPONS_RETRIEVAL_ERROR, @"Could NOT fetch user Coupons", error);
+        }
+        
+    }];
 }
 
 // MARK: NearIT Recipes handling
