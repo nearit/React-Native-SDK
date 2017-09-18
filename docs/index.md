@@ -1,7 +1,7 @@
 # React Native NearIT SDK
 > The official [NearIT](https://www.nearit.com) SDK plugin for [React Native](https://facebook.github.io/react-native/)
 
-[![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](LICENSE.md)
+[![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](https://github.com/panz3r/react-native-nearit-sdk/blob/master/LICENSE.md)
 [![GitHub release](https://img.shields.io/github/release/nearit/React-Native-SDK.svg)](https://github.com/nearit/react-native-nearit-sdk/releases)
 [![npm](https://img.shields.io/npm/v/react-native-nearit.svg)](https://www.npmjs.com/package/react-native-nearit)
 
@@ -10,7 +10,7 @@
 [![Android](https://img.shields.io/badge/Android-16-blue.svg)](https://developer.android.com/about/dashboards/index.html#Platform)
 [![iOS](https://img.shields.io/badge/iOS-9-blue.svg)](https://developer.apple.com/ios/)
 
-[![Documentation Status](https://readthedocs.org/projects/nearit-react-native-sdk/badge/?version=latest)](https://nearit-react-native-sdk.readthedocs.io/en/latest/?badge=latest)
+[![Github](https://img.shields.io/badge/code-Github-green.svg)](https://github.com/nearit/react-native-nearit-sdk)
 [![Gitter](https://img.shields.io/gitter/room/nearit/Lobby.svg)](https://gitter.im/nearit/Lobby)
 
 NearIT allows to engage app users by sending **context-aware targeted content**.

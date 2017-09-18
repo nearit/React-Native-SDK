@@ -341,7 +341,7 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
         // Simple notification
         NITSimpleNotification *simple = (NITSimpleNotification*)content;
         
-        NSString* message = [simple message];
+        NSString* message = [simple notificationMessage];
         if (!message) {
             message = @"";
         }
@@ -365,7 +365,10 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
         NITCustomJSON *custom = (NITCustomJSON*)content;
         NITLogI(TAG, @"JSON message %@ trackingInfo %@", [custom content], trackingInfo);
         
-        NSString* message = @""; // TODO Update when SDK sends this field
+        NSString* message = [custom notificationMessage];
+        if (!message) {
+            message = @"";
+        }
         
         NSDictionary* eventContent = @{
                                        EVENT_CONTENT_MESSAGE: message,

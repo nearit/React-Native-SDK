@@ -12,12 +12,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/panz3r/react-native-nearit-sdk"
+    "url": "git+https://github.com/nearit/React-Native-SDK"
   },
   "bugs": {
-    "url": "https://github.com/panz3r/react-native-nearit-sdk/issues"
+    "url": "https://github.com/nearit/React-Native-SDK/issues"
   },
-  "homepage": "https://github.com/panz3r/react-native-nearit-sdk#readme",
+  "homepage": "https://github.com/nearit/React-Native-SDK#readme",
   "main": "index.js",
   "nativePackage": true,
   "peerDependencies": {
@@ -25,11 +25,24 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
+    "flow-bin": "^0.54.1",
+    "flow-copy-source": "^1.2.1",
+    "flow-remove-types": "^1.2.1",
+    "npm-run-all": "^4.1.1",
+    "rimraf": "^2.6.2",
     "snazzy": "^7.0.0",
     "standard": "*"
   },
   "scripts": {
-    "lint": "standard './index.js' './src/**.js' | snazzy"
+    "flow": "flow",
+    "cleanup": "rimraf lib/",
+    "lint:js": "standard './index.js' './src/**.js' | snazzy",
+    "lint:flow": "flow check",
+    "lint": "run-s lint:*",
+    "build:js": "flow-remove-types src/ -d lib/",
+    "build:flow": "flow-copy-source src lib",
+    "build": "run-s build:*",
+    "prepack": "run-s cleanup lint build"
   },
   "standard": {
     "parser": "babel-eslint"

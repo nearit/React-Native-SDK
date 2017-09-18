@@ -6,11 +6,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-  NativeEventEmitter,
-  NativeModules,
-  Platform
-} from 'react-native'
+// @flow
+import { NativeEventEmitter, NativeModules } from 'react-native'
+
+type NearItEvent = {
+  'type': string
+}
+
+type NearItContentsListener = (event: NearItEvent) => void
+
+type EmitterSubscription = {
+  remove(): void
+}
 
 const NearItSdk = NativeModules.RNNearIt
 
@@ -24,51 +31,51 @@ export class NearItManager {
 
   static _eventSource = new NativeEventEmitter(NearItSdk)
 
-  static setContentsListener (listener) {
-      return NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+  static setContentsListener (listener: NearItContentsListener): EmitterSubscription {
+    return NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
   }
 
-  static refreshConfig () {
+  static refreshConfig (): Promise<null> {
     return NearItSdk.refreshConfig()
   }
 
-  static startRadar () {
+  static startRadar (): Promise<null> {
     return NearItSdk.startRadar()
   }
 
-  static stopRadar () {
+  static stopRadar (): Promise<null> {
     return NearItSdk.stopRadar()
   }
 
-  static sendTracking (trackingInfo, status) {
+  static sendTracking (trackingInfo: string, status: string): Promise<null> {
     return NearItSdk.sendTracking(trackingInfo, status)
   }
 
-  /*static sendFeedback (recipeId, feedbackId, rating, comment = '') {
+  /* static sendFeedback (recipeId, feedbackId, rating, comment = '') {
     return NearItSdk.sendFeedback(recipeId, feedbackId, rating, comment)
-  }*/
+  } */
 
-  static getUserProfileId () {
+  static getUserProfileId (): Promise<string> {
     return NearItSdk.getUserProfileId()
   }
 
-  static setUserProfileId (profileId) {
+  static setUserProfileId (profileId: string): Promise<string> {
     return NearItSdk.setUserProfileId(profileId)
   }
 
-  static resetUserProfile () {
+  static resetUserProfile (): Promise<null> {
     return NearItSdk.resetUserProfile()
   }
 
-  static setUserData (userDataObject) {
+  static setUserData (userDataObject: { [string]: any }): Promise<null> {
     return NearItSdk.setUserData(userDataObject)
   }
 
-  static requestNotificationPermission () {
+  static requestNotificationPermission (): Promise<boolean> {
     return NearItSdk.requestNotificationPermission()
   }
 
-  static requestLocationPermission () {
+  static requestLocationPermission (): Promise<boolean | null> {
     return NearItSdk.requestLocationPermission()
   }
 }

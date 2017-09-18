@@ -1,5 +1,6 @@
 # Docs
 .github
+mkdocs.yml
 docs/
 
 # NodeModules
@@ -16,5 +17,9 @@ sample/
 package-lock.json
 yarn.lock
 
-# Sample (Temp)
-sample/
+# Source files
+src/
+
+# Flow
+.flowconfig
+flow-typed/
