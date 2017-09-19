@@ -22,6 +22,7 @@ NSString* const RN_LOCAL_EVENTS_TOPIC = @"RNNearItLocalEvents";
 NSString* const EVENT_TYPE_PERMISSIONS = @"NearIt.Events.PermissionStatus";
 NSString* const EVENT_TYPE_SIMPLE = @"NearIt.Events.SimpleNotification";
 NSString* const EVENT_TYPE_CUSTOM_JSON = @"NearIt.Events.CustomJSON";
+NSString* const EVENT_TYPE_COUPON = @"NearIt.Events.Coupon";
 
 // Events content
 NSString* const EVENT_TYPE = @"type";
@@ -29,6 +30,7 @@ NSString* const EVENT_TRACKING_INFO = @"trackingInfo";
 NSString* const EVENT_CONTENT = @"content";
 NSString* const EVENT_CONTENT_MESSAGE = @"message";
 NSString* const EVENT_CONTENT_DATA = @"data";
+NSString* const EVENT_CONTENT_COUPON = @"coupon";
 NSString* const EVENT_FROM_USER_ACTION = @"fromUserAction";
 NSString* const EVENT_STATUS = @"status";
 
@@ -102,7 +104,8 @@ RCT_EXPORT_MODULE()
              @"Events": @{
                         @"PermissionStatus": EVENT_TYPE_PERMISSIONS,
                         @"SimpleNotification": EVENT_TYPE_SIMPLE,
-                        @"CustomJson": EVENT_TYPE_CUSTOM_JSON
+                        @"CustomJson": EVENT_TYPE_CUSTOM_JSON,
+                        @"Coupon": EVENT_TYPE_COUPON
                      },
              @"EventContent": @{
                         @"type": EVENT_TYPE,
@@ -110,6 +113,7 @@ RCT_EXPORT_MODULE()
                         @"content": EVENT_CONTENT,
                         @"message": EVENT_CONTENT_MESSAGE,
                         @"data": EVENT_CONTENT_DATA,
+                        @"coupon": EVENT_CONTENT_COUPON,
                         @"fromUserAction": EVENT_FROM_USER_ACTION,
                         @"status": EVENT_STATUS
                      },
@@ -343,26 +347,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
     [[NITManager defaultManager] couponsWithCompletionHandler:^(NSArray<NITCoupon *> *coupones, NSError *error) {
         if (!error) {
             for(NITCoupon *c in coupones) {
-                NSMutableDictionary *coupon = [[NSMutableDictionary alloc] init];
-                [coupon setValue:c.name forKey:@"name"];
-                [coupon setValue:c.couponDescription forKey:@"description"];
-                [coupon setValue:c.value forKey:@"value"];
-                [coupon setValue:c.expiresAt forKey:@"expiresAt"];
-                [coupon setValue:c.redeemableFrom forKey:@"redeemableFrom"];
-                
-                if (c.claims.count > 0) {
-                    [coupon setValue:c.claims[0].serialNumber forKey:@"serial"];
-                    [coupon setValue:c.claims[0].claimedAt forKey:@"claimedAt"];
-                    [coupon setValue:(c.claims[0].redeemedAt ? c.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
-                }
-                
-                [coupon setValue:@{
-                                   @"fullSize": (c.icon.url ? c.icon.url : [NSNull null]),
-                                   @"squareSize": (c.icon.smallSizeURL ? c.icon.smallSizeURL : [NSNull null])
-                                }
-                          forKey:@"image"];
-            
-                [coupons addObject:coupon];
+                [coupons addObject:[self bundleNITCoupon:c]];
             }
 
             resolve(coupons);
@@ -378,7 +363,6 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 - (BOOL)handleNearContent: (id _Nonnull) content trackingInfo: (NITTrackingInfo* _Nonnull) trackingInfo fromUserAction: (BOOL) fromUserAction
 {
     if ([content isKindOfClass:[NITSimpleNotification class]]) {
-        
         // Simple notification
         NITSimpleNotification *simple = (NITSimpleNotification*)content;
         
@@ -399,9 +383,30 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                     fromUserAction:fromUserAction];
         
         return YES;
+    
+    } else if ([content isKindOfClass:[NITCoupon class]]) {
+        // Coupon notification
+        NITCoupon *coupon = (NITCoupon*)content;
+        NITLogI(TAG, @"Coupon %@ trackingInfo %@", coupon, trackingInfo);
+        
+        NSString* message = [coupon notificationMessage];
+        if (!message) {
+            message = @"";
+        }
+        
+        NSDictionary* eventContent = @{
+                                       EVENT_CONTENT_MESSAGE: message,
+                                       EVENT_CONTENT_COUPON: [self bundleNITCoupon:coupon]
+                                    };
+        
+        [self sendEventWithContent:eventContent
+                      NITEventType:EVENT_TYPE_COUPON
+                      trackingInfo:trackingInfo
+                    fromUserAction:fromUserAction];
+        
+        return YES;
         
     } else if ([content isKindOfClass:[NITCustomJSON class]]) {
-        
         // Custom JSON notification
         NITCustomJSON *custom = (NITCustomJSON*)content;
         NITLogI(TAG, @"JSON message %@ trackingInfo %@", [custom content], trackingInfo);
@@ -431,10 +436,36 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
     }
 }
 
+// MARK: Internal contents handling
+
+- (NSDictionary*)bundleNITCoupon:(NITCoupon* _Nonnull) coupon
+{
+    NSMutableDictionary* couponDictionary = [[NSMutableDictionary alloc] init];
+    [couponDictionary setValue:coupon.name forKey:@"name"];
+    [couponDictionary setValue:coupon.couponDescription forKey:@"description"];
+    [couponDictionary setValue:coupon.value forKey:@"value"];
+    [couponDictionary setValue:coupon.expiresAt forKey:@"expiresAt"];
+    [couponDictionary setValue:coupon.redeemableFrom forKey:@"redeemableFrom"];
+    
+    if (coupon.claims.count > 0) {
+        [couponDictionary setValue:coupon.claims[0].serialNumber forKey:@"serial"];
+        [couponDictionary setValue:coupon.claims[0].claimedAt forKey:@"claimedAt"];
+        [couponDictionary setValue:(coupon.claims[0].redeemedAt ? coupon.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
+    }
+    
+    [couponDictionary setValue:@{
+                       @"fullSize": (coupon.icon.url ? coupon.icon.url : [NSNull null]),
+                       @"squareSize": (coupon.icon.smallSizeURL ? coupon.icon.smallSizeURL : [NSNull null])
+                       }
+              forKey:@"image"];
+    
+    return couponDictionary;
+}
+
 
 // MARK: Internal notification handling
 
-- (void)handleNotificationReceived:(NSNotification *) notification
+- (void)handleNotificationReceived:(NSNotification*) notification
 {
     NSLog(@"handleNotificationReceived: %@", notification);
     

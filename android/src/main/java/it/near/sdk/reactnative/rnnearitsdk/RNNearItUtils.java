@@ -10,8 +10,11 @@
 
 import android.util.Base64;
 
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.google.gson.Gson;
 
+import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.trackings.TrackingInfo;
 
 public class RNNearItUtils {
@@ -30,5 +33,25 @@ public class RNNearItUtils {
 
     // DeJSONify trackingInfo
     return new Gson().fromJson(trackingInfoJsonString, TrackingInfo.class);
+  }
+
+  static WritableMap bundleCoupon(final Coupon coupon) {
+    final WritableMap couponMap = new WritableNativeMap();
+    couponMap.putString("name", coupon.name);
+    couponMap.putString("description", coupon.description);
+    couponMap.putString("value", coupon.value);
+    couponMap.putString("expiresAt", coupon.expires_at);
+    couponMap.putString("redeemableFrom", coupon.redeemable_from);
+    couponMap.putString("serial", coupon.getSerial());
+    couponMap.putString("claimedAt", coupon.getClaimedAt());
+    couponMap.putString("redeemedAt", coupon.getRedeemedAt());
+
+    // Coupon icon handling
+    final WritableMap couponImage = new WritableNativeMap();
+    couponImage.putString("fullSize", coupon.getIconSet().getFullSize());
+    couponImage.putString("squareSize", coupon.getIconSet().getSmallSize());
+    couponMap.putMap("image", couponImage);
+
+    return couponMap;
   }
 }

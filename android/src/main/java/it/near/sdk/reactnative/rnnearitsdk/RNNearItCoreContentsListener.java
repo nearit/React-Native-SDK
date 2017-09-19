@@ -25,11 +25,13 @@ import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
 
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_COUPON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_DATA;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_MESSAGE;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_FROM_USER_ACTION;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TRACKING_INFO;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_COUPON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_CUSTOM_JSON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_SIMPLE;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.NATIVE_EVENTS_TOPIC;
@@ -54,7 +56,13 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
 
   @Override
   public void gotCouponNotification(Coupon coupon, TrackingInfo trackingInfo) {
-    // TODO emit CouponEvent
+    // Create EventContent map
+    final WritableMap contentMap = new WritableNativeMap();
+    contentMap.putString(EVENT_CONTENT_MESSAGE, coupon.notificationMessage);
+    contentMap.putMap(EVENT_CONTENT_COUPON, RNNearItUtils.bundleCoupon(coupon));
+
+    // Notify JS
+    sendEventWithContent(EVENT_TYPE_COUPON, contentMap, trackingInfo);
   }
 
   @Override

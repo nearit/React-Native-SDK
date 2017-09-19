@@ -67,6 +67,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_TYPE_PERMISSIONS = "NearIt.Events.PermissionStatus";
   public static final String EVENT_TYPE_SIMPLE = "NearIt.Events.SimpleNotification";
   public static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
+  public static final String EVENT_TYPE_COUPON = "NearIt.Events.Coupon";
 
   // Events content
   public static final String EVENT_TYPE = "type";
@@ -74,6 +75,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_CONTENT = "content";
   public static final String EVENT_CONTENT_MESSAGE = "message";
   public static final String EVENT_CONTENT_DATA = "data";
+  public static final String EVENT_CONTENT_COUPON = "coupon";
   public static final String EVENT_FROM_USER_ACTION = "fromUserAction";
   public static final String EVENT_STATUS = "status";
 
@@ -133,6 +135,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("PermissionStatus", EVENT_TYPE_PERMISSIONS);
             put("SimpleNotification", EVENT_TYPE_SIMPLE);
             put("CustomJson", EVENT_TYPE_CUSTOM_JSON);
+            put("Coupon", EVENT_TYPE_COUPON);
           }
         });
       }
@@ -145,6 +148,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("content", EVENT_CONTENT);
             put("message", EVENT_CONTENT_MESSAGE);
             put("data", EVENT_CONTENT_DATA);
+            put("coupon", EVENT_CONTENT_COUPON);
             put("fromUserAction", EVENT_FROM_USER_ACTION);
             put("status", EVENT_STATUS);
           }
@@ -357,27 +361,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
       public void onCouponsDownloaded(List<Coupon> list) {
         try {
           final WritableArray coupons = new WritableNativeArray();
-
           for (Coupon c : list) {
-            // TODO: Extract utility method
-            final WritableMap coupon = new WritableNativeMap();
-            coupon.putString("name", c.name);
-            coupon.putString("description", c.description);
-            coupon.putString("value", c.value);
-            coupon.putString("expiresAt", c.expires_at);
-            coupon.putString("redeemableFrom", c.redeemable_from);
-            coupon.putString("serial", c.getSerial());
-            coupon.putString("claimedAt", c.getClaimedAt());
-            coupon.putString("redeemedAt", c.getRedeemedAt());
-
-            final WritableMap couponImage = new WritableNativeMap();
-            couponImage.putString("fullSize", c.getIconSet().getFullSize());
-            couponImage.putString("squareSize", c.getIconSet().getSmallSize());
-
-            coupon.putMap("image", couponImage);
-            // TODO: Extraction end
-
-            coupons.pushMap(coupon);
+            coupons.pushMap(RNNearItUtils.bundleCoupon(c));
           }
           promise.resolve(coupons);
         } catch (Exception e) {
