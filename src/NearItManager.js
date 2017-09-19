@@ -15,6 +15,25 @@ type NearItEvent = {
 
 type NearItContentsListener = (event: NearItEvent) => void
 
+type NearItImage = {
+  'fullSize': ?string,
+  'squareSize': ?string
+}
+
+type NearItCoupon = {
+  'name': string,
+  'description': string,
+  'image': ?NearItImage,
+  'value': string,
+  'expiresAt': string,
+  'redeemableFrom': string,
+  'serial': ?string,
+  'claimedAt': ?string,
+  'redeemedAt': ?string
+}
+
+type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
+
 type EmitterSubscription = {
   remove(): void
 }
@@ -51,9 +70,9 @@ export class NearItManager {
     return NearItSdk.sendTracking(trackingInfo, status)
   }
 
-  /* static sendFeedback (recipeId, feedbackId, rating, comment = '') {
-    return NearItSdk.sendFeedback(recipeId, feedbackId, rating, comment)
-  } */
+  static sendFeedback (feedbackId: string, rating: NearItRating, comment: string = ''): Promise<null> {
+    return NearItSdk.sendFeedback(feedbackId, rating, comment)
+  }
 
   static getUserProfileId (): Promise<string> {
     return NearItSdk.getUserProfileId()
@@ -77,6 +96,10 @@ export class NearItManager {
 
   static requestLocationPermission (): Promise<boolean | null> {
     return NearItSdk.requestLocationPermission()
+  }
+
+  static getCoupons (): Promise<NearItCoupon[]> {
+    return NearItSdk.getCoupons()
   }
 }
 

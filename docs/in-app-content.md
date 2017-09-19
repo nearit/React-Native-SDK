@@ -43,6 +43,9 @@ Each event object (except for `PermissionStatus` ones) is composed as follow
 | Value     | Description |
 |-----------|-------------|
 | `Events.SimpleNotification` | A NearIT simple notification |
+| `Events.Content` | A NearIT notification with Content |
+| `Events.Feedback` | A NearIT notification with Feedback |
+| `Events.Coupon` | A NearIT notification with Coupon |
 | `Events.CustomJson` | A NearIT Custom JSON |
 | `Events.PermissionStatus` | A message indicating the state (`Granted` or `Denied`) of a permission |
 
@@ -53,6 +56,34 @@ Each event object (except for `PermissionStatus` ones) is composed as follow
 | Field    | Description |
 |----------|-------------|
 | `EventContent.message` | The `body` of the NearIT simple notification |
+
+- For `Events.Content`
+
+| Field    | Description |
+|----------|-------------|
+| `EventContent.message` | The `body` of the NearIT simple notification |
+| `EventContent.text`    | The `text` content (can be empty) |
+| `EventContent.images`  | The array of `images` sent within the content (can be empty) |
+| `EventContent.video`   | The url to the `video` content (can be empty) |
+| `EventContent.upload`  | The url to the `pdf` content (can be empty) |
+| `EventContent.audio`   | The url to the `audio` content (can be empty) |
+
+- For `Events.Feedback`
+
+| Field    | Description |
+|----------|-------------|
+| `EventContent.message` | The `body` of the NearIT simple notification |
+| `EventContent.feedbackId` | The `feedbackId` required to send a Feedback answer |
+| `EventContent.question` | The `question` to be displayed to the user  |
+
+See below to learn how to send a `Feedback` answer to NearIT.
+
+- For `Events.Coupon`
+
+| Field    | Description |
+|----------|-------------|
+| `EventContent.message` | The `body` of the NearIT simple notification |
+| `EventContent.coupon` | The `coupon` object sent with the notification |
 
 - For `Events.CustomJson`
 
@@ -89,6 +120,30 @@ A `PermissionStatus` event is composed as follow
 
 <br>
 
+# Feedbacks
+
+NearIT allow you to send questions and get feedback from your users.
+
+NearIT Feedback are composed of 2 parts:
+
+- A `rating`, represented as an integer from 0 to 5
+- An optional `comment`, to allow your user to comment on a rating
+
+After displaying the Feedback request to your user and receiving his answer, you should send this data to NearIT using the below method:
+```js
+import NearIT from 'react-native-nearit'
+
+...
+const rating = 5 // The rating index (0 to 5)
+const comment = '' // The optional comment for the rating
+
+const feedbackSent = await NearIT.sendFeedback(feedbackId, rating, comment) // Full method call
+// or
+const  feedbackSent = await NearIT.sendFeedback(feedbackId, rating) // Method call without comment string
+```
+
+<br>
+
 # Trackings
 
 NearIT analytics on recipes are built from trackings describing the status of user engagement with a recipe.
@@ -113,3 +168,21 @@ NearIT.sendTracking(trackingInfo, 'custom-event'); // Track a custom event to th
 ```
 
 **N.B:** The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
+
+<br>
+
+# Fetch current user coupon
+
+We handle the complete emission and redemption coupon cycle in our platform, and we deliver a coupon content only when a coupon is emitted (you will not be notified of recipes when a profile has already received the coupon, even if the coupon is still valid). 
+
+You can ask the library to fetch the list of all the user current coupons with the method:
+
+```js
+import NearIT from 'react-native-nearit'
+
+...
+
+const coupons = await NearIT.getCoupons() // Will return an array of coupon objects
+```
+
+The method will also return already redeemed coupons so you get to decide to filter them if necessary.

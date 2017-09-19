@@ -22,6 +22,9 @@ NSString* const RN_LOCAL_EVENTS_TOPIC = @"RNNearItLocalEvents";
 NSString* const EVENT_TYPE_PERMISSIONS = @"NearIt.Events.PermissionStatus";
 NSString* const EVENT_TYPE_SIMPLE = @"NearIt.Events.SimpleNotification";
 NSString* const EVENT_TYPE_CUSTOM_JSON = @"NearIt.Events.CustomJSON";
+NSString* const EVENT_TYPE_COUPON = @"NearIt.Events.Coupon";
+NSString* const EVENT_TYPE_CONTENT = @"NearIt.Events.Content";
+NSString* const EVENT_TYPE_FEEDBACK = @"NearIt.Events.Feedback";
 
 // Events content
 NSString* const EVENT_TYPE = @"type";
@@ -29,6 +32,14 @@ NSString* const EVENT_TRACKING_INFO = @"trackingInfo";
 NSString* const EVENT_CONTENT = @"content";
 NSString* const EVENT_CONTENT_MESSAGE = @"message";
 NSString* const EVENT_CONTENT_DATA = @"data";
+NSString* const EVENT_CONTENT_COUPON = @"coupon";
+NSString* const EVENT_CONTENT_TEXT = @"text";
+NSString* const EVENT_CONTENT_VIDEO = @"video";
+NSString* const EVENT_CONTENT_IMAGES = @"images";
+NSString* const EVENT_CONTENT_UPLOAD = @"upload";
+NSString* const EVENT_CONTENT_AUDIO = @"audio";
+NSString* const EVENT_CONTENT_FEEDBACK = @"feedbackId";
+NSString* const EVENT_CONTENT_QUESTION = @"feedbackQuestion";
 NSString* const EVENT_FROM_USER_ACTION = @"fromUserAction";
 NSString* const EVENT_STATUS = @"status";
 
@@ -47,6 +58,7 @@ NSString* const E_USER_PROFILE_SET_ERROR = @"E_USER_PROFILE_SET_ERROR";
 NSString* const E_USER_PROFILE_RESET_ERROR = @"E_USER_PROFILE_RESET_ERROR";
 NSString* const E_USER_PROFILE_CREATE_ERROR = @"E_USER_PROFILE_CREATE_ERROR";
 NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
+NSString* const E_COUPONS_RETRIEVAL_ERROR = @"E_COUPONS_RETRIEVAL_ERROR";
 
 // CLLocationManager
 CLLocationManager *locationManager;
@@ -101,7 +113,10 @@ RCT_EXPORT_MODULE()
              @"Events": @{
                         @"PermissionStatus": EVENT_TYPE_PERMISSIONS,
                         @"SimpleNotification": EVENT_TYPE_SIMPLE,
-                        @"CustomJson": EVENT_TYPE_CUSTOM_JSON
+                        @"CustomJson": EVENT_TYPE_CUSTOM_JSON,
+                        @"Coupon": EVENT_TYPE_COUPON,
+                        @"Content": EVENT_TYPE_CONTENT,
+                        @"Feedback": EVENT_TYPE_FEEDBACK
                      },
              @"EventContent": @{
                         @"type": EVENT_TYPE,
@@ -109,6 +124,14 @@ RCT_EXPORT_MODULE()
                         @"content": EVENT_CONTENT,
                         @"message": EVENT_CONTENT_MESSAGE,
                         @"data": EVENT_CONTENT_DATA,
+                        @"coupon": EVENT_CONTENT_COUPON,
+                        @"text": EVENT_CONTENT_TEXT,
+                        @"images": EVENT_CONTENT_IMAGES,
+                        @"video": EVENT_CONTENT_VIDEO,
+                        @"upload": EVENT_CONTENT_UPLOAD,
+                        @"audio": EVENT_CONTENT_AUDIO,
+                        @"feedbackId": EVENT_CONTENT_FEEDBACK,
+                        @"question": EVENT_CONTENT_QUESTION,
                         @"fromUserAction": EVENT_FROM_USER_ACTION,
                         @"status": EVENT_STATUS
                      },
@@ -202,6 +225,40 @@ RCT_EXPORT_METHOD(stopRadar: (RCTPromiseResolveBlock) resolve
     [[NITManager defaultManager] stop];
     resolve([NSNull null]);
 }
+
+// MARK: NearIT Feedback
+
+RCT_EXPORT_METHOD(sendFeedback: (NSString* _Nonnull)feedbackB64
+                        rating: (NSInteger* _Nonnull)rating
+                       comment: (NSString* _Nullable)comment
+                    resolution: (RCTPromiseResolveBlock) resolve
+                     rejection: (RCTPromiseRejectBlock) reject)
+{
+    if (IS_EMPTY(feedbackB64)) {
+        reject(E_SEND_FEEDBACK_ERROR, @"Missing feedbackId parameter", nil);
+    } else {
+        NSData* feedbackData = [[NSData alloc] initWithBase64EncodedString:feedbackB64
+                                                                   options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        
+        NITFeedback *feedback = [NSKeyedUnarchiver unarchiveObjectWithData:feedbackData];
+        
+        NSString* feedbackComment = comment ? comment : @"";
+        
+        NITFeedbackEvent *feedbackEvent = [[NITFeedbackEvent alloc] initWithFeedback:feedback
+                                                                              rating:*rating
+                                                                             comment:feedbackComment];
+        
+        [[NITManager defaultManager] sendEventWithEvent:feedbackEvent
+                                      completionHandler:^(NSError * _Nullable error) {
+                                          if (error) {
+                                              reject(E_SEND_FEEDBACK_ERROR, @"Failed to send feedback to NearIT", error);
+                                          } else {
+                                              resolve([NSNull null]);
+                                          }
+                                      }];
+    }
+}
+
 
 // MARK: NearIT Trackings
 
@@ -332,12 +389,32 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     }
 }
 
+// MARK: NearIT Coupons handling
+
+RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
+                  rejection:(RCTPromiseRejectBlock)reject)
+{
+    NSMutableArray *coupons = [NSMutableArray init];
+    
+    [[NITManager defaultManager] couponsWithCompletionHandler:^(NSArray<NITCoupon *> *coupones, NSError *error) {
+        if (!error) {
+            for(NITCoupon *c in coupones) {
+                [coupons addObject:[self bundleNITCoupon:c]];
+            }
+
+            resolve(coupons);
+        } else {
+            reject(E_COUPONS_RETRIEVAL_ERROR, @"Could NOT fetch user Coupons", error);
+        }
+        
+    }];
+}
+
 // MARK: NearIT Recipes handling
 
 - (BOOL)handleNearContent: (id _Nonnull) content trackingInfo: (NITTrackingInfo* _Nonnull) trackingInfo fromUserAction: (BOOL) fromUserAction
 {
     if ([content isKindOfClass:[NITSimpleNotification class]]) {
-        
         // Simple notification
         NITSimpleNotification *simple = (NITSimpleNotification*)content;
         
@@ -358,9 +435,110 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
                     fromUserAction:fromUserAction];
         
         return YES;
+    } else if ([content isKindOfClass:[NITContent class]]) {
+        // Notification with Content
+        NITContent *nearContent = (NITContent*)content;
+        NITLogI(TAG, @"Content %@ trackingInfo %@", nearContent, trackingInfo);
+        
+        NSString* message = [nearContent notificationMessage];
+        if (!message) {
+            message = @"";
+        }
+        
+        NSString* text = [nearContent content];
+        if (!text) {
+            text = @"";
+        }
+        
+        NSString* videoUrl = [nearContent videoLink];
+        if (!videoUrl){
+            videoUrl = @"";
+        }
+        
+        NSMutableArray* images = [NSMutableArray init];
+        if ([nearContent images]) {
+            for(NITImage* i in [nearContent images]) {
+                [images addObject:[self bundleNITImage:i]];
+            }
+        }
+        
+        NSString* uploadUrl = @"";
+        NITUpload* upload = [nearContent upload];
+        if (upload) {
+            uploadUrl = upload.url ? upload.url.absoluteString : @"";
+        }
+        
+        NSString* audioUrl = @"";
+        NITAudio* audioResource = [nearContent audio];
+        if (audioResource) {
+            audioUrl = audioResource.url ? audioResource.url.absoluteString : @"";
+        }
+        
+        NSDictionary* eventContent = @{
+                                       EVENT_CONTENT_MESSAGE:message,
+                                          EVENT_CONTENT_TEXT:text,
+                                         EVENT_CONTENT_VIDEO:videoUrl,
+                                        EVENT_CONTENT_IMAGES:images,
+                                        EVENT_CONTENT_UPLOAD:uploadUrl,
+                                         EVENT_CONTENT_AUDIO:audioUrl
+                                    };
+        
+        [self sendEventWithContent:eventContent
+                      NITEventType:EVENT_TYPE_CONTENT
+                      trackingInfo:trackingInfo
+                    fromUserAction:fromUserAction];
+        
+        return YES;
+    
+    } else if ([content isKindOfClass:[NITFeedback class]]) {
+        // Feedback
+        NITFeedback* feedback = (NITFeedback*)content;
+        NITLogI(TAG, @"Feedback %@ trackingInfo %@", feedback, trackingInfo);
+        
+        NSString* message = [feedback notificationMessage];
+        if (!message) {
+            message = @"";
+        }
+        
+        NSData* feedbackData = [NSKeyedArchiver archivedDataWithRootObject:feedback];
+        NSString* feedbackB64 = [feedbackData base64EncodedStringWithOptions:0];
+        
+        NSDictionary* eventContent = @{
+                                       EVENT_CONTENT_MESSAGE: message,
+                                      EVENT_CONTENT_FEEDBACK: feedbackB64,
+                                      EVENT_CONTENT_QUESTION: [feedback question]
+                                    };
+        
+        [self sendEventWithContent:eventContent
+                      NITEventType:EVENT_TYPE_FEEDBACK
+                      trackingInfo:trackingInfo
+                    fromUserAction:fromUserAction];
+        
+        return YES;
+        
+    } else if ([content isKindOfClass:[NITCoupon class]]) {
+        // Coupon notification
+        NITCoupon *coupon = (NITCoupon*)content;
+        NITLogI(TAG, @"Coupon %@ trackingInfo %@", coupon, trackingInfo);
+        
+        NSString* message = [coupon notificationMessage];
+        if (!message) {
+            message = @"";
+        }
+        
+        NSDictionary* eventContent = @{
+                                       EVENT_CONTENT_MESSAGE: message,
+                                       EVENT_CONTENT_COUPON: [self bundleNITCoupon:coupon]
+                                    };
+        
+        [self sendEventWithContent:eventContent
+                      NITEventType:EVENT_TYPE_COUPON
+                      trackingInfo:trackingInfo
+                    fromUserAction:fromUserAction];
+        
+        return YES;
         
     } else if ([content isKindOfClass:[NITCustomJSON class]]) {
-        
         // Custom JSON notification
         NITCustomJSON *custom = (NITCustomJSON*)content;
         NITLogI(TAG, @"JSON message %@ trackingInfo %@", [custom content], trackingInfo);
@@ -390,10 +568,42 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     }
 }
 
+// MARK: Internal contents handling
+
+- (NSDictionary*)bundleNITCoupon:(NITCoupon* _Nonnull) coupon
+{
+    NSMutableDictionary* couponDictionary = [[NSMutableDictionary alloc] init];
+    [couponDictionary setValue:coupon.name forKey:@"name"];
+    [couponDictionary setValue:coupon.couponDescription forKey:@"description"];
+    [couponDictionary setValue:coupon.value forKey:@"value"];
+    [couponDictionary setValue:coupon.expiresAt forKey:@"expiresAt"];
+    [couponDictionary setValue:coupon.redeemableFrom forKey:@"redeemableFrom"];
+    
+    if (coupon.claims.count > 0) {
+        [couponDictionary setValue:coupon.claims[0].serialNumber forKey:@"serial"];
+        [couponDictionary setValue:coupon.claims[0].claimedAt forKey:@"claimedAt"];
+        [couponDictionary setValue:(coupon.claims[0].redeemedAt ? coupon.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
+    }
+    
+    if (coupon.icon) {
+        [couponDictionary setValue:[self bundleNITImage:coupon.icon] forKey:@"image"];
+    }
+    
+    return couponDictionary;
+}
+
+- (NSDictionary*)bundleNITImage:(NITImage* _Nonnull) image
+{
+    return @{
+             @"fullSize": (image.url ? image.url : [NSNull null]),
+             @"squareSize": (image.smallSizeURL ? image.smallSizeURL : [NSNull null])
+            };
+}
+
 
 // MARK: Internal notification handling
 
-- (void)handleNotificationReceived:(NSNotification *) notification
+- (void)handleNotificationReceived:(NSNotification*) notification
 {
     NSLog(@"handleNotificationReceived: %@", notification);
     

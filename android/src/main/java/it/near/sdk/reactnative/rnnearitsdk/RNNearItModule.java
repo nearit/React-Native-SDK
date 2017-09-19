@@ -25,17 +25,25 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.UserDataNotifier;
+import it.near.sdk.reactions.couponplugin.CouponListener;
+import it.near.sdk.reactions.couponplugin.model.Coupon;
+import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
+import it.near.sdk.reactions.feedbackplugin.model.Feedback;
+import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
@@ -59,6 +67,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_TYPE_PERMISSIONS = "NearIt.Events.PermissionStatus";
   public static final String EVENT_TYPE_SIMPLE = "NearIt.Events.SimpleNotification";
   public static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
+  public static final String EVENT_TYPE_COUPON = "NearIt.Events.Coupon";
+  public static final String EVENT_TYPE_CONTENT = "NearIt.Events.Content";
+  public static final String EVENT_TYPE_FEEDBACK = "NearIt.Events.Feedback";
 
   // Events content
   public static final String EVENT_TYPE = "type";
@@ -66,6 +77,14 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_CONTENT = "content";
   public static final String EVENT_CONTENT_MESSAGE = "message";
   public static final String EVENT_CONTENT_DATA = "data";
+  public static final String EVENT_CONTENT_COUPON = "coupon";
+  public static final String EVENT_CONTENT_TEXT = "text";
+  public static final String EVENT_CONTENT_VIDEO = "video";
+  public static final String EVENT_CONTENT_IMAGES = "images";
+  public static final String EVENT_CONTENT_UPLOAD = "upload";
+  public static final String EVENT_CONTENT_AUDIO = "audio";
+  public static final String EVENT_CONTENT_FEEDBACK = "feedbackId";
+  public static final String EVENT_CONTENT_QUESTION = "feedbackQuestion";
   public static final String EVENT_FROM_USER_ACTION = "fromUserAction";
   public static final String EVENT_STATUS = "status";
 
@@ -84,6 +103,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   private static final String E_USER_PROFILE_RESET_ERROR = "E_USER_PROFILE_RESET_ERROR";
   private static final String E_USER_PROFILE_CREATE_ERROR = "E_USER_PROFILE_CREATE_ERROR";
   private static final String E_USER_PROFILE_DATA_ERROR = "E_USER_PROFILE_DATA_ERROR";
+  private static final String E_COUPONS_PARSING_ERROR = "E_COUPONS_PARSING_ERROR";
+  private static final String E_COUPONS_RETRIEVAL_ERROR = "E_COUPONS_RETRIEVAL_ERROR";
 
 
   public RNNearItModule(ReactApplicationContext reactContext) {
@@ -123,6 +144,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("PermissionStatus", EVENT_TYPE_PERMISSIONS);
             put("SimpleNotification", EVENT_TYPE_SIMPLE);
             put("CustomJson", EVENT_TYPE_CUSTOM_JSON);
+            put("Coupon", EVENT_TYPE_COUPON);
+            put("Content", EVENT_TYPE_CONTENT);
+            put("Feedback", EVENT_TYPE_FEEDBACK);
           }
         });
       }
@@ -135,6 +159,14 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("content", EVENT_CONTENT);
             put("message", EVENT_CONTENT_MESSAGE);
             put("data", EVENT_CONTENT_DATA);
+            put("coupon", EVENT_CONTENT_COUPON);
+            put("text", EVENT_CONTENT_TEXT);
+            put("images", EVENT_CONTENT_IMAGES);
+            put("video", EVENT_CONTENT_VIDEO);
+            put("upload", EVENT_CONTENT_UPLOAD);
+            put("audio", EVENT_CONTENT_AUDIO);
+            put("feedbackId", EVENT_CONTENT_FEEDBACK);
+            put("question", EVENT_CONTENT_QUESTION);
             put("fromUserAction", EVENT_FROM_USER_ACTION);
             put("status", EVENT_STATUS);
           }
@@ -247,21 +279,28 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
     }
   }
 
-  // NearIT Feedbacks
-  /*@ReactMethod
-  public void sendFeedback(final String feedbackId, final int rating, final String comment, final Promise promise) {
-    NearItManager.getInstance().sendEvent(new FeedbackEvent(feedbackId, rating, comment), new NearITEventHandler() {
-      @Override
-      public void onSuccess() {
-        promise.resolve(null);
-      }
+  // NearIT Feedback
+  @ReactMethod
+  public void sendFeedback(final String feedbackB64, final int rating, final String comment, final Promise promise) {
+    final Feedback feedback;
+    try {
+      feedback = RNNearItUtils.feedbackFromBase64(feedbackB64);
 
-      @Override
-      public void onFail(int errorCode, String errorMessage) {
-        promise.reject(E_SEND_FEEDBACK_ERROR, String.valueOf(errorCode) + ": " + errorMessage);
-      }
-    });
-  }*/
+      NearItManager.getInstance().sendEvent(new FeedbackEvent(feedback, rating, comment), new NearITEventHandler() {
+        @Override
+        public void onSuccess() {
+          promise.resolve(null);
+        }
+
+        @Override
+        public void onFail(int errorCode, String errorMessage) {
+          promise.reject(E_SEND_FEEDBACK_ERROR, "Failed to send feedback to NearIT");
+        }
+      });
+    } catch (Exception e) {
+      promise.reject(E_SEND_FEEDBACK_ERROR, "Failed to encode feedback to be sent", e);
+    }
+  }
 
   // NearIT UserProfiling
   @ReactMethod
@@ -336,6 +375,31 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public void requestLocationPermission(final Promise promise) {
     promise.resolve(true);
     // sendEventWithLocationPermissionStatus(PERMISSION_LOCATION_GRANTED);
+  }
+
+  // NearIT Coupons
+
+  @ReactMethod
+  public void getCoupons(final Promise promise) {
+    NearItManager.getInstance().getCoupons(new CouponListener() {
+      @Override
+      public void onCouponsDownloaded(List<Coupon> list) {
+        try {
+          final WritableArray coupons = new WritableNativeArray();
+          for (Coupon c : list) {
+            coupons.pushMap(RNNearItUtils.bundleCoupon(c));
+          }
+          promise.resolve(coupons);
+        } catch (Exception e) {
+          promise.reject(E_COUPONS_PARSING_ERROR, e);
+        }
+      }
+
+      @Override
+      public void onCouponDownloadError(String errorMessage) {
+        promise.reject(E_COUPONS_RETRIEVAL_ERROR, errorMessage);
+      }
+    });
   }
 
   // Private methods
