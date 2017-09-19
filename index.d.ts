@@ -19,9 +19,15 @@ declare module 'react-native-nearit' {
       status?: string
     }
 
+    interface NearItImage {
+      fullSize?: string,
+      squareSize?: string
+    }
+
     interface NearItCoupon {
       name: string,
       description: string,
+      image: NearItImage,
       value: string,
       expiresAt: string,
       redeemableFrom: string,

@@ -369,6 +369,12 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             coupon.putString("serial", c.getSerial());
             coupon.putString("claimedAt", c.getClaimedAt());
             coupon.putString("redeemedAt", c.getRedeemedAt());
+
+            final WritableMap couponImage = new WritableNativeMap();
+            couponImage.putString("fullSize", c.getIconSet().getFullSize());
+            couponImage.putString("squareSize", c.getIconSet().getSmallSize());
+
+            coupon.putMap("image", couponImage);
             // TODO: Extraction end
 
             coupons.pushMap(coupon);

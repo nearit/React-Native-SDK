@@ -353,8 +353,14 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                 if (c.claims.count > 0) {
                     [coupon setValue:c.claims[0].serialNumber forKey:@"serial"];
                     [coupon setValue:c.claims[0].claimedAt forKey:@"claimedAt"];
-                    [coupon setValue:c.claims[0].redeemedAt forKey:@"redeemedAt"];
+                    [coupon setValue:(c.claims[0].redeemedAt ? c.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
                 }
+                
+                [coupon setValue:@{
+                                   @"fullSize": (c.icon.url ? c.icon.url : [NSNull null]),
+                                   @"squareSize": (c.icon.smallSizeURL ? c.icon.smallSizeURL : [NSNull null])
+                                }
+                          forKey:@"image"];
             
                 [coupons addObject:coupon];
             }

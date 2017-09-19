@@ -15,9 +15,15 @@ type NearItEvent = {
 
 type NearItContentsListener = (event: NearItEvent) => void
 
+type NearItImage = {
+  'fullSize': ?string,
+  'squareSize': ?string
+}
+
 type NearItCoupon = {
   'name': string,
   'description': string,
+  'image': NearItImage,
   'value': string,
   'expiresAt': string,
   'redeemableFrom': string,
