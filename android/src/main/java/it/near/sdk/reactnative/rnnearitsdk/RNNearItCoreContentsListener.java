@@ -31,8 +31,10 @@ import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_AUDIO;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_COUPON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_DATA;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_FEEDBACK;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_IMAGES;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_MESSAGE;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_QUESTION;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_TEXT;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_UPLOAD;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_VIDEO;
@@ -42,6 +44,7 @@ import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_CONTENT;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_COUPON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_CUSTOM_JSON;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_FEEDBACK;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_SIMPLE;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.NATIVE_EVENTS_TOPIC;
 
@@ -105,7 +108,7 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
   public void gotSimpleNotification(SimpleNotification simpleNotification, TrackingInfo trackingInfo) {
     // Create EventContent map
     final WritableMap contentMap = new WritableNativeMap();
-    contentMap.putString(EVENT_CONTENT_MESSAGE, simpleNotification.message);
+    contentMap.putString(EVENT_CONTENT_MESSAGE, simpleNotification.notificationMessage);
 
     // Notify JS
     sendEventWithContent(EVENT_TYPE_SIMPLE, contentMap, trackingInfo);
@@ -113,7 +116,18 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
 
   @Override
   public void gotFeedbackNotification(Feedback feedback, TrackingInfo trackingInfo) {
-    // TODO emit FeedbackNotification
+    try {
+      // Create EventContent map
+      final WritableMap contentMap = new WritableNativeMap();
+      contentMap.putString(EVENT_CONTENT_MESSAGE, feedback.notificationMessage);
+      contentMap.putString(EVENT_CONTENT_QUESTION, feedback.question);
+      contentMap.putString(EVENT_CONTENT_FEEDBACK, RNNearItUtils.feedbackToBase64(feedback));
+
+      // Notify JS
+      sendEventWithContent(EVENT_TYPE_FEEDBACK, contentMap, trackingInfo);
+    } catch (Exception e) {
+      Log.e(TAG, "Error while encoding feedback event", e);
+    }
   }
 
   // Private methods

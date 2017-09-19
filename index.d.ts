@@ -36,6 +36,8 @@ declare module 'react-native-nearit' {
       redeemedAt?: string
     }
 
+    type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
+
     interface EmitterSubscription {
       remove(): void
     }
@@ -53,6 +55,8 @@ declare module 'react-native-nearit' {
       static stopRadar(): Promise<void>
 
       static sendTracking(trackingInfo: string, status: string): Promise<void>
+      
+      static sendFeedback(feedbackId: string, rating: NearItRating, comment: string = ''): Promise<void>
 
       static getUserProfileId(): Promise<string>
 

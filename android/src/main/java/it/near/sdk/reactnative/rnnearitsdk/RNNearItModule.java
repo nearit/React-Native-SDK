@@ -41,6 +41,9 @@ import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.couponplugin.CouponListener;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
+import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
+import it.near.sdk.reactions.feedbackplugin.model.Feedback;
+import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
@@ -66,6 +69,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
   public static final String EVENT_TYPE_COUPON = "NearIt.Events.Coupon";
   public static final String EVENT_TYPE_CONTENT = "NearIt.Events.Content";
+  public static final String EVENT_TYPE_FEEDBACK = "NearIt.Events.Feedback";
 
   // Events content
   public static final String EVENT_TYPE = "type";
@@ -79,6 +83,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_CONTENT_IMAGES = "images";
   public static final String EVENT_CONTENT_UPLOAD = "upload";
   public static final String EVENT_CONTENT_AUDIO = "audio";
+  public static final String EVENT_CONTENT_FEEDBACK = "feedbackId";
+  public static final String EVENT_CONTENT_QUESTION = "feedbackQuestion";
   public static final String EVENT_FROM_USER_ACTION = "fromUserAction";
   public static final String EVENT_STATUS = "status";
 
@@ -140,6 +146,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("CustomJson", EVENT_TYPE_CUSTOM_JSON);
             put("Coupon", EVENT_TYPE_COUPON);
             put("Content", EVENT_TYPE_CONTENT);
+            put("Feedback", EVENT_TYPE_FEEDBACK);
           }
         });
       }
@@ -158,6 +165,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("video", EVENT_CONTENT_VIDEO);
             put("upload", EVENT_CONTENT_UPLOAD);
             put("audio", EVENT_CONTENT_AUDIO);
+            put("feedbackId", EVENT_CONTENT_FEEDBACK);
+            put("question", EVENT_CONTENT_QUESTION);
             put("fromUserAction", EVENT_FROM_USER_ACTION);
             put("status", EVENT_STATUS);
           }
@@ -270,21 +279,28 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
     }
   }
 
-  // NearIT Feedbacks
-  /*@ReactMethod
-  public void sendFeedback(final String feedbackId, final int rating, final String comment, final Promise promise) {
-    NearItManager.getInstance().sendEvent(new FeedbackEvent(feedbackId, rating, comment), new NearITEventHandler() {
-      @Override
-      public void onSuccess() {
-        promise.resolve(null);
-      }
+  // NearIT Feedback
+  @ReactMethod
+  public void sendFeedback(final String feedbackB64, final int rating, final String comment, final Promise promise) {
+    final Feedback feedback;
+    try {
+      feedback = RNNearItUtils.feedbackFromBase64(feedbackB64);
 
-      @Override
-      public void onFail(int errorCode, String errorMessage) {
-        promise.reject(E_SEND_FEEDBACK_ERROR, String.valueOf(errorCode) + ": " + errorMessage);
-      }
-    });
-  }*/
+      NearItManager.getInstance().sendEvent(new FeedbackEvent(feedback, rating, comment), new NearITEventHandler() {
+        @Override
+        public void onSuccess() {
+          promise.resolve(null);
+        }
+
+        @Override
+        public void onFail(int errorCode, String errorMessage) {
+          promise.reject(E_SEND_FEEDBACK_ERROR, "Failed to send feedback to NearIT");
+        }
+      });
+    } catch (Exception e) {
+      promise.reject(E_SEND_FEEDBACK_ERROR, "Failed to encode feedback to be sent", e);
+    }
+  }
 
   // NearIT UserProfiling
   @ReactMethod
