@@ -43,6 +43,7 @@ Each event object (except for `PermissionStatus` ones) is composed as follow
 | Value     | Description |
 |-----------|-------------|
 | `Events.SimpleNotification` | A NearIT simple notification |
+| `Events.Content` | A NearIT notification with Content |
 | `Events.Coupon` | A NearIT notification with Coupon |
 | `Events.CustomJson` | A NearIT Custom JSON |
 | `Events.PermissionStatus` | A message indicating the state (`Granted` or `Denied`) of a permission |
@@ -54,6 +55,17 @@ Each event object (except for `PermissionStatus` ones) is composed as follow
 | Field    | Description |
 |----------|-------------|
 | `EventContent.message` | The `body` of the NearIT simple notification |
+
+- For `Events.Content`
+
+| Field    | Description |
+|----------|-------------|
+| `EventContent.message` | The `body` of the NearIT simple notification |
+| `EventContent.text`    | The `text` content (can be empty) |
+| `EventContent.images`  | The array of `images` sent within the content (can be empty) |
+| `EventContent.video`   | The url to the `video` content (can be empty) |
+| `EventContent.upload`  | The url to the `pdf` content (can be empty) |
+| `EventContent.audio`   | The url to the `audio` content (can be empty) |
 
 - For `Events.Coupon`
 
