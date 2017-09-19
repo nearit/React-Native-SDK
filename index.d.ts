@@ -27,7 +27,7 @@ declare module 'react-native-nearit' {
     interface NearItCoupon {
       name: string,
       description: string,
-      image: NearItImage,
+      image?: NearItImage,
       value: string,
       expiresAt: string,
       redeemableFrom: string,

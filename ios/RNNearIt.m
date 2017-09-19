@@ -23,6 +23,7 @@ NSString* const EVENT_TYPE_PERMISSIONS = @"NearIt.Events.PermissionStatus";
 NSString* const EVENT_TYPE_SIMPLE = @"NearIt.Events.SimpleNotification";
 NSString* const EVENT_TYPE_CUSTOM_JSON = @"NearIt.Events.CustomJSON";
 NSString* const EVENT_TYPE_COUPON = @"NearIt.Events.Coupon";
+NSString* const EVENT_TYPE_CONTENT = @"NearIt.Events.Content";
 
 // Events content
 NSString* const EVENT_TYPE = @"type";
@@ -31,6 +32,11 @@ NSString* const EVENT_CONTENT = @"content";
 NSString* const EVENT_CONTENT_MESSAGE = @"message";
 NSString* const EVENT_CONTENT_DATA = @"data";
 NSString* const EVENT_CONTENT_COUPON = @"coupon";
+NSString* const EVENT_CONTENT_TEXT = @"text";
+NSString* const EVENT_CONTENT_VIDEO = @"video";
+NSString* const EVENT_CONTENT_IMAGES = @"images";
+NSString* const EVENT_CONTENT_UPLOAD = @"upload";
+NSString* const EVENT_CONTENT_AUDIO = @"audio";
 NSString* const EVENT_FROM_USER_ACTION = @"fromUserAction";
 NSString* const EVENT_STATUS = @"status";
 
@@ -105,7 +111,8 @@ RCT_EXPORT_MODULE()
                         @"PermissionStatus": EVENT_TYPE_PERMISSIONS,
                         @"SimpleNotification": EVENT_TYPE_SIMPLE,
                         @"CustomJson": EVENT_TYPE_CUSTOM_JSON,
-                        @"Coupon": EVENT_TYPE_COUPON
+                        @"Coupon": EVENT_TYPE_COUPON,
+                        @"Content": EVENT_TYPE_CONTENT
                      },
              @"EventContent": @{
                         @"type": EVENT_TYPE,
@@ -114,6 +121,11 @@ RCT_EXPORT_MODULE()
                         @"message": EVENT_CONTENT_MESSAGE,
                         @"data": EVENT_CONTENT_DATA,
                         @"coupon": EVENT_CONTENT_COUPON,
+                        @"text": EVENT_CONTENT_TEXT,
+                        @"images": EVENT_CONTENT_IMAGES,
+                        @"video": EVENT_CONTENT_VIDEO,
+                        @"upload": EVENT_CONTENT_UPLOAD,
+                        @"audio": EVENT_CONTENT_AUDIO,
                         @"fromUserAction": EVENT_FROM_USER_ACTION,
                         @"status": EVENT_STATUS
                      },
@@ -383,6 +395,60 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                     fromUserAction:fromUserAction];
         
         return YES;
+    } else if ([content isKindOfClass:[NITContent class]]) {
+        // Notification with Content
+        NITContent *nearContent = (NITContent*)content;
+        NITLogI(TAG, @"Content %@ trackingInfo %@", nearContent, trackingInfo);
+        
+        NSString* message = [nearContent notificationMessage];
+        if (!message) {
+            message = @"";
+        }
+        
+        NSString* text = [nearContent content];
+        if (!text) {
+            text = @"";
+        }
+        
+        NSString* videoUrl = [nearContent videoLink];
+        if (!videoUrl){
+            videoUrl = @"";
+        }
+        
+        NSMutableArray* images = [NSMutableArray init];
+        if ([nearContent images]) {
+            for(NITImage* i in [nearContent images]) {
+                [images addObject:[self bundleNITImage:i]];
+            }
+        }
+        
+        NSString* uploadUrl = @"";
+        NITUpload* upload = [nearContent upload];
+        if (upload) {
+            uploadUrl = upload.url ? upload.url.absoluteString : @"";
+        }
+        
+        NSString* audioUrl = @"";
+        NITAudio* audioResource = [nearContent audio];
+        if (audioResource) {
+            audioUrl = audioResource.url ? audioResource.url.absoluteString : @"";
+        }
+        
+        NSDictionary* eventContent = @{
+                                       EVENT_CONTENT_MESSAGE:message,
+                                          EVENT_CONTENT_TEXT:text,
+                                         EVENT_CONTENT_VIDEO:videoUrl,
+                                        EVENT_CONTENT_IMAGES:images,
+                                        EVENT_CONTENT_UPLOAD:uploadUrl,
+                                         EVENT_CONTENT_AUDIO:audioUrl
+                                    };
+        
+        [self sendEventWithContent:eventContent
+                      NITEventType:EVENT_TYPE_CONTENT
+                      trackingInfo:trackingInfo
+                    fromUserAction:fromUserAction];
+        
+        return YES;
     
     } else if ([content isKindOfClass:[NITCoupon class]]) {
         // Coupon notification
@@ -453,13 +519,19 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
         [couponDictionary setValue:(coupon.claims[0].redeemedAt ? coupon.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
     }
     
-    [couponDictionary setValue:@{
-                       @"fullSize": (coupon.icon.url ? coupon.icon.url : [NSNull null]),
-                       @"squareSize": (coupon.icon.smallSizeURL ? coupon.icon.smallSizeURL : [NSNull null])
-                       }
-              forKey:@"image"];
+    if (coupon.icon) {
+        [couponDictionary setValue:[self bundleNITImage:coupon.icon] forKey:@"image"];
+    }
     
     return couponDictionary;
+}
+
+- (NSDictionary*)bundleNITImage:(NITImage* _Nonnull) image
+{
+    return @{
+             @"fullSize": (image.url ? image.url : [NSNull null]),
+             @"squareSize": (image.smallSizeURL ? image.smallSizeURL : [NSNull null])
+            };
 }
 
 

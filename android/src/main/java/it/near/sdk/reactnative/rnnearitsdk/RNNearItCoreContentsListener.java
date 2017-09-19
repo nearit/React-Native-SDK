@@ -11,12 +11,15 @@ package it.near.sdk.reactnative.rnnearitsdk;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.gson.Gson;
 
 import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
@@ -25,12 +28,18 @@ import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
 
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_AUDIO;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_COUPON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_DATA;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_IMAGES;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_MESSAGE;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_TEXT;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_UPLOAD;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_VIDEO;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_FROM_USER_ACTION;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TRACKING_INFO;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_CONTENT;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_COUPON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_CUSTOM_JSON;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_SIMPLE;
@@ -51,7 +60,23 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
 
   @Override
   public void gotContentNotification(Content content, TrackingInfo trackingInfo) {
-    // TODO emit ContentEvent
+    // Create EventContent map
+    final WritableMap contentMap = new WritableNativeMap();
+    contentMap.putString(EVENT_CONTENT_MESSAGE, content.notificationMessage);
+    contentMap.putString(EVENT_CONTENT_TEXT, (content.contentString != null ? content.contentString : ""));
+    contentMap.putString(EVENT_CONTENT_VIDEO, (content.video_link != null ? content.video_link : ""));
+
+    final WritableArray images = new WritableNativeArray();
+    for (ImageSet i : content.getImages_links()) {
+      images.pushMap(RNNearItUtils.bundleImageSet(i));
+    }
+    contentMap.putArray(EVENT_CONTENT_IMAGES, images);
+
+    contentMap.putString(EVENT_CONTENT_UPLOAD, (content.upload != null ? content.upload.getUrl() : ""));
+    contentMap.putString(EVENT_CONTENT_AUDIO, (content.audio != null ? content.audio.getUrl() : ""));
+
+    // Notify JS
+    sendEventWithContent(EVENT_TYPE_CONTENT, contentMap, trackingInfo);
   }
 
   @Override

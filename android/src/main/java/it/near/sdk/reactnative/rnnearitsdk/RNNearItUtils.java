@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
- package it.near.sdk.reactnative.rnnearitsdk;
+package it.near.sdk.reactnative.rnnearitsdk;
 
 import android.util.Base64;
 
@@ -14,6 +14,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.google.gson.Gson;
 
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.trackings.TrackingInfo;
 
@@ -47,11 +48,18 @@ public class RNNearItUtils {
     couponMap.putString("redeemedAt", coupon.getRedeemedAt());
 
     // Coupon icon handling
-    final WritableMap couponImage = new WritableNativeMap();
-    couponImage.putString("fullSize", coupon.getIconSet().getFullSize());
-    couponImage.putString("squareSize", coupon.getIconSet().getSmallSize());
-    couponMap.putMap("image", couponImage);
+    if (coupon.getIconSet() != null) {
+      couponMap.putMap("image", RNNearItUtils.bundleImageSet(coupon.getIconSet()));
+    }
 
     return couponMap;
+  }
+
+  static WritableMap bundleImageSet(ImageSet imageSet) {
+    final WritableMap image = new WritableNativeMap();
+    image.putString("fullSize", imageSet.getFullSize());
+    image.putString("squareSize", imageSet.getSmallSize());
+
+    return image;
   }
 }

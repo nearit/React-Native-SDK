@@ -31,9 +31,6 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +65,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_TYPE_SIMPLE = "NearIt.Events.SimpleNotification";
   public static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
   public static final String EVENT_TYPE_COUPON = "NearIt.Events.Coupon";
+  public static final String EVENT_TYPE_CONTENT = "NearIt.Events.Content";
 
   // Events content
   public static final String EVENT_TYPE = "type";
@@ -76,6 +74,11 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public static final String EVENT_CONTENT_MESSAGE = "message";
   public static final String EVENT_CONTENT_DATA = "data";
   public static final String EVENT_CONTENT_COUPON = "coupon";
+  public static final String EVENT_CONTENT_TEXT = "text";
+  public static final String EVENT_CONTENT_VIDEO = "video";
+  public static final String EVENT_CONTENT_IMAGES = "images";
+  public static final String EVENT_CONTENT_UPLOAD = "upload";
+  public static final String EVENT_CONTENT_AUDIO = "audio";
   public static final String EVENT_FROM_USER_ACTION = "fromUserAction";
   public static final String EVENT_STATUS = "status";
 
@@ -136,6 +139,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("SimpleNotification", EVENT_TYPE_SIMPLE);
             put("CustomJson", EVENT_TYPE_CUSTOM_JSON);
             put("Coupon", EVENT_TYPE_COUPON);
+            put("Content", EVENT_TYPE_CONTENT);
           }
         });
       }
@@ -149,6 +153,11 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
             put("message", EVENT_CONTENT_MESSAGE);
             put("data", EVENT_CONTENT_DATA);
             put("coupon", EVENT_CONTENT_COUPON);
+            put("text", EVENT_CONTENT_TEXT);
+            put("images", EVENT_CONTENT_IMAGES);
+            put("video", EVENT_CONTENT_VIDEO);
+            put("upload", EVENT_CONTENT_UPLOAD);
+            put("audio", EVENT_CONTENT_AUDIO);
             put("fromUserAction", EVENT_FROM_USER_ACTION);
             put("status", EVENT_STATUS);
           }
