@@ -43,6 +43,7 @@ Each event object (except for `PermissionStatus` ones) is composed as follow
 | Value     | Description |
 |-----------|-------------|
 | `Events.SimpleNotification` | A NearIT simple notification |
+| `Events.Coupon` | A NearIT notification with Coupon |
 | `Events.CustomJson` | A NearIT Custom JSON |
 | `Events.PermissionStatus` | A message indicating the state (`Granted` or `Denied`) of a permission |
 
@@ -53,6 +54,13 @@ Each event object (except for `PermissionStatus` ones) is composed as follow
 | Field    | Description |
 |----------|-------------|
 | `EventContent.message` | The `body` of the NearIT simple notification |
+
+- For `Events.Coupon`
+
+| Field    | Description |
+|----------|-------------|
+| `EventContent.message` | The `body` of the NearIT simple notification |
+| `EventContent.coupon` | The `coupon` object sent with the notification |
 
 - For `Events.CustomJson`
 
@@ -113,3 +121,21 @@ NearIT.sendTracking(trackingInfo, 'custom-event'); // Track a custom event to th
 ```
 
 **N.B:** The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
+
+<br>
+
+# Fetch current user coupon
+
+We handle the complete emission and redemption coupon cycle in our platform, and we deliver a coupon content only when a coupon is emitted (you will not be notified of recipes when a profile has already received the coupon, even if the coupon is still valid). 
+
+You can ask the library to fetch the list of all the user current coupons with the method:
+
+```js
+import NearIT from 'react-native-nearit'
+
+...
+
+const coupons = await NearIT.getCoupons() // Will return an array of coupon objects
+```
+
+The method will also return already redeemed coupons so you get to decide to filter them if necessary.
