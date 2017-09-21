@@ -24,7 +24,7 @@ This call will return a value of:
 import NearIT, { NearItConstants } from 'react-native-nearit'
 ...
 async function askPermissions() {
-    this.locationSubscription = NearIT.addContentsListener(event => {
+    this.locationSubscription = NearIT.setContentsListener(event => {
         if (event[NearItConstants.EventContent.type] === NearItConstants.Events.PermissionStatus){
             if (event[NearItConstants.EventContent.status] === NearItConstants.Permissions.LocationGranted) {
                 this.locationGranted = true
@@ -52,7 +52,7 @@ async function askPermissions() {
 
 After starting the radar, events are delivered through events, to listen to them just add a new `ContentsListener` to `NearIT`
 ```js
-this.eventsSubscription = NearIT.addContentsListener(event => {
+this.eventsSubscription = NearIT.setContentsListener(event => {
     // Your events handling code here
 })
 ```

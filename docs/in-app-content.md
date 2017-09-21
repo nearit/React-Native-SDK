@@ -7,7 +7,7 @@ NearIT takes care of delivering content at the right time, you will just need to
 
 NearIT contents are delivered through React Native events, to listen to them just add a new `ContentsListener` to `NearIT`
 ```js
-this.eventsSubscription = NearIT.addContentsListener(event => {
+this.eventsSubscription = NearIT.setContentsListener(event => {
     // Your events handling code here
 })
 ```

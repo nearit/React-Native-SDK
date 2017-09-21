@@ -27,7 +27,7 @@ This call will return a value of:
 
 Events are delivered through events, to listen to them just add a new `ContentsListener` to `NearIT`
 ```js
-this.eventsSubscription = NearIT.addContentsListener(event => {
+this.eventsSubscription = NearIT.setContentsListener(event => {
     // Your events handling code here
 })
 ```
