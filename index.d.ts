@@ -5,10 +5,36 @@
 declare module 'react-native-nearit' {
 
     interface NearItConstants {
-      Events: Map<string, string>
-      EventContent: Map<string, string>
-      Statuses: Map<string, string>
-      Permissions: Map<string, string>
+      Events: NearItEvents
+      EventContent: NearItEventContent
+      Statuses: NearItStatuses
+      Permissions: NearItPermissions
+    }
+
+    interface NearItEvents {
+      SimpleNotification: string
+      Content: string
+      Feedback: string
+      Coupon: string
+      CustomJson: string
+      PermissionStatus: string
+    }
+
+    interface NearItEventContent {
+      type: string
+      content: string
+      fromUserAction: string
+      trackingInfo: string
+    }
+
+    interface NearItStatuses {
+      notified: string
+      engaged: string
+    }
+
+    interface NearItPermissions {
+      LocationGranted: string
+      LocationDenied: string
     }
 
     interface NearItEvent {
