@@ -9,6 +9,39 @@
 // @flow
 import { NativeEventEmitter, NativeModules } from 'react-native'
 
+type NearItEvents = {
+  SimpleNotification: string,
+  Content: string,
+  Feedback: string,
+  Coupon: string,
+  CustomJson: string,
+  PermissionStatus: string
+}
+
+type NearItEventContent = {
+  type: string,
+  content: string,
+  fromUserAction: string,
+  trackingInfo: string
+}
+
+type NearItStatuses = {
+  notified: string,
+  engaged: string
+}
+
+type NearItPermissions = {
+  LocationGranted: string,
+  LocationDenied: string
+}
+
+type NearItConstants = {
+  Events: NearItEvents,
+  EventContent: NearItEventContent,
+  Statuses: NearItStatuses,
+  Permissions: NearItPermissions
+}
+
 type NearItEvent = {
   'type': string
 }
@@ -41,7 +74,7 @@ type EmitterSubscription = {
 const NearItSdk = NativeModules.RNNearIt
 
 export class NearItManager {
-  static constants = {
+  static constants: NearItConstants = {
     Events: NearItSdk.Events,
     EventContent: NearItSdk.EventContent,
     Statuses: NearItSdk.Statuses,
