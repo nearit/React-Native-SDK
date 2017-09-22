@@ -394,7 +394,7 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
 RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
-    NSMutableArray *coupons = [NSMutableArray init];
+    NSMutableArray *coupons = [[NSMutableArray alloc] init];
     
     [[NITManager defaultManager] couponsWithCompletionHandler:^(NSArray<NITCoupon *> *coupones, NSError *error) {
         if (!error) {
