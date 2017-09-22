@@ -37,7 +37,7 @@ async function askPermissions() {
     })
     
     this.locationGranted = await NearIT.requestLocationPermission()
-    if (typeof(this.locationGranted) !== 'undefined') {
+    if (typeof(this.locationGranted) !== 'undefined' && this.locationGranted != null) {
         this.locationSubscription.remove()
     }
 }
