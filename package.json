@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "react-native-nearit",
-  "version": "1.0.0-alpha.1",
+  "version": "2.2.0-alpha.1",
   "author": "Mattia Panzeri <mattia.panzeri93@gmail.com>",
   "license": "MPL-2.0",
   "description": "The official NearIT SDK plugin for React Native",
