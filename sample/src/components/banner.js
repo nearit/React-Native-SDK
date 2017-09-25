@@ -1,10 +1,11 @@
 import React from 'react'
 import { Animated, Image, Platform, StatusBar, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
-import { ifIphoneX, isIphoneX } from 'react-native-iphone-x-helper'
+import { isIphoneX } from 'react-native-iphone-x-helper'
 
 const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? (isIphoneX ? 69 : 45) : 56
+const APPBAR_HEIGHT = Platform.OS === 'ios' ? (isIphoneX() ? 69 : 45) : 56
 const BANNER_HEIGHT = STATUSBAR_HEIGHT + APPBAR_HEIGHT
+const BANNER_MARGIN_TOP = isIphoneX() ? 25 : STATUSBAR_HEIGHT
 
 export default class Banner extends React.Component {
   state = {
@@ -76,11 +77,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    ...ifIphoneX({
-      marginTop: 25
-    }, {
-      marginTop: 0
-    })
+    marginTop: BANNER_MARGIN_TOP
   },
   bannerIcon: {
     width: 35,

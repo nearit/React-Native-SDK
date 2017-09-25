@@ -1,8 +1,9 @@
 import React from 'react'
 import { Platform, StatusBar, StyleSheet, View } from 'react-native'
-import { ifIphoneX } from 'react-native-iphone-x-helper'
+import { isIphoneX } from 'react-native-iphone-x-helper'
 
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56;
+const APPBAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56
+const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (isIphoneX() ? 20 : 0) : StatusBar.currentHeight
 
 const AppBar = ({ backgroundColor, children, ...props }) => (
   <View style={[styles.appBar, { backgroundColor }]}>
@@ -12,12 +13,8 @@ const AppBar = ({ backgroundColor, children, ...props }) => (
 
 const styles = StyleSheet.create({
   appBar: {
-    ...ifIphoneX({
-        height: APPBAR_HEIGHT + 20,
-        paddingTop: 20
-    }, {
-        height: APPBAR_HEIGHT
-    }),
+    height: APPBAR_HEIGHT + STATUS_BAR_HEIGHT,
+    paddingTop: STATUS_BAR_HEIGHT,
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomWidth: 1,
