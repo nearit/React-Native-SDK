@@ -21,6 +21,7 @@ allprojects {
     repositories {
         jcenter()
         maven { url "$projectDir/../node_modules/react-native/android" }
+        maven { url "https://maven.google.com" }
     }
 }
 
@@ -43,5 +44,5 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile 'it.near.sdk:nearit:2.2.0'
+    compile 'it.near.sdk:nearit:2.2.2'
 }
