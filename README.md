@@ -1,6 +1,3 @@
-# WARNING
-This project is currently in **pre-alpha stage**
-
 # React Native NearIT SDK
 > The official [NearIT](https://www.nearit.com) SDK plugin for [React Native](https://facebook.github.io/react-native/)
 
@@ -33,13 +30,6 @@ Once the settings are configured, **everyone** - even people without technical s
 
 **NearIT SDK** synchronizes with servers and behaves accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
 
-## Features
-* User Segmentation
-* Beacon monitoring and ranging
-* Geofence monitoring
-* Notifications and in-app content
-* Analytics
-
 <br>
 
 ## Installation
@@ -54,6 +44,14 @@ To start using the SDK, add this plugin to your React Native project
 ```bash
 $ yarn add react-native-nearit
 ```
+
+and link it
+
+```bash
+$ react-native link react-native-nearit
+```
+
+<br/>
 
 ## Integration guide
 For information on how to integrate all NearIT features in your app, visit the [documentation website](https://nearit-react-native-sdk.readthedocs.io/)
