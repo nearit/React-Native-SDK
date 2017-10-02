@@ -591,7 +591,9 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
     }
     
     if (coupon.icon) {
-        [couponDictionary setObject:[self bundleNITImage:coupon.icon] forKey:@"image"];
+        if (coupon.icon.url || coupon.icon.smallSizeURL) {
+            [couponDictionary setObject:[self bundleNITImage:coupon.icon] forKey:@"image"];
+        }
     }
     
     return couponDictionary;
