@@ -7,7 +7,6 @@
  */
 
 #import "RNNearIt.h"
-#import <CoreLocation/CoreLocation.h>
 
 #define TAG @"RNNearIT"
 
@@ -93,19 +92,6 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
-
-// Will be called when this module's first listener is added.
--(void)startObserving {
-    hasListeners = YES;
-    // Set up any upstream listeners or background tasks as necessary
-}
-
-// Will be called when this module's last listener is removed, or on dealloc.
--(void)stopObserving {
-    hasListeners = NO;
-    // Remove upstream listeners, stop unnecessary background tasks
-}
-
 - (NSDictionary *)constantsToExport
 {
     return @{
@@ -153,6 +139,21 @@ RCT_EXPORT_MODULE()
     return @[RN_NATIVE_EVENTS_TOPIC];
 }
 
+// Will be called when this module's first listener is added.
+-(void)startObserving {
+    hasListeners = YES;
+    // Dispatch Notification received while app was backgrounded/dead
+    [[RNNearItBackgroundQueue defaultQueue] dispatchNotificationsQueue:^(NSDictionary* notification) {
+        [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
+                           body:notification];
+    }];
+}
+
+// Will be called when this module's last listener is removed, or on dealloc.
+-(void)stopObserving {
+    hasListeners = NO;
+}
+
 - (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nonnull) trackingInfo fromUserAction:(BOOL) fromUserAction
 {
     NSData* trackingInfoData = [NSKeyedArchiver archivedDataWithRootObject:trackingInfo];
@@ -168,8 +169,11 @@ RCT_EXPORT_MODULE()
     if (hasListeners) {
         [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
                            body:event];
+    } else {
+        [[RNNearItBackgroundQueue defaultQueue] addNotification:event];
     }
 }
+
 -(void) sendEventWithLocationPermissionStatus:(NSString* _Nonnull) permissionStatus
 {
     NSDictionary* event = @{
