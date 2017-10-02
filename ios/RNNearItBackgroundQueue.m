@@ -48,8 +48,6 @@ NSMutableArray<NSDictionary *>* _Nullable notificationsQueue;
     while ((notification = [self dispatchSingleNotification]) != nil) {
         block(notification);
     }
-    
-    notificationsQueue = nil;
 }
 
 @end
