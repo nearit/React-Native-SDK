@@ -7,7 +7,7 @@
  */
 
 // @flow
-import { Platform, NativeEventEmitter, NativeModules } from 'react-native'
+import { NativeEventEmitter, NativeModules } from 'react-native'
 
 type NearItEvents = {
   SimpleNotification: string,
@@ -89,7 +89,7 @@ export class NearItManager {
     return subscription
   }
 
-  static removeContentsListener (subscription: EmitterSubscription): null {
+  static removeContentsListener (subscription: EmitterSubscription) {
     NearItSdk.listenerUnregistered()
       .then(res => {
         subscription.remove()
