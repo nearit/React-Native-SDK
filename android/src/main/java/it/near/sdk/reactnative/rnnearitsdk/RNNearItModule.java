@@ -58,6 +58,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
   // Event topic (used by JS to subscribe to generated events)
   public static final String NATIVE_EVENTS_TOPIC = "RNNearItEvent";
+  public static final String NATIVE_PERMISSIONS_TOPIC = "RNNearItPermissions";
 
   // Local Events topic (used by LocalBroadcastReceiver to handle foreground notifications)
   public static final String LOCAL_EVENTS_TOPIC = "RNNearItLocalEvents";
@@ -132,6 +133,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
         put("NativeEventsTopic", NATIVE_EVENTS_TOPIC);
+        put("NativePermissionsTopic", NATIVE_PERMISSIONS_TOPIC);
         put("Events", getEventsConstants());
         put("EventContent", getEventContentConstants());
         put("Statuses", getStatusConstants());
@@ -201,9 +203,10 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
   @Override
   public void onNewIntent(Intent intent) {
+    Log.d(MODULE_NAME, "onNewIntent");
     if (intent != null && NearUtils.carriesNearItContent(intent)) {
-      // we got a NearIT intent
-      // coming from a notification tap
+      Log.d(MODULE_NAME, "onNewIntent: Got NearIT intent");
+      // we got a NearIT intent coming from a notification tap
       NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getRCTDeviceEventEmitter(), true));
     }
   }
@@ -225,12 +228,14 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
   // ReactNative listeners management
   @ReactMethod
-  public void _listenerRegistered(final Promise promise) {
-    RNNearItBackgroundQueue.defaultQueue().registerListener();
+  public void listenerRegistered(final Promise promise) {
+    final int listenersCount = RNNearItBackgroundQueue.defaultQueue().registerListener();
+    Log.d(MODULE_NAME, String.format("listenerRegistered (Registered listeners: %d)", listenersCount));
     // Try to flush background notifications when a listener is added
     RNNearItBackgroundQueue.defaultQueue().dispatchNotificationsQueue(new RNNearItBackgroundQueue.NotificationDispatcher() {
       @Override
       public void onNotification(WritableMap notification) {
+        Log.d(MODULE_NAME, "Dispatching background notification");
         getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, notification);
       }
     });
@@ -238,8 +243,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   }
 
   @ReactMethod
-  public void _listenerUnregistered(final Promise promise) {
-    RNNearItBackgroundQueue.defaultQueue().unregisterListener();
+  public void listenerUnregistered(final Promise promise) {
+    final int listenersCount = RNNearItBackgroundQueue.defaultQueue().unregisterListener();
+    Log.d(MODULE_NAME, String.format("listenerUnregistered (Registered listeners: %d)", listenersCount));
     promise.resolve(true);
   }
 
@@ -436,9 +442,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
       eventMap.putString(EVENT_STATUS, permissionStatus);
 
       // Send event to JS
-      getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, eventMap);
+      getRCTDeviceEventEmitter().emit(NATIVE_PERMISSIONS_TOPIC, eventMap);
     } catch (Exception e) {
-      Log.e("RNNearItModule", "Error while sending event to JS");
+      Log.e(MODULE_NAME, "Error while sending permissions to JS");
     }
   }
 

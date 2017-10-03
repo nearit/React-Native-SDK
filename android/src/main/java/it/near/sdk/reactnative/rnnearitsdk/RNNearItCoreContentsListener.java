@@ -132,6 +132,7 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
 
   // Private methods
   private void sendEventWithContent(final String eventType, @Nullable WritableMap contentMap, final TrackingInfo trackingInfo) {
+    Log.d(TAG, String.format("sendEventWithContent: (eventType: %s)", eventType));
     try {
       // Encode TrackingInfo
       final String trackingInfoData = RNNearItUtils.trackingInfoToBase64(trackingInfo);
@@ -147,9 +148,11 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
 
       if (RNNearItBackgroundQueue.defaultQueue().hasListeners()) {
         // Send event to JS
+        Log.d(TAG, "Listeners available, will send notification to JS now");
         this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
       } else {
         // Defer event notification when at least a listener is available
+        Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItBackgroundQueue");
         RNNearItBackgroundQueue.defaultQueue().addNotification(eventMap);
       }
     } catch (Exception e) {
