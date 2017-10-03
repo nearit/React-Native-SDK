@@ -7,7 +7,7 @@
  */
 
 // @flow
-import { NativeEventEmitter, NativeModules } from 'react-native'
+import { Platform, NativeEventEmitter, NativeModules } from 'react-native'
 
 type NearItEvents = {
   SimpleNotification: string,
@@ -84,7 +84,11 @@ export class NearItManager {
   static _eventSource = new NativeEventEmitter(NearItSdk)
 
   static setContentsListener (listener: NearItContentsListener): EmitterSubscription {
-    return NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+    const subscription = NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+    if (Platform.OS === 'android') {
+      NearItSdk._listenerRegistered()
+    }
+    return subscription
   }
 
   static refreshConfig (): Promise<null> {

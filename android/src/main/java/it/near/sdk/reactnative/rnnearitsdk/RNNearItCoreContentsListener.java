@@ -145,8 +145,13 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
       eventMap.putString(EVENT_TRACKING_INFO, trackingInfoData);
       eventMap.putBoolean(EVENT_FROM_USER_ACTION, fromUserAction);
 
-      // Send event to JS
-      this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
+      if (RNNearItBackgroundQueue.defaultQueue().hasListeners()) {
+        // Send event to JS
+        this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
+      } else {
+        // Defer event notification when at least a listener is available
+        RNNearItBackgroundQueue.defaultQueue().addNotification(eventMap);
+      }
     } catch (Exception e) {
       Log.e(TAG, "Error while sending event to JS");
     }

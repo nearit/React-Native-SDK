@@ -223,6 +223,26 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public void onHostDestroy() {
   }
 
+  // ReactNative listeners management
+  @ReactMethod
+  public void _listenerRegistered(final Promise promise) {
+    RNNearItBackgroundQueue.defaultQueue().registerListener();
+    // Try to flush background notifications when a listener is added
+    RNNearItBackgroundQueue.defaultQueue().dispatchNotificationsQueue(new RNNearItBackgroundQueue.NotificationDispatcher() {
+      @Override
+      public void onNotification(WritableMap notification) {
+        getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, notification);
+      }
+    });
+    promise.resolve(true);
+  }
+
+  @ReactMethod
+  public void _listenerUnregistered(final Promise promise) {
+    RNNearItBackgroundQueue.defaultQueue().unregisterListener();
+    promise.resolve(true);
+  }
+
   // NearIT SDK Listeners
   @Override
   public void foregroundEvent(Parcelable parcelable, TrackingInfo trackingInfo) {
