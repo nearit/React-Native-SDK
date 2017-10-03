@@ -8,7 +8,6 @@ declare module 'react-native-nearit' {
       Events: NearItEvents
       EventContent: NearItEventContent
       Statuses: NearItStatuses
-      Permissions: NearItPermissions
     }
 
     interface NearItEvents {
@@ -30,11 +29,6 @@ declare module 'react-native-nearit' {
     interface NearItStatuses {
       notified: string
       engaged: string
-    }
-
-    interface NearItPermissions {
-      LocationGranted: string
-      LocationDenied: string
     }
 
     interface NearItEvent {
@@ -72,7 +66,9 @@ declare module 'react-native-nearit' {
 
       static constants: NearItConstants
 
-      static setContentsListener (listener: (event: NearItEvent) => void): EmitterSubscription
+      static addContentsListener (listener: (event: NearItEvent) => void): EmitterSubscription
+
+      static removeContentsListener (subscription: EmitterSubscription): void
 
       static refreshConfig(): Promise<void>
 
@@ -94,7 +90,7 @@ declare module 'react-native-nearit' {
 
       static requestNotificationPermission(): Promise<boolean>
 
-      static requestLocationPermission(): Promise<boolean | void>
+      static requestLocationPermission(): Promise<boolean>
 
       static getCoupons(): Promise<NearItCoupon[]>
 

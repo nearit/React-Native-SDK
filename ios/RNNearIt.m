@@ -13,6 +13,7 @@
 #define IS_EMPTY(v) (v == nil || [v length] <= 0)
 
 NSString* const RN_NATIVE_EVENTS_TOPIC = @"RNNearItEvent";
+NSString* const RN_NATIVE_PERMISSIONS_TOPIC = @"RNNearItPermissions";
 
 // Local Events topic (used by NotificationCenter to handle incoming notifications)
 NSString* const RN_LOCAL_EVENTS_TOPIC = @"RNNearItLocalEvents";
@@ -62,9 +63,7 @@ NSString* const E_COUPONS_RETRIEVAL_ERROR = @"E_COUPONS_RETRIEVAL_ERROR";
 // CLLocationManager
 CLLocationManager *locationManager;
 
-@implementation RNNearIt {
-    BOOL hasListeners;
-}
+@implementation RNNearIt
 
 - (dispatch_queue_t)methodQueue
 {
@@ -96,6 +95,7 @@ RCT_EXPORT_MODULE()
 {
     return @{
              @"NativeEventsTopic": RN_NATIVE_EVENTS_TOPIC,
+             @"NativePermissionsTopic": RN_NATIVE_PERMISSIONS_TOPIC,
              @"Events": @{
                         @"PermissionStatus": EVENT_TYPE_PERMISSIONS,
                         @"SimpleNotification": EVENT_TYPE_SIMPLE,
@@ -136,12 +136,16 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[RN_NATIVE_EVENTS_TOPIC];
+    return @[
+             RN_NATIVE_EVENTS_TOPIC,
+             RN_NATIVE_PERMISSIONS_TOPIC
+         ];
 }
 
-// Will be called when this module's first listener is added.
--(void)startObserving {
-    hasListeners = YES;
+RCT_EXPORT_METHOD(listenerRegistered: (RCTPromiseResolveBlock) resolve
+                            rejecter: (RCTPromiseRejectBlock) reject) {
+    _listeners++;
+    resolve([NSNull null]);
     // Dispatch Notification received while app was backgrounded/dead
     [[RNNearItBackgroundQueue defaultQueue] dispatchNotificationsQueue:^(NSDictionary* notification) {
         [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
@@ -149,10 +153,12 @@ RCT_EXPORT_MODULE()
     }];
 }
 
-// Will be called when this module's last listener is removed, or on dealloc.
--(void)stopObserving {
-    hasListeners = NO;
+RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
+                              rejecter: (RCTPromiseRejectBlock) reject) {
+    _listeners--;
+    resolve([NSNull null]);
 }
+
 
 - (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nonnull) trackingInfo fromUserAction:(BOOL) fromUserAction
 {
@@ -166,7 +172,7 @@ RCT_EXPORT_MODULE()
                             EVENT_FROM_USER_ACTION: [NSNumber numberWithBool:fromUserAction]
                         };
     
-    if (hasListeners) {
+    if (_listeners > 0) {
         [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
                            body:event];
     } else {
@@ -174,17 +180,14 @@ RCT_EXPORT_MODULE()
     }
 }
 
--(void) sendEventWithLocationPermissionStatus:(NSString* _Nonnull) permissionStatus
-{
+-(void) sendEventWithLocationPermissionStatus:(NSString* _Nonnull) permissionStatus {
     NSDictionary* event = @{
                             EVENT_TYPE: EVENT_TYPE_PERMISSIONS,
                             EVENT_STATUS: permissionStatus
                         };
 
-    if (hasListeners) {
-        [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
-                           body:event];
-    }
+    [self sendEventWithName:RN_NATIVE_PERMISSIONS_TOPIC
+                       body:event];
 }
 
 // MARK: NITManagerDelegate
@@ -359,8 +362,11 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
         }];
 #endif
     }
-    
+
+#if !TARGET_IPHONE_SIMULATOR
+    NITLogV(TAG, @"registerForRemoteNotifications");
     [RCTSharedApplication() registerForRemoteNotifications];
+#endif // TARGET_IPHONE_SIMULATOR
 }
 
 RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve

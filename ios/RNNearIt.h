@@ -18,6 +18,8 @@
 
 @interface RNNearIt : RCTEventEmitter <RCTBridgeModule, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, NITManagerDelegate>
 
+@property int listeners;
+
 #if !TARGET_OS_TV
     + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo;
     + (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification;
