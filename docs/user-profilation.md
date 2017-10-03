@@ -14,7 +14,7 @@ If the result is null, it means that no profile is associated with the app insta
 After the profile is created, to set user data call:
 ```js
 NearIT.setUserData({
-    'name': 'John',
+    'name': 'Jon',
     'surname': 'Snow'
 })
 ```

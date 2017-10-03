@@ -7,13 +7,13 @@ NearIT takes care of delivering content at the right time, you will just need to
 
 NearIT contents are delivered through React Native events, to listen to them just add a new `ContentsListener` to `NearIT`
 ```js
-this.eventsSubscription = NearIT.setContentsListener(event => {
+this.eventsSubscription = NearIT.addContentsListener(event => {
     // Your events handling code here
 })
 ```
-**N.B:** As stated in the official `React Native` documentation, remember to unsubscribe from events (you'd want to do this when the component is unmounted)
+**N.B:** Remember to unsubscribe from events (you'd want to do this when the component is ***unmounted***)
 ```js
-this.eventsSubscription.remove()
+NearIT.removeContentsListener(this.eventsSubscription)
 ```
 
 <br>
@@ -24,12 +24,12 @@ this.eventsSubscription.remove()
 ```js
 import { NearItConstants } from 'react-native-nearit'
 
-const { Events, EventContent, Permissions } = NearItConstants
+const { Events, EventContent } = NearItConstants
 ```
 
 <br>
 
-Each event object (except for `PermissionStatus` ones) is composed as follow
+Each event object is composed as follow
 
 | Field      | Description |
 |------------|-------------|
@@ -47,7 +47,6 @@ Each event object (except for `PermissionStatus` ones) is composed as follow
 | `Events.Feedback` | A NearIT notification with Feedback |
 | `Events.Coupon` | A NearIT notification with Coupon |
 | `Events.CustomJson` | A NearIT Custom JSON |
-| `Events.PermissionStatus` | A message indicating the state (`Granted` or `Denied`) of a permission |
 
 #### Events content
 
@@ -91,32 +90,6 @@ See below to learn how to send a `Feedback` answer to NearIT.
 |----------|-------------|
 | `EventContent.message` | The `body` of the NearIT simple notification |
 | `EventContent.data` | The `json` of the NearIT custom JSON notification |
-
-<br>
-
-## Permission Status events
-
-```js
-import { NearItConstants } from 'react-native-nearit'
-
-const { Permissions } = NearItConstants
-```
-
-<br>
-
-A `PermissionStatus` event is composed as follow
-
-| Field      | Description |
-|------------|-------------|
-| `EventContent.type` | A string that equals `Events.PermissionStatus` |
-| `EventContent.status` | A string which represent a permission status (see below table for specific values) |
-
-#### Permission Statuses
-
-| Field      | Description |
-|------------|-------------|
-| `Permissions.LocationGranted` | This status indicates that the user has GRANTED the app the permission to access his location |
-| `Permissions.LocationDenied` | This status indicates that the user has DENIED the app the permission to access his location |
 
 <br>
 
