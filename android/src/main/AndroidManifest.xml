@@ -4,21 +4,18 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application>
-        <!-- built-in background receiver -->
-        <receiver
-            android:name="it.near.sdk.reactnative.rnnearitsdk.RNNearItBroadcastReceiver"
-            android:exported="false">
-
-            <intent-filter>
-                <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
+        <service android:name="it.near.sdk.reactnative.rnnearitsdk.RNNearItJobIntentService"
+                 android:exported="false"
+                 android:permission="android.permission.BIND_JOB_SERVICE" >
             <intent-filter>
                 <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </receiver>
+            <intent-filter>
+                <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
 
         <meta-data
             android:name="near_api_key"

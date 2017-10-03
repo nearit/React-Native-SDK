@@ -8,27 +8,27 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
-import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
-import it.near.sdk.recipes.background.NearItBroadcastReceiver;
+import it.near.sdk.recipes.background.NearBackgroundJobIntentService;
 import it.near.sdk.utils.AppVisibilityDetector;
 
 
-public class RNNearItBroadcastReceiver extends NearItBroadcastReceiver {
+public class RNNearItJobIntentService extends NearBackgroundJobIntentService {
 
   @Override
-  public void onReceive(Context context, Intent intent) {
+  protected void onHandleWork(@NonNull Intent intent) {
     if (AppVisibilityDetector.sIsForeground) {
-      final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
+      final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
       final Intent localEvent = new Intent(RNNearItModule.LOCAL_EVENTS_TOPIC);
       localEvent.putExtras(intent);
 
       localBroadcastManager.sendBroadcast(localEvent);
     } else {
-      super.onReceive(context, intent);
+      super.onHandleWork(intent);
     }
   }
 }

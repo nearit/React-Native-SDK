@@ -7,13 +7,13 @@
  */
 
 #import "RNNearIt.h"
-#import <CoreLocation/CoreLocation.h>
 
 #define TAG @"RNNearIT"
 
 #define IS_EMPTY(v) (v == nil || [v length] <= 0)
 
 NSString* const RN_NATIVE_EVENTS_TOPIC = @"RNNearItEvent";
+NSString* const RN_NATIVE_PERMISSIONS_TOPIC = @"RNNearItPermissions";
 
 // Local Events topic (used by NotificationCenter to handle incoming notifications)
 NSString* const RN_LOCAL_EVENTS_TOPIC = @"RNNearItLocalEvents";
@@ -63,9 +63,7 @@ NSString* const E_COUPONS_RETRIEVAL_ERROR = @"E_COUPONS_RETRIEVAL_ERROR";
 // CLLocationManager
 CLLocationManager *locationManager;
 
-@implementation RNNearIt {
-    BOOL hasListeners;
-}
+@implementation RNNearIt
 
 - (dispatch_queue_t)methodQueue
 {
@@ -93,23 +91,11 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
-
-// Will be called when this module's first listener is added.
--(void)startObserving {
-    hasListeners = YES;
-    // Set up any upstream listeners or background tasks as necessary
-}
-
-// Will be called when this module's last listener is removed, or on dealloc.
--(void)stopObserving {
-    hasListeners = NO;
-    // Remove upstream listeners, stop unnecessary background tasks
-}
-
 - (NSDictionary *)constantsToExport
 {
     return @{
              @"NativeEventsTopic": RN_NATIVE_EVENTS_TOPIC,
+             @"NativePermissionsTopic": RN_NATIVE_PERMISSIONS_TOPIC,
              @"Events": @{
                         @"PermissionStatus": EVENT_TYPE_PERMISSIONS,
                         @"SimpleNotification": EVENT_TYPE_SIMPLE,
@@ -150,8 +136,29 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[RN_NATIVE_EVENTS_TOPIC];
+    return @[
+             RN_NATIVE_EVENTS_TOPIC,
+             RN_NATIVE_PERMISSIONS_TOPIC
+         ];
 }
+
+RCT_EXPORT_METHOD(listenerRegistered: (RCTPromiseResolveBlock) resolve
+                            rejecter: (RCTPromiseRejectBlock) reject) {
+    _listeners++;
+    resolve([NSNull null]);
+    // Dispatch Notification received while app was backgrounded/dead
+    [[RNNearItBackgroundQueue defaultQueue] dispatchNotificationsQueue:^(NSDictionary* notification) {
+        [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
+                           body:notification];
+    }];
+}
+
+RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
+                              rejecter: (RCTPromiseRejectBlock) reject) {
+    _listeners--;
+    resolve([NSNull null]);
+}
+
 
 - (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nonnull) trackingInfo fromUserAction:(BOOL) fromUserAction
 {
@@ -165,22 +172,22 @@ RCT_EXPORT_MODULE()
                             EVENT_FROM_USER_ACTION: [NSNumber numberWithBool:fromUserAction]
                         };
     
-    if (hasListeners) {
+    if (_listeners > 0) {
         [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
                            body:event];
+    } else {
+        [[RNNearItBackgroundQueue defaultQueue] addNotification:event];
     }
 }
--(void) sendEventWithLocationPermissionStatus:(NSString* _Nonnull) permissionStatus
-{
+
+-(void) sendEventWithLocationPermissionStatus:(NSString* _Nonnull) permissionStatus {
     NSDictionary* event = @{
                             EVENT_TYPE: EVENT_TYPE_PERMISSIONS,
                             EVENT_STATUS: permissionStatus
                         };
 
-    if (hasListeners) {
-        [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC
-                           body:event];
-    }
+    [self sendEventWithName:RN_NATIVE_PERMISSIONS_TOPIC
+                       body:event];
 }
 
 // MARK: NITManagerDelegate
@@ -355,8 +362,11 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
         }];
 #endif
     }
-    
+
+#if !TARGET_IPHONE_SIMULATOR
+    NITLogV(TAG, @"registerForRemoteNotifications");
     [RCTSharedApplication() registerForRemoteNotifications];
+#endif // TARGET_IPHONE_SIMULATOR
 }
 
 RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
@@ -573,20 +583,27 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 - (NSDictionary*)bundleNITCoupon:(NITCoupon* _Nonnull) coupon
 {
     NSMutableDictionary* couponDictionary = [[NSMutableDictionary alloc] init];
-    [couponDictionary setValue:coupon.name forKey:@"name"];
-    [couponDictionary setValue:coupon.couponDescription forKey:@"description"];
-    [couponDictionary setValue:coupon.value forKey:@"value"];
-    [couponDictionary setValue:coupon.expiresAt forKey:@"expiresAt"];
-    [couponDictionary setValue:coupon.redeemableFrom forKey:@"redeemableFrom"];
+    [couponDictionary setObject:(coupon.name ? coupon.name : [NSNull null])
+                         forKey:@"name"];
+    [couponDictionary setObject:(coupon.couponDescription ? coupon.couponDescription : [NSNull null])
+                         forKey:@"description"];
+    [couponDictionary setObject:(coupon.value ? coupon.value : [NSNull null])
+                         forKey:@"value"];
+    [couponDictionary setObject:(coupon.expiresAt ? coupon.expiresAt : [NSNull null])
+                         forKey:@"expiresAt"];
+    [couponDictionary setObject:(coupon.redeemableFrom ? coupon.redeemableFrom : [NSNull null])
+                         forKey:@"redeemableFrom"];
     
     if (coupon.claims.count > 0) {
-        [couponDictionary setValue:coupon.claims[0].serialNumber forKey:@"serial"];
-        [couponDictionary setValue:coupon.claims[0].claimedAt forKey:@"claimedAt"];
-        [couponDictionary setValue:(coupon.claims[0].redeemedAt ? coupon.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
+        [couponDictionary setObject:coupon.claims[0].serialNumber forKey:@"serial"];
+        [couponDictionary setObject:coupon.claims[0].claimedAt forKey:@"claimedAt"];
+        [couponDictionary setObject:(coupon.claims[0].redeemedAt ? coupon.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
     }
     
     if (coupon.icon) {
-        [couponDictionary setValue:[self bundleNITImage:coupon.icon] forKey:@"image"];
+        if (coupon.icon.url || coupon.icon.smallSizeURL) {
+            [couponDictionary setObject:[self bundleNITImage:coupon.icon] forKey:@"image"];
+        }
     }
     
     return couponDictionary;
@@ -616,7 +633,9 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
         if (error) {
             [self manager:[NITManager defaultManager] eventFailureWithError:error];
         } else {
-            [self handleNearContent:content trackingInfo:trackingInfo fromUserAction:@(RCTSharedApplication().applicationState == UIApplicationStateInactive)];
+            [self handleNearContent:content
+                       trackingInfo:trackingInfo
+                     fromUserAction:@(RCTSharedApplication().applicationState == UIApplicationStateInactive)];
         }
         
     }];
@@ -628,7 +647,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo
 {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
-    [data setValue:@YES forKey:@"fromUserAction"];
+    [data setObject:@YES forKey:@"fromUserAction"];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
                                                         object:self
@@ -638,21 +657,26 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 + (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification
 {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.userInfo];
-    [data setValue:@YES forKey:@"fromUserAction"];
+    [data setObject:@YES forKey:@"fromUserAction"];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
                                                         object:self
-                                                      userInfo:@{@"data": data}];
+                                                      userInfo:@{
+                                                                 @"data": data
+                                                             }];
 }
 
 + (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler
 {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
-    [data setValue:@YES forKey:@"fromUserAction"];
+    [data setObject:@YES forKey:@"fromUserAction"];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
                                                         object:self
-                                                      userInfo:@{@"data": data, @"completionHandler": completionHandler}];
+                                                      userInfo:@{
+                                                                 @"data": data,
+                                                                 @"completionHandler": completionHandler
+                                                             }];
 }
 
 @end

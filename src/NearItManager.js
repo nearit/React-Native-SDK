@@ -83,8 +83,17 @@ export class NearItManager {
 
   static _eventSource = new NativeEventEmitter(NearItSdk)
 
-  static setContentsListener (listener: NearItContentsListener): EmitterSubscription {
-    return NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+  static addContentsListener (listener: NearItContentsListener): EmitterSubscription {
+    const subscription = NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+    NearItSdk.listenerRegistered()
+    return subscription
+  }
+
+  static removeContentsListener (subscription: EmitterSubscription) {
+    NearItSdk.listenerUnregistered()
+      .then(res => {
+        subscription.remove()
+      })
   }
 
   static refreshConfig (): Promise<null> {
@@ -127,8 +136,28 @@ export class NearItManager {
     return NearItSdk.requestNotificationPermission()
   }
 
-  static requestLocationPermission (): Promise<boolean | null> {
-    return NearItSdk.requestLocationPermission()
+  static requestLocationPermission (): Promise<boolean> {
+    return new Promise(function (resolve, reject) {
+      const locationSubscription = NearItManager._eventSource.addListener(NearItSdk.NativePermissionsTopic, event => {
+        if (event[NearItSdk.EventContent.type] === NearItSdk.Events.PermissionStatus) {
+          if (event[NearItSdk.EventContent.status] === NearItSdk.Permissions.LocationGranted) {
+            resolve(true)
+          } else if (event[NearItSdk.EventContent.status] === NearItSdk.Permissions.LocationDenied) {
+            resolve(false)
+          }
+
+          locationSubscription.remove()
+        }
+      })
+
+      NearItSdk.requestLocationPermission()
+        .then(locationGranted => {
+          if (typeof (locationGranted) !== 'undefined' && locationGranted != null) {
+            locationSubscription.remove()
+            resolve(locationGranted)
+          }
+        })
+    })
   }
 
   static getCoupons (): Promise<NearItCoupon[]> {
