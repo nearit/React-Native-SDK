@@ -38,7 +38,7 @@ class App extends React.Component {
 
     console.log({NearItConstants})
 
-    this._nearItSubscription = NearIT.setContentsListener(event => {
+    this._nearItSubscription = NearIT.addContentsListener(event => {
       console.log('Received a new event from NearIT', { event })
       const evtType = event[EventContent.type]
       if (evtType !== Events.PermissionStatus) {
@@ -107,29 +107,14 @@ class App extends React.Component {
 
   async _onPressRequestNotificationPermissions () {
     const permissionGranted = await NearIT.requestNotificationPermission()
-    
+    console.log({permissionGranted})
     this._showBanner(permissionGranted ? 'Notification Permission GRANTED' : 'Notification Permission NOT GRANTED')
   }
   
   async _onPressRequestLocationPermissions () {
-    this.locationSubscription = NearIT.setContentsListener(event => {
-      if (event[EventContent.type] === Events.PermissionStatus){
-        if (event[EventContent.status] === Permissions.LocationGranted) {
-          this._showBanner('Location Permission GRANTED')
-        } else if (event[EventContent.status] === Permissions.LocationDenied) {
-          this._showBanner('Location Permission NOT GRANTED')
-        }
-
-        this.locationSubscription.remove()
-      }
-    })
-
     const locationGranted = await NearIT.requestLocationPermission()
     console.log({locationGranted})
-    if (typeof(locationGranted) !== 'undefined' && locationGranted != null) {
-        this.locationSubscription.remove()
-        this._showBanner(locationGranted ? 'Location Permission GRANTED' : 'Location Permission NOT GRANTED')
-    }
+    this._showBanner(locationGranted ? 'Location Permission GRANTED' : 'Location Permission NOT GRANTED')
   }
 
   async _onPressRefreshCfg () {

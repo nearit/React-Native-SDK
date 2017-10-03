@@ -6,6 +6,6 @@ target 'nearsdksample' do
   # use_frameworks!
 
   # Pods for nearsdksample
-  pod 'NearITSDK', '2.2.1'
+  pod 'NearITSDK', '2.2.2'
 
 end
