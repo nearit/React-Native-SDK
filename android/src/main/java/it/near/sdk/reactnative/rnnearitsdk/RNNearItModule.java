@@ -8,7 +8,6 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,14 +16,12 @@ import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
@@ -49,49 +46,48 @@ import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearUtils;
 
-public class RNNearItModule extends ReactContextBaseJavaModule implements ActivityEventListener,
-        LifecycleEventListener,
+public class RNNearItModule extends ReactContextBaseJavaModule implements LifecycleEventListener,
         ProximityListener {
 
   // Module name
-  private static final String MODULE_NAME = "RNNearIt";
+  static final String MODULE_NAME = "RNNearIt";
 
   // Event topic (used by JS to subscribe to generated events)
-  public static final String NATIVE_EVENTS_TOPIC = "RNNearItEvent";
-  public static final String NATIVE_PERMISSIONS_TOPIC = "RNNearItPermissions";
+  static final String NATIVE_EVENTS_TOPIC = "RNNearItEvent";
+  private static final String NATIVE_PERMISSIONS_TOPIC = "RNNearItPermissions";
 
   // Local Events topic (used by LocalBroadcastReceiver to handle foreground notifications)
-  public static final String LOCAL_EVENTS_TOPIC = "RNNearItLocalEvents";
+  static final String LOCAL_EVENTS_TOPIC = "RNNearItLocalEvents";
 
   // Module Constants
   // Events type
-  public static final String EVENT_TYPE_PERMISSIONS = "NearIt.Events.PermissionStatus";
-  public static final String EVENT_TYPE_SIMPLE = "NearIt.Events.SimpleNotification";
-  public static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
-  public static final String EVENT_TYPE_COUPON = "NearIt.Events.Coupon";
-  public static final String EVENT_TYPE_CONTENT = "NearIt.Events.Content";
-  public static final String EVENT_TYPE_FEEDBACK = "NearIt.Events.Feedback";
+  private static final String EVENT_TYPE_PERMISSIONS = "NearIt.Events.PermissionStatus";
+  static final String EVENT_TYPE_SIMPLE = "NearIt.Events.SimpleNotification";
+  static final String EVENT_TYPE_CUSTOM_JSON = "NearIt.Events.CustomJSON";
+  static final String EVENT_TYPE_COUPON = "NearIt.Events.Coupon";
+  static final String EVENT_TYPE_CONTENT = "NearIt.Events.Content";
+  static final String EVENT_TYPE_FEEDBACK = "NearIt.Events.Feedback";
 
   // Events content
-  public static final String EVENT_TYPE = "type";
-  public static final String EVENT_TRACKING_INFO = "trackingInfo";
-  public static final String EVENT_CONTENT = "content";
-  public static final String EVENT_CONTENT_MESSAGE = "message";
-  public static final String EVENT_CONTENT_DATA = "data";
-  public static final String EVENT_CONTENT_COUPON = "coupon";
-  public static final String EVENT_CONTENT_TEXT = "text";
-  public static final String EVENT_CONTENT_VIDEO = "video";
-  public static final String EVENT_CONTENT_IMAGES = "images";
-  public static final String EVENT_CONTENT_UPLOAD = "upload";
-  public static final String EVENT_CONTENT_AUDIO = "audio";
-  public static final String EVENT_CONTENT_FEEDBACK = "feedbackId";
-  public static final String EVENT_CONTENT_QUESTION = "feedbackQuestion";
-  public static final String EVENT_FROM_USER_ACTION = "fromUserAction";
-  public static final String EVENT_STATUS = "status";
+  static final String EVENT_TYPE = "type";
+  static final String EVENT_TRACKING_INFO = "trackingInfo";
+  static final String EVENT_CONTENT = "content";
+  static final String EVENT_CONTENT_MESSAGE = "message";
+  static final String EVENT_CONTENT_DATA = "data";
+  static final String EVENT_CONTENT_COUPON = "coupon";
+  static final String EVENT_CONTENT_TEXT = "text";
+  static final String EVENT_CONTENT_VIDEO = "video";
+  static final String EVENT_CONTENT_IMAGES = "images";
+  static final String EVENT_CONTENT_UPLOAD = "upload";
+  static final String EVENT_CONTENT_AUDIO = "audio";
+  static final String EVENT_CONTENT_FEEDBACK = "feedbackId";
+  static final String EVENT_CONTENT_QUESTION = "feedbackQuestion";
+  static final String EVENT_FROM_USER_ACTION = "fromUserAction";
+  private static final String EVENT_STATUS = "status";
 
   // Location permission status
-  public static final String PERMISSION_LOCATION_GRANTED = "NearIt.Permissions.Location.Granted";
-  public static final String PERMISSION_LOCATION_DENIED = "NearIt.Permissions.Location.Denied";
+  private static final String PERMISSION_LOCATION_GRANTED = "NearIt.Permissions.Location.Granted";
+  private static final String PERMISSION_LOCATION_DENIED = "NearIt.Permissions.Location.Denied";
 
   // Error codes
   private static final String E_REFRESH_CONFIG_ERROR = "E_REFRESH_CONFIG_ERROR";
@@ -111,15 +107,12 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   public RNNearItModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
-    // Listen for onNewIntent event
-    reactContext.addActivityEventListener(this);
-
-    // Listen for Resume, Pause, Destroy events
-    reactContext.addLifecycleEventListener(this);
-
     // Register LocalBroadcastReceiver to be used for Foreground notification handling
     final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(reactContext);
     localBroadcastManager.registerReceiver(new LocalBroadcastReceiver(), new IntentFilter(LOCAL_EVENTS_TOPIC));
+
+    // Listen for Resume, Pause, Destroy events
+    getReactApplicationContext().addLifecycleEventListener(this);
   }
 
   // Module definition
@@ -195,22 +188,6 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
     });
   }
 
-  // ReactApp Activity methods
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    // Empty
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    Log.d(MODULE_NAME, "onNewIntent");
-    if (intent != null && NearUtils.carriesNearItContent(intent)) {
-      Log.d(MODULE_NAME, "onNewIntent: Got NearIT intent");
-      // we got a NearIT intent coming from a notification tap
-      NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getRCTDeviceEventEmitter(), true));
-    }
-  }
-
   // ReactApp Lifecycle methods
   @Override
   public void onHostResume() {
@@ -219,6 +196,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
   @Override
   public void onHostPause() {
+    RNNearItPersistedQueue.defaultQueue().resetListeners();
     NearItManager.getInstance().removeProximityListener(this);
   }
 
@@ -229,14 +207,18 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   // ReactNative listeners management
   @ReactMethod
   public void listenerRegistered(final Promise promise) {
-    final int listenersCount = RNNearItBackgroundQueue.defaultQueue().registerListener();
-    Log.d(MODULE_NAME, String.format("listenerRegistered (Registered listeners: %d)", listenersCount));
+    final int listenersCount = RNNearItPersistedQueue.defaultQueue().registerListener();
+    Log.i(MODULE_NAME, String.format("listenerRegistered (Registered listeners: %d)", listenersCount));
     // Try to flush background notifications when a listener is added
-    RNNearItBackgroundQueue.defaultQueue().dispatchNotificationsQueue(new RNNearItBackgroundQueue.NotificationDispatcher() {
+    RNNearItPersistedQueue.dispatchNotificationsQueue(getReactApplicationContext(), new RNNearItPersistedQueue.NotificationDispatcher() {
       @Override
       public void onNotification(WritableMap notification) {
-        Log.d(MODULE_NAME, "Dispatching background notification");
-        getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, notification);
+        Log.i(MODULE_NAME, "Dispatching background notification");
+        try {
+          getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, notification);
+        } catch (Exception e) {
+          Log.i(MODULE_NAME, "Error dispatching backgrounded notification");
+        }
       }
     });
     promise.resolve(true);
@@ -244,7 +226,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
   @ReactMethod
   public void listenerUnregistered(final Promise promise) {
-    final int listenersCount = RNNearItBackgroundQueue.defaultQueue().unregisterListener();
+    final int listenersCount = RNNearItPersistedQueue.defaultQueue().unregisterListener();
     Log.d(MODULE_NAME, String.format("listenerUnregistered (Registered listeners: %d)", listenersCount));
     promise.resolve(true);
   }
@@ -252,7 +234,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   // NearIT SDK Listeners
   @Override
   public void foregroundEvent(Parcelable parcelable, TrackingInfo trackingInfo) {
-    NearUtils.parseCoreContents(parcelable, trackingInfo, new RNNearItCoreContentsListener(getRCTDeviceEventEmitter(), false));
+    NearUtils.parseCoreContents(parcelable, trackingInfo, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), false));
   }
 
   // NearIT Config
@@ -366,15 +348,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
 
     while (userData.keySetIterator().hasNextKey()) {
       final String k = userData.keySetIterator().nextKey();
-      final ReadableType t = userData.getType(k);
-
-      if (t == ReadableType.Number) {
-        userDataMap.put(k, String.valueOf(userData.getDouble(k)));
-      } else if (t == ReadableType.Boolean) {
-        userDataMap.put(k, String.valueOf(userData.getBoolean(k)));
-      } else if (t == ReadableType.String) {
-        userDataMap.put(k, userData.getString(k));
-      }
+      userDataMap.put(k, String.valueOf(userData.getDynamic(k)));
     }
 
     NearItManager.getInstance().setBatchUserData(userDataMap, new UserDataNotifier() {
@@ -400,7 +374,6 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
   @ReactMethod
   public void requestLocationPermission(final Promise promise) {
     promise.resolve(true);
-    // sendEventWithLocationPermissionStatus(PERMISSION_LOCATION_GRANTED);
   }
 
   // NearIT Coupons
@@ -453,7 +426,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Activi
     @Override
     public void onReceive(Context context, Intent intent) {
       if (intent != null && NearUtils.carriesNearItContent(intent)) {
-        NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getRCTDeviceEventEmitter(), false));
+        NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), false));
       }
     }
   }

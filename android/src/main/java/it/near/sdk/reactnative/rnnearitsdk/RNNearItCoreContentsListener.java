@@ -8,6 +8,8 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -53,10 +55,13 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
 
   private static final String TAG = "RNNearItCoreContents";
 
-  private final DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
-  private final boolean fromUserAction;
+  private Context context;
+  private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
+  private boolean fromUserAction;
 
-  RNNearItCoreContentsListener(DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
+
+  RNNearItCoreContentsListener(@NonNull Context context, @Nullable DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
+    this.context = context;
     this.eventEmitter = eventEmitter;
     this.fromUserAction = fromUserAction;
   }
@@ -146,14 +151,14 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
       eventMap.putString(EVENT_TRACKING_INFO, trackingInfoData);
       eventMap.putBoolean(EVENT_FROM_USER_ACTION, fromUserAction);
 
-      if (RNNearItBackgroundQueue.defaultQueue().hasListeners()) {
+      if (eventEmitter != null && RNNearItPersistedQueue.defaultQueue().hasListeners()) {
         // Send event to JS
         Log.d(TAG, "Listeners available, will send notification to JS now");
         this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
       } else {
         // Defer event notification when at least a listener is available
-        Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItBackgroundQueue");
-        RNNearItBackgroundQueue.defaultQueue().addNotification(eventMap);
+        Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItPersistedQueue");
+        RNNearItPersistedQueue.addNotification(context, eventMap);
       }
     } catch (Exception e) {
       Log.e(TAG, "Error while sending event to JS");

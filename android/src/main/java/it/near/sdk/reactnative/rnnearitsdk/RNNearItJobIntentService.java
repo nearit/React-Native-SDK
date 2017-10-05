@@ -14,6 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import it.near.sdk.recipes.background.NearBackgroundJobIntentService;
 import it.near.sdk.utils.AppVisibilityDetector;
+import it.near.sdk.utils.NearUtils;
 
 
 public class RNNearItJobIntentService extends NearBackgroundJobIntentService {
@@ -28,6 +29,9 @@ public class RNNearItJobIntentService extends NearBackgroundJobIntentService {
 
       localBroadcastManager.sendBroadcast(localEvent);
     } else {
+      if (NearUtils.carriesNearItContent(intent)) {
+        NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(this, null, true));
+      }
       super.onHandleWork(intent);
     }
   }
