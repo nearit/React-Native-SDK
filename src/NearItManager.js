@@ -47,7 +47,7 @@ type NearItImage = {
 }
 
 type NearItCoupon = {
-  'name': string,
+  'title': string,
   'description': string,
   'image': ?NearItImage,
   'value': string,

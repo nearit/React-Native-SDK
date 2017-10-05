@@ -61,11 +61,10 @@ Each event object is composed as follow
 | Field    | Description |
 |----------|-------------|
 | `EventContent.message` | The `body` of the NearIT simple notification |
+| `EventContent.title`   | The `title` content (can be empty) |
 | `EventContent.text`    | The `text` content (can be empty) |
-| `EventContent.images`  | The array of `images` sent within the content (can be empty) |
-| `EventContent.video`   | The url to the `video` content (can be empty) |
-| `EventContent.upload`  | The url to the `pdf` content (can be empty) |
-| `EventContent.audio`   | The url to the `audio` content (can be empty) |
+| `EventContent.image`   | The `image` resource (can be empty) |
+| `EventContent.cta`     | The `cta` resource object (can be empty) |
 
 - For `Events.Feedback`
 
