@@ -34,10 +34,9 @@ NSString* const EVENT_CONTENT_MESSAGE = @"message";
 NSString* const EVENT_CONTENT_DATA = @"data";
 NSString* const EVENT_CONTENT_COUPON = @"coupon";
 NSString* const EVENT_CONTENT_TEXT = @"text";
-NSString* const EVENT_CONTENT_VIDEO = @"video";
-NSString* const EVENT_CONTENT_IMAGES = @"images";
-NSString* const EVENT_CONTENT_UPLOAD = @"upload";
-NSString* const EVENT_CONTENT_AUDIO = @"audio";
+NSString* const EVENT_CONTENT_TITLE = @"title";
+NSString* const EVENT_CONTENT_IMAGE = @"image";
+NSString* const EVENT_CONTENT_CTA = @"cta";
 NSString* const EVENT_CONTENT_FEEDBACK = @"feedbackId";
 NSString* const EVENT_CONTENT_QUESTION = @"feedbackQuestion";
 NSString* const EVENT_FROM_USER_ACTION = @"fromUserAction";
@@ -111,11 +110,10 @@ RCT_EXPORT_MODULE()
                         @"message": EVENT_CONTENT_MESSAGE,
                         @"data": EVENT_CONTENT_DATA,
                         @"coupon": EVENT_CONTENT_COUPON,
+                        @"title": EVENT_CONTENT_TITLE,
                         @"text": EVENT_CONTENT_TEXT,
-                        @"images": EVENT_CONTENT_IMAGES,
-                        @"video": EVENT_CONTENT_VIDEO,
-                        @"upload": EVENT_CONTENT_UPLOAD,
-                        @"audio": EVENT_CONTENT_AUDIO,
+                        @"image": EVENT_CONTENT_IMAGE,
+                        @"cta": EVENT_CONTENT_CTA,
                         @"feedbackId": EVENT_CONTENT_FEEDBACK,
                         @"question": EVENT_CONTENT_QUESTION,
                         @"fromUserAction": EVENT_FROM_USER_ACTION,
@@ -455,42 +453,36 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
             message = @"";
         }
         
+        NSString* title = [nearContent title];
+        if (!title) {
+            title = @"";
+        }
+        
         NSString* text = [nearContent content];
         if (!text) {
             text = @"";
         }
         
-        NSString* videoUrl = [nearContent videoLink];
-        if (!videoUrl){
-            videoUrl = @"";
+        id image;
+        if (nearContent.image) {
+            image = [self bundleNITImage:nearContent.image];
+        } else {
+            image = [NSNull null];
         }
         
-        NSMutableArray* images = [NSMutableArray init];
-        if ([nearContent images]) {
-            for(NITImage* i in [nearContent images]) {
-                [images addObject:[self bundleNITImage:i]];
-            }
-        }
-        
-        NSString* uploadUrl = @"";
-        NITUpload* upload = [nearContent upload];
-        if (upload) {
-            uploadUrl = upload.url ? upload.url.absoluteString : @"";
-        }
-        
-        NSString* audioUrl = @"";
-        NITAudio* audioResource = [nearContent audio];
-        if (audioResource) {
-            audioUrl = audioResource.url ? audioResource.url.absoluteString : @"";
+        id cta;
+        if (nearContent.link) {
+            cta = [self bundleNITContentLink:nearContent.link];
+        } else {
+            cta = [NSNull null];
         }
         
         NSDictionary* eventContent = @{
                                        EVENT_CONTENT_MESSAGE:message,
+                                         EVENT_CONTENT_TITLE:title,
                                           EVENT_CONTENT_TEXT:text,
-                                         EVENT_CONTENT_VIDEO:videoUrl,
-                                        EVENT_CONTENT_IMAGES:images,
-                                        EVENT_CONTENT_UPLOAD:uploadUrl,
-                                         EVENT_CONTENT_AUDIO:audioUrl
+                                         EVENT_CONTENT_IMAGE:image,
+                                           EVENT_CONTENT_CTA:cta
                                     };
         
         [self sendEventWithContent:eventContent
@@ -583,7 +575,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 - (NSDictionary*)bundleNITCoupon:(NITCoupon* _Nonnull) coupon
 {
     NSMutableDictionary* couponDictionary = [[NSMutableDictionary alloc] init];
-    [couponDictionary setObject:(coupon.name ? coupon.name : [NSNull null])
+    [couponDictionary setObject:(coupon.title ? coupon.title : [NSNull null])
                          forKey:@"name"];
     [couponDictionary setObject:(coupon.couponDescription ? coupon.couponDescription : [NSNull null])
                          forKey:@"description"];
@@ -614,6 +606,13 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
     return @{
              @"fullSize": (image.url ? image.url : [NSNull null]),
              @"squareSize": (image.smallSizeURL ? image.smallSizeURL : [NSNull null])
+            };
+}
+
+-(NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull) cta {
+    return @{
+             @"label": cta.label,
+             @"url": cta.url
             };
 }
 
