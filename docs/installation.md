@@ -1,4 +1,4 @@
-# Installation #
+# Installation
 
 Minimum Requirements:
 
@@ -20,8 +20,48 @@ $ react-native link react-native-nearit
 
 <br>
 
-## Android ##
-To setup NearIT SDK for Android, simply add a new string resource to the Android resources specify your API key
+## Android
+
+To setup NearIT SDK for Android
+
+### Dependency setup
+
+In your project `android/build.gradle` make sure to include the following:
+```java
+buildscript {
+    ...
+    dependencies {
+        ...
+        classpath 'com.google.gms:google-services:3.1.0'
+    }
+}
+
+allprojects {
+    repositories {
+        ...
+        maven { url "https://maven.google.com" }
+    }
+}
+```
+
+
+In your project `android/app/build.gradle` make sure to include the following:
+```java
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
+    ...
+}
+
+...
+
+apply plugin: 'com.google.gms.google-services' // Include at the end of file
+```
+
+
+
+### NearIT API Key
+Add a new string resource to the Android resources to specify your API key
 
 ```xml
 <resources>
@@ -38,10 +78,10 @@ If you don't have a resources file, create a new `secrets.xml` file under your p
 
 <br>
 
-## iOS ##
+## iOS
 To setup NearIT SDK for iOS, you'll need `Cocoapods`.
 
-### Cocoapod setup ###
+### Cocoapod setup
 Follow the instructions to install Cocoapods [here](https://guides.cocoapods.org/using/getting-started.html#getting-started), then initialize the `Podfile` inside your project `ios` folder.
 ```bash
 $ cd ios
@@ -50,7 +90,7 @@ $ pod init
 
 **NOTE:** The Podfile needs to be initialised in the `ios` directory of your project. Make sure to update cocoapods libs first by running `pod update`
 
-### Dependency setup ###
+### Dependency setup
 Edit the created `Podfile` as follow:
 
 - set `platform` to `9.0`
@@ -72,7 +112,7 @@ end
 
 Run `pod install` to install the required dependencies
 
-### iOS App Setup ###
+### iOS App Setup
 Edit the file `ios/<your app name>/AppDelegate.m` and
 
 - add the following import (after the `React` ones)
