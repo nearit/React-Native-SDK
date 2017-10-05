@@ -82,7 +82,7 @@ class App extends React.Component {
     }
 
     if (this._nearItSubscription) {
-      this._nearItSubscription.remove()
+      NearIT.removeContentsListener(this._nearItSubscription)
     }
   }
 
