@@ -158,15 +158,18 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
 }
 
 
-- (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nonnull) trackingInfo fromUserAction:(BOOL) fromUserAction
+- (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nullable) trackingInfo fromUserAction:(BOOL) fromUserAction
 {
-    NSData* trackingInfoData = [NSKeyedArchiver archivedDataWithRootObject:trackingInfo];
-    NSString* trackingInfoB64 = [trackingInfoData base64EncodedStringWithOptions:0];
+    NSString* trackingInfoB64;
+    if (trackingInfo) {
+        NSData* trackingInfoData = [NSKeyedArchiver archivedDataWithRootObject:trackingInfo];
+        trackingInfoB64 = [trackingInfoData base64EncodedStringWithOptions:0];
+    }
     
     NSDictionary* event = @{
                             EVENT_TYPE: eventType,
                             EVENT_CONTENT: content,
-                            EVENT_TRACKING_INFO: trackingInfoB64,
+                            EVENT_TRACKING_INFO: (trackingInfoB64 ? trackingInfoB64 : [NSNull null]),
                             EVENT_FROM_USER_ACTION: [NSNumber numberWithBool:fromUserAction]
                         };
     
@@ -188,11 +191,18 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
                        body:event];
 }
 
+// MARK: UNUserNotificationCenterDelegate
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    completionHandler(UNNotificationPresentationOptionAlert);
+}
+
 // MARK: NITManagerDelegate
 
 - (void)manager:(NITManager *)manager eventWithContent:(id)content trackingInfo:(NITTrackingInfo *)trackingInfo
 {
-    [self handleNearContent:content trackingInfo:trackingInfo fromUserAction:NO];
+    [self handleNearContent:content
+               trackingInfo:trackingInfo
+             fromUserAction:NO];
 }
 
 - (void)manager:(NITManager *)manager eventFailureWithError:(NSError *)error
@@ -200,6 +210,11 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
     // handle errors (only for information purpose)
 }
 
+- (void)manager:(NITManager* _Nonnull)manager alertWantsToShowContent:(id _Nonnull)content {
+    [self handleNearContent:content
+               trackingInfo:nil
+             fromUserAction:YES];
+}
 
 // MARK: NearIT Config
 
@@ -420,7 +435,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 
 // MARK: NearIT Recipes handling
 
-- (BOOL)handleNearContent: (id _Nonnull) content trackingInfo: (NITTrackingInfo* _Nonnull) trackingInfo fromUserAction: (BOOL) fromUserAction
+- (BOOL)handleNearContent: (id _Nonnull) content trackingInfo: (NITTrackingInfo* _Nullable) trackingInfo fromUserAction: (BOOL) fromUserAction
 {
     if ([content isKindOfClass:[NITSimpleNotification class]]) {
         // Simple notification
@@ -636,12 +651,27 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                        trackingInfo:trackingInfo
                      fromUserAction:@(RCTSharedApplication().applicationState == UIApplicationStateInactive)];
         }
-        
     }];
-    
 }
 
-// MARK: Push Notification handling
+// MARK: Foreground Notifications handling
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler {
+
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
+    [data setObject:@YES forKey:@"fromUserAction"];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
+                                                        object:self
+                                                      userInfo:@{
+                                                                 @"data": data,
+                                                                 @"completionHandler": completionHandler
+                                                             }];
+ 
+     completionHandler();
+}
+
+// MARK: Push Notifications handling
 
 + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo
 {
