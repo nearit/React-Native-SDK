@@ -8,18 +8,17 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.gson.Gson;
 
 import it.near.sdk.reactions.contentplugin.model.Content;
-import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
@@ -28,16 +27,15 @@ import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
 
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_AUDIO;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_COUPON;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_CTA;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_DATA;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_FEEDBACK;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_IMAGES;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_IMAGE;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_MESSAGE;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_QUESTION;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_TEXT;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_UPLOAD;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_VIDEO;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_TITLE;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_FROM_USER_ACTION;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TRACKING_INFO;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE;
@@ -53,10 +51,13 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
 
   private static final String TAG = "RNNearItCoreContents";
 
-  private final DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
-  private final boolean fromUserAction;
+  private Context context;
+  private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
+  private boolean fromUserAction;
 
-  RNNearItCoreContentsListener(DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
+
+  RNNearItCoreContentsListener(@NonNull Context context, @Nullable DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
+    this.context = context;
     this.eventEmitter = eventEmitter;
     this.fromUserAction = fromUserAction;
   }
@@ -66,17 +67,14 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
     // Create EventContent map
     final WritableMap contentMap = new WritableNativeMap();
     contentMap.putString(EVENT_CONTENT_MESSAGE, content.notificationMessage);
+    contentMap.putString(EVENT_CONTENT_TITLE, (content.title != null ? content.title : ""));
     contentMap.putString(EVENT_CONTENT_TEXT, (content.contentString != null ? content.contentString : ""));
-    contentMap.putString(EVENT_CONTENT_VIDEO, (content.video_link != null ? content.video_link : ""));
-
-    final WritableArray images = new WritableNativeArray();
-    for (ImageSet i : content.getImages_links()) {
-      images.pushMap(RNNearItUtils.bundleImageSet(i));
+    if (content.getImageLink() != null) {
+      contentMap.putMap(EVENT_CONTENT_IMAGE, RNNearItUtils.bundleImageSet(content.getImageLink()));
     }
-    contentMap.putArray(EVENT_CONTENT_IMAGES, images);
-
-    contentMap.putString(EVENT_CONTENT_UPLOAD, (content.upload != null ? content.upload.getUrl() : ""));
-    contentMap.putString(EVENT_CONTENT_AUDIO, (content.audio != null ? content.audio.getUrl() : ""));
+    if (content.getCta() != null) {
+      contentMap.putMap(EVENT_CONTENT_CTA, RNNearItUtils.bundleContentLink(content.getCta()));
+    }
 
     // Notify JS
     sendEventWithContent(EVENT_TYPE_CONTENT, contentMap, trackingInfo);
@@ -146,14 +144,14 @@ public class RNNearItCoreContentsListener implements CoreContentsListener {
       eventMap.putString(EVENT_TRACKING_INFO, trackingInfoData);
       eventMap.putBoolean(EVENT_FROM_USER_ACTION, fromUserAction);
 
-      if (RNNearItBackgroundQueue.defaultQueue().hasListeners()) {
+      if (eventEmitter != null && RNNearItPersistedQueue.defaultQueue().hasListeners()) {
         // Send event to JS
         Log.d(TAG, "Listeners available, will send notification to JS now");
         this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
       } else {
         // Defer event notification when at least a listener is available
-        Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItBackgroundQueue");
-        RNNearItBackgroundQueue.defaultQueue().addNotification(eventMap);
+        Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItPersistedQueue");
+        RNNearItPersistedQueue.addNotification(context, eventMap);
       }
     } catch (Exception e) {
       Log.e(TAG, "Error while sending event to JS");

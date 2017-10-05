@@ -16,7 +16,6 @@ declare module 'react-native-nearit' {
       Feedback: string
       Coupon: string
       CustomJson: string
-      PermissionStatus: string
     }
 
     interface NearItEventContent {
@@ -45,7 +44,7 @@ declare module 'react-native-nearit' {
     }
 
     interface NearItCoupon {
-      name: string,
+      title: string,
       description: string,
       image?: NearItImage,
       value: string,
@@ -58,9 +57,7 @@ declare module 'react-native-nearit' {
 
     type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
 
-    interface EmitterSubscription {
-      remove(): void
-    }
+    interface EmitterSubscription {}
 
     class NearItManager {
 

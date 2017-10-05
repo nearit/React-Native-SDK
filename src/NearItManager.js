@@ -14,8 +14,7 @@ type NearItEvents = {
   Content: string,
   Feedback: string,
   Coupon: string,
-  CustomJson: string,
-  PermissionStatus: string
+  CustomJson: string
 }
 
 type NearItEventContent = {
@@ -30,16 +29,10 @@ type NearItStatuses = {
   engaged: string
 }
 
-type NearItPermissions = {
-  LocationGranted: string,
-  LocationDenied: string
-}
-
 type NearItConstants = {
   Events: NearItEvents,
   EventContent: NearItEventContent,
-  Statuses: NearItStatuses,
-  Permissions: NearItPermissions
+  Statuses: NearItStatuses
 }
 
 type NearItEvent = {
@@ -54,7 +47,7 @@ type NearItImage = {
 }
 
 type NearItCoupon = {
-  'name': string,
+  'title': string,
   'description': string,
   'image': ?NearItImage,
   'value': string,
@@ -77,8 +70,7 @@ export class NearItManager {
   static constants: NearItConstants = {
     Events: NearItSdk.Events,
     EventContent: NearItSdk.EventContent,
-    Statuses: NearItSdk.Statuses,
-    Permissions: NearItSdk.Permissions
+    Statuses: NearItSdk.Statuses
   }
 
   static _eventSource = new NativeEventEmitter(NearItSdk)
