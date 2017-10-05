@@ -76,10 +76,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   static final String EVENT_CONTENT_DATA = "data";
   static final String EVENT_CONTENT_COUPON = "coupon";
   static final String EVENT_CONTENT_TEXT = "text";
-  static final String EVENT_CONTENT_VIDEO = "video";
-  static final String EVENT_CONTENT_IMAGES = "images";
-  static final String EVENT_CONTENT_UPLOAD = "upload";
-  static final String EVENT_CONTENT_AUDIO = "audio";
+  static final String EVENT_CONTENT_TITLE = "title";
+  static final String EVENT_CONTENT_IMAGE = "image";
+  static final String EVENT_CONTENT_CTA = "cta";
   static final String EVENT_CONTENT_FEEDBACK = "feedbackId";
   static final String EVENT_CONTENT_QUESTION = "feedbackQuestion";
   static final String EVENT_FROM_USER_ACTION = "fromUserAction";
@@ -98,7 +97,6 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   private static final String E_USER_PROFILE_GET_ERROR = "E_USER_PROFILE_GET_ERROR";
   private static final String E_USER_PROFILE_SET_ERROR = "E_USER_PROFILE_SET_ERROR";
   private static final String E_USER_PROFILE_RESET_ERROR = "E_USER_PROFILE_RESET_ERROR";
-  private static final String E_USER_PROFILE_CREATE_ERROR = "E_USER_PROFILE_CREATE_ERROR";
   private static final String E_USER_PROFILE_DATA_ERROR = "E_USER_PROFILE_DATA_ERROR";
   private static final String E_COUPONS_PARSING_ERROR = "E_COUPONS_PARSING_ERROR";
   private static final String E_COUPONS_RETRIEVAL_ERROR = "E_COUPONS_RETRIEVAL_ERROR";
@@ -155,11 +153,10 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
             put("message", EVENT_CONTENT_MESSAGE);
             put("data", EVENT_CONTENT_DATA);
             put("coupon", EVENT_CONTENT_COUPON);
+            put("title", EVENT_CONTENT_TITLE);
             put("text", EVENT_CONTENT_TEXT);
-            put("images", EVENT_CONTENT_IMAGES);
-            put("video", EVENT_CONTENT_VIDEO);
-            put("upload", EVENT_CONTENT_UPLOAD);
-            put("audio", EVENT_CONTENT_AUDIO);
+            put("image", EVENT_CONTENT_IMAGE);
+            put("cta", EVENT_CONTENT_CTA);
             put("feedbackId", EVENT_CONTENT_FEEDBACK);
             put("question", EVENT_CONTENT_QUESTION);
             put("fromUserAction", EVENT_FROM_USER_ACTION);

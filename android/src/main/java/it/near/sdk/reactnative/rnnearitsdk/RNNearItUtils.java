@@ -35,12 +35,11 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import it.near.sdk.reactions.contentplugin.model.ContentLink;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.trackings.TrackingInfo;
-
-import static com.facebook.react.bridge.ReadableType.Array;
 
 public class RNNearItUtils {
 
@@ -62,7 +61,7 @@ public class RNNearItUtils {
 
   static WritableMap bundleCoupon(final Coupon coupon) {
     final WritableMap couponMap = new WritableNativeMap();
-    couponMap.putString("name", coupon.name);
+    couponMap.putString("title", coupon.getTitle());
     couponMap.putString("description", coupon.description);
     couponMap.putString("value", coupon.value);
     couponMap.putString("expiresAt", coupon.expires_at);
@@ -85,6 +84,13 @@ public class RNNearItUtils {
     image.putString("squareSize", imageSet.getSmallSize());
 
     return image;
+  }
+
+  static WritableMap bundleContentLink(ContentLink cta) {
+    final WritableMap contentLink = new WritableNativeMap();
+    contentLink.putString("label", cta.label);
+    contentLink.putString("url", cta.url);
+    return contentLink;
   }
 
   static String feedbackToBase64(final Feedback feedback) throws Exception {
@@ -336,7 +342,7 @@ public class RNNearItUtils {
     Iterator iterator = map.entrySet().iterator();
 
     while (iterator.hasNext()) {
-      Map.Entry pair = (Map.Entry)iterator.next();
+      Map.Entry pair = (Map.Entry) iterator.next();
       Object value = pair.getValue();
 
       if (value == null) {
