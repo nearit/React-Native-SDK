@@ -81,10 +81,24 @@ RCT_EXPORT_MODULE()
                                                      name:RN_LOCAL_EVENTS_TOPIC
                                                    object:nil];
         
+        // Load API Key from NearIt.plist
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"NearIt" ofType:@"plist"];
+        NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:path];
+        NSString* NITApiKey = [dict objectForKey:@"API Key"];
+        // Pass API Key to NITManager
+        if (NITApiKey) {
+            [NITManager setupWithApiKey:NITApiKey];
+        } else {
+            NSLog(@"Could not find NearIt.plist or 'API Key' field inside of it. NearIT won't work!");
+        }
+        
+        // Delegates
         [NITManager defaultManager].delegate = self;
 
         locationManager = [[CLLocationManager alloc]init];
         locationManager.delegate = self;
+
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
     }
     
     return self;
@@ -192,6 +206,7 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
 }
 
 // MARK: UNUserNotificationCenterDelegate
+
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
     completionHandler(UNNotificationPresentationOptionAlert);
 }
@@ -624,7 +639,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
             };
 }
 
--(NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull) cta {
+- (NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull) cta {
     return @{
              @"label": cta.label,
              @"url": cta.url
@@ -673,8 +688,11 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 
 // MARK: Push Notifications handling
 
-+ (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo
-{
++ (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *) deviceToken {
+    [[NITManager defaultManager] setDeviceTokenWithData:deviceToken];
+}
+
++ (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
     [data setObject:@YES forKey:@"fromUserAction"];
 
@@ -683,8 +701,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                                                       userInfo:@{@"data": data}];
 }
 
-+ (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification
-{
++ (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.userInfo];
     [data setObject:@YES forKey:@"fromUserAction"];
     
@@ -695,8 +712,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                                                              }];
 }
 
-+ (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler
-{
++ (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
     [data setObject:@YES forKey:@"fromUserAction"];
     
@@ -705,7 +721,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                                                       userInfo:@{
                                                                  @"data": data,
                                                                  @"completionHandler": completionHandler
-                                                             }];
+                                                                 }];
 }
 
 @end

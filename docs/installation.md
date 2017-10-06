@@ -58,8 +58,6 @@ android {
 apply plugin: 'com.google.gms.google-services' // Include at the end of file
 ```
 
-
-
 ### NearIT API Key
 Add a new string resource to the Android resources to specify your API key
 
@@ -112,27 +110,25 @@ end
 
 Run `pod install` to install the required dependencies
 
-### iOS App Setup
-Edit the file `ios/<your app name>/AppDelegate.m` and
 
-- add the following import (after the `React` ones)
-```obj-c
-#import <NearITSDK/NearITSDK.h>
+### NearIT API Key
+
+Create the `NearIt.plist` file at `ios/<your app name>/NearIt.plist` to specify your API Key
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>API Key</key>
+        <string>Your.API.Key</string>
+    </dict>
+</plist>
 ```
 
-- add `NearIT` initialization method as first line inside the initialization method
-
-```obj-c
-...
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    [NITManager setupWithApiKey:@"Your.API.Key"]; // Needed by NearIT plugin
-
-    ...
-}
-...
-```
 You can find your API key on [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
+
+
+**N.B:** We suggests you to ignore this file from your versioning system.
 
 <br>
 
@@ -142,7 +138,6 @@ To interact with `NearIT` SDK from your React code use the `NearItManager` class
 ```js
 import NearIT from 'react-native-nearit'
 ```
-
 
 <br>
 
