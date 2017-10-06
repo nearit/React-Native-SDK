@@ -94,10 +94,6 @@ RCT_EXPORT_MODULE()
         
         // Delegates
         [NITManager defaultManager].delegate = self;
-
-        locationManager = [[CLLocationManager alloc]init];
-        locationManager.delegate = self;
-
         [UNUserNotificationCenter currentNotificationCenter].delegate = self;
     }
     
@@ -403,27 +399,40 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     NITLogD(TAG, @"requestLocationPermission");
     
     if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
-        [locationManager requestAlwaysAuthorization];
+        // resolve null
         resolve([NSNull null]);
+        
+        // Request location permission to user
+        locationManager = [[CLLocationManager alloc] init];
+        locationManager.delegate = self;
+        [locationManager requestAlwaysAuthorization];
     } else {
+        // resolve if user hase given 'Always' permission
         resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
     }
 }
+
+// MARK: CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
     NITLogV(TAG, @"didChangeAuthorizationStatus status=%d", status);
     
-    if (status == kCLAuthorizationStatusAuthorizedAlways) {
-        [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_GRANTED];
+    if (status != kCLAuthorizationStatusNotDetermined) {
+        if (status == kCLAuthorizationStatusAuthorizedAlways) {
+            [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_GRANTED];
+            
+            NITLogI(TAG, @"NITManager start");
+            [[NITManager defaultManager] start];
+        } else {
+            [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_DENIED];
+            
+            NITLogI(TAG, @"NITManager stop");
+            [[NITManager defaultManager] stop];
+        }
         
-        NITLogI(TAG, @"NITManager start");
-        [[NITManager defaultManager] start];
-    } else {
-        [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_DENIED];
-        
-        NITLogI(TAG, @"NITManager stop");
-        [[NITManager defaultManager] stop];
+        // Remove CLLocationManagerDelegate
+        locationManager.delegate = nil;
     }
 }
 
