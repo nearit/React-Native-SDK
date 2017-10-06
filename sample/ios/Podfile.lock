@@ -1,12 +1,49 @@
 PODS:
   - NearITSDK (2.2.4)
+  - React (0.48.1):
+    - React/Core (= 0.48.1)
+  - React/BatchedBridge (0.48.1):
+    - React/Core
+    - React/cxxreact_legacy
+  - React/Core (0.48.1):
+    - Yoga (= 0.48.1.React)
+  - React/cxxreact_legacy (0.48.1):
+    - React/jschelpers_legacy
+  - React/DevSupport (0.48.1):
+    - React/Core
+    - React/RCTWebSocket
+  - React/jschelpers_legacy (0.48.1)
+  - React/RCTBlob (0.48.1):
+    - React/Core
+  - React/RCTWebSocket (0.48.1):
+    - React/Core
+    - React/RCTBlob
+  - RNNearIt (2.2.7-beta.2):
+    - NearITSDK (= 2.2.4)
+    - React
+  - Yoga (0.48.1.React)
 
 DEPENDENCIES:
-  - NearITSDK (= 2.2.4)
+  - React/BatchedBridge (from `../node_modules/react-native`)
+  - React/Core (from `../node_modules/react-native`)
+  - React/DevSupport (from `../node_modules/react-native`)
+  - RNNearIt (from `../node_modules/react-native-nearit`)
+  - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+
+EXTERNAL SOURCES:
+  React:
+    :path: ../node_modules/react-native
+  RNNearIt:
+    :path: ../node_modules/react-native-nearit
+  Yoga:
+    :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
   NearITSDK: a5eb344a2673db0c59e06a512f84cb2ea1f666c2
+  React: c409fc3f984bbc91da9328ace90b0851759c8111
+  RNNearIt: 85cb096f65033cd8648b2ca81f5ca9ab900ae072
+  Yoga: 1a0ed95233aeb0ed308fc70fabeb4348234a61d5
 
-PODFILE CHECKSUM: d1f9cd3f6f41ef8812875ded65b4d0bcf68b6ef0
+PODFILE CHECKSUM: e0a64d713adf04105d0bcece2008407031091a0e
 
 COCOAPODS: 1.3.1
