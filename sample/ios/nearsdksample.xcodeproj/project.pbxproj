@@ -20,6 +20,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		30B59B0D1F61358100C85C72 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		30B971EF1F876FF800824602 /* NearIt.plist in Resources */ = {isa = PBXBuildFile; fileRef = 30B971EE1F876FF800824602 /* NearIt.plist */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		63AB4CEADC3EBE12F8C423C4 /* libPods-nearsdksample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 54272F20D818B676F88F9838 /* libPods-nearsdksample.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
@@ -257,6 +258,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = nearsdksample/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		30B7AFF81F6039190091BCB6 /* libNearITSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNearITSDK.a; path = "../../../../../Library/Developer/Xcode/DerivedData/nearsdksample-ffertpfsantdsmanjqfjdnbfzxli/Build/Products/Debug-iphonesimulator/NearITSDK/libNearITSDK.a"; sourceTree = "<group>"; };
+		30B971EE1F876FF800824602 /* NearIt.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = NearIt.plist; sourceTree = "<group>"; };
 		30E24AD01F7511F200CE09EB /* nearsdksample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = nearsdksample.entitlements; path = nearsdksample/nearsdksample.entitlements; sourceTree = "<group>"; };
 		30E5CAE51F613EA800E0215D /* libRNNearIt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRNNearIt.a; path = "../node_modules/react-native-nearit/ios/build/Debug-iphoneos/libRNNearIt.a"; sourceTree = "<group>"; };
 		520C6B7572AB22E08122E9D1 /* Pods-nearsdksample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nearsdksample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-nearsdksample/Pods-nearsdksample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -364,6 +366,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				30B971EE1F876FF800824602 /* NearIt.plist */,
 			);
 			name = nearsdksample;
 			sourceTree = "<group>";
@@ -819,6 +822,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				30B971EF1F876FF800824602 /* NearIt.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);

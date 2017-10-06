@@ -64,4 +64,5 @@ fastlane/screenshots
 #
 # Project specific
 #
+NearIt.plist
 secrets.xml
