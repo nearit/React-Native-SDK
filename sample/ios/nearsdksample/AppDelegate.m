@@ -8,20 +8,16 @@
  */
 
 #import "AppDelegate.h"
-#import <UserNotifications/UserNotifications.h>
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
-#import <NearITSDK/NearITSDK.h>
 #import "RNNearIt.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [NITManager setupWithApiKey:@"Your.API.Key"]; // Needed by NearIT plugin
-  
   NSURL *jsCodeLocation;
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
@@ -38,29 +34,20 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   
-  [UNUserNotificationCenter currentNotificationCenter].delegate = self; // Needed by NearIT plugin
-  
   return YES;
 }
 
 // Needed by NearIT plugin
-- (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [[NITManager defaultManager] setDeviceTokenWithData:deviceToken];
+- (void)application:(UIApplication*) application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [RNNearIt didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
-- (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
+- (void)application:(UIApplication*) application didReceiveLocalNotification:(UILocalNotification *)notification {
   [RNNearIt didReceiveLocalNotification:notification];
 }
 
-- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
+- (void)application:(UIApplication*) application didReceiveRemoteNotification:(NSDictionary *)userInfo {
   [RNNearIt didReceiveRemoteNotification:userInfo];
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler
-{
-  [RNNearIt didReceiveNotificationResponse:response withCompletionHandler: completionHandler];
 }
 
 @end

@@ -81,10 +81,20 @@ RCT_EXPORT_MODULE()
                                                      name:RN_LOCAL_EVENTS_TOPIC
                                                    object:nil];
         
+        // Load API Key from NearIt.plist
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"NearIt" ofType:@"plist"];
+        NSDictionary *dict = [[NSDictionary alloc] initWithContentsOfFile:path];
+        NSString* NITApiKey = [dict objectForKey:@"API Key"];
+        // Pass API Key to NITManager
+        if (NITApiKey) {
+            [NITManager setupWithApiKey:NITApiKey];
+        } else {
+            NSLog(@"Could not find NearIt.plist or 'API Key' field inside of it. NearIT won't work!");
+        }
+        
+        // Delegates
         [NITManager defaultManager].delegate = self;
-
-        locationManager = [[CLLocationManager alloc]init];
-        locationManager.delegate = self;
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
     }
     
     return self;
@@ -158,15 +168,18 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
 }
 
 
-- (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nonnull) trackingInfo fromUserAction:(BOOL) fromUserAction
+- (void) sendEventWithContent:(NSDictionary* _Nonnull) content NITEventType:(NSString* _Nonnull) eventType trackingInfo:(NITTrackingInfo* _Nullable) trackingInfo fromUserAction:(BOOL) fromUserAction
 {
-    NSData* trackingInfoData = [NSKeyedArchiver archivedDataWithRootObject:trackingInfo];
-    NSString* trackingInfoB64 = [trackingInfoData base64EncodedStringWithOptions:0];
+    NSString* trackingInfoB64;
+    if (trackingInfo) {
+        NSData* trackingInfoData = [NSKeyedArchiver archivedDataWithRootObject:trackingInfo];
+        trackingInfoB64 = [trackingInfoData base64EncodedStringWithOptions:0];
+    }
     
     NSDictionary* event = @{
                             EVENT_TYPE: eventType,
                             EVENT_CONTENT: content,
-                            EVENT_TRACKING_INFO: trackingInfoB64,
+                            EVENT_TRACKING_INFO: (trackingInfoB64 ? trackingInfoB64 : [NSNull null]),
                             EVENT_FROM_USER_ACTION: [NSNumber numberWithBool:fromUserAction]
                         };
     
@@ -188,11 +201,19 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
                        body:event];
 }
 
+// MARK: UNUserNotificationCenterDelegate
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    completionHandler(UNNotificationPresentationOptionAlert);
+}
+
 // MARK: NITManagerDelegate
 
 - (void)manager:(NITManager *)manager eventWithContent:(id)content trackingInfo:(NITTrackingInfo *)trackingInfo
 {
-    [self handleNearContent:content trackingInfo:trackingInfo fromUserAction:NO];
+    [self handleNearContent:content
+               trackingInfo:trackingInfo
+             fromUserAction:NO];
 }
 
 - (void)manager:(NITManager *)manager eventFailureWithError:(NSError *)error
@@ -200,6 +221,11 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
     // handle errors (only for information purpose)
 }
 
+- (void)manager:(NITManager* _Nonnull)manager alertWantsToShowContent:(id _Nonnull)content {
+    [self handleNearContent:content
+               trackingInfo:nil
+             fromUserAction:YES];
+}
 
 // MARK: NearIT Config
 
@@ -373,27 +399,40 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     NITLogD(TAG, @"requestLocationPermission");
     
     if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
-        [locationManager requestAlwaysAuthorization];
+        // resolve null
         resolve([NSNull null]);
+        
+        // Request location permission to user
+        locationManager = [[CLLocationManager alloc] init];
+        locationManager.delegate = self;
+        [locationManager requestAlwaysAuthorization];
     } else {
+        // resolve if user hase given 'Always' permission
         resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
     }
 }
+
+// MARK: CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
     NITLogV(TAG, @"didChangeAuthorizationStatus status=%d", status);
     
-    if (status == kCLAuthorizationStatusAuthorizedAlways) {
-        [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_GRANTED];
+    if (status != kCLAuthorizationStatusNotDetermined) {
+        if (status == kCLAuthorizationStatusAuthorizedAlways) {
+            [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_GRANTED];
+            
+            NITLogI(TAG, @"NITManager start");
+            [[NITManager defaultManager] start];
+        } else {
+            [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_DENIED];
+            
+            NITLogI(TAG, @"NITManager stop");
+            [[NITManager defaultManager] stop];
+        }
         
-        NITLogI(TAG, @"NITManager start");
-        [[NITManager defaultManager] start];
-    } else {
-        [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_DENIED];
-        
-        NITLogI(TAG, @"NITManager stop");
-        [[NITManager defaultManager] stop];
+        // Remove CLLocationManagerDelegate
+        locationManager.delegate = nil;
     }
 }
 
@@ -420,7 +459,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 
 // MARK: NearIT Recipes handling
 
-- (BOOL)handleNearContent: (id _Nonnull) content trackingInfo: (NITTrackingInfo* _Nonnull) trackingInfo fromUserAction: (BOOL) fromUserAction
+- (BOOL)handleNearContent: (id _Nonnull) content trackingInfo: (NITTrackingInfo* _Nullable) trackingInfo fromUserAction: (BOOL) fromUserAction
 {
     if ([content isKindOfClass:[NITSimpleNotification class]]) {
         // Simple notification
@@ -609,7 +648,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
             };
 }
 
--(NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull) cta {
+- (NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull) cta {
     return @{
              @"label": cta.label,
              @"url": cta.url
@@ -636,15 +675,33 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                        trackingInfo:trackingInfo
                      fromUserAction:@(RCTSharedApplication().applicationState == UIApplicationStateInactive)];
         }
-        
     }];
-    
 }
 
-// MARK: Push Notification handling
+// MARK: Foreground Notifications handling
 
-+ (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo
-{
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler {
+
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
+    [data setObject:@YES forKey:@"fromUserAction"];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
+                                                        object:self
+                                                      userInfo:@{
+                                                                 @"data": data,
+                                                                 @"completionHandler": completionHandler
+                                                             }];
+ 
+     completionHandler();
+}
+
+// MARK: Push Notifications handling
+
++ (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *) deviceToken {
+    [[NITManager defaultManager] setDeviceTokenWithData:deviceToken];
+}
+
++ (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
     [data setObject:@YES forKey:@"fromUserAction"];
 
@@ -653,8 +710,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                                                       userInfo:@{@"data": data}];
 }
 
-+ (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification
-{
++ (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.userInfo];
     [data setObject:@YES forKey:@"fromUserAction"];
     
@@ -665,8 +721,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                                                              }];
 }
 
-+ (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler
-{
++ (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
     [data setObject:@YES forKey:@"fromUserAction"];
     
@@ -675,7 +730,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                                                       userInfo:@{
                                                                  @"data": data,
                                                                  @"completionHandler": completionHandler
-                                                             }];
+                                                                 }];
 }
 
 @end

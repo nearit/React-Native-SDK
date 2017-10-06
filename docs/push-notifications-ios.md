@@ -1,65 +1,37 @@
 # Push Notifications
 
 To enable push notification you will need to enable **Push Capabilities** in your app.<br>
+
 **N.B:** Remember to open `ios/<your-app-name>.xcworkspace` file when opening XCode.
 
 <br>
 
 ## iOS App Setup
 
-### Edit AppDelegate.h
-Edit your project `ios/<app-name>/AppDelegate.h` as follow
-```objc
-#import <UIKit/UIKit.h>
-#import <UserNotifications/UserNotifications.h> // Add import - Needed by NearIT plugin
-
-// Add 'UNUserNotificationCenterDelegate' - Needed by NearIT plugin
-@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate> 
-
-@property (nonatomic, strong) UIWindow *window;
-
-@end
-```
-
 ### Edit AppDelegate.m
 Edit your project `ios/<app-name>/AppDelegate.m` as follow
-```objc
-...
-// Import 'NearITSDK' and 'RNNearIt` headers - Needed by NearIT plugin
-#import <NearITSDK/NearITSDK.h>
+
+- add the following import (after the `React` ones)
+```obj-c
+// Import 'RNNearIt` headers - Needed by NearIT plugin
 #import "RNNearIt.h"
+```
 
+- add `RNNearIT` notification handling methods
+
+```obj-c
 ...
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  // Set your NearIT API Key here - Needed by NearIT plugin
-  [NITManager setupWithApiKey:@"Your.API.Key"];
- 
-  // ... React Native init code ...
-
-  // Add 'UNUserNotificationCenter' delegate - Needed by NearIT plugin
-  [UNUserNotificationCenter currentNotificationCenter].delegate = self; 
+// Needed by NearIT plugin
+- (void)application:(UIApplication*) application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [RNNearIt didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }
 
-// Implement `UNUserNotificationCenterDelegate` protocol - Needed by NearIT plugin
-- (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [[NITManager defaultManager] setDeviceTokenWithData:deviceToken];
-}
-
-- (void) application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
-{
+- (void)application:(UIApplication*) application didReceiveLocalNotification:(UILocalNotification *)notification {
   [RNNearIt didReceiveLocalNotification:notification];
 }
 
-- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
+- (void)application:(UIApplication*) application didReceiveRemoteNotification:(NSDictionary *)userInfo {
   [RNNearIt didReceiveRemoteNotification:userInfo];
-}
-
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler
-{
-  [RNNearIt didReceiveNotificationResponse:response withCompletionHandler: completionHandler];
 }
 ```
 
