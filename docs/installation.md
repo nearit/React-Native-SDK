@@ -92,23 +92,45 @@ $ pod init
 Edit the created `Podfile` as follow:
 
 - set `platform` to `9.0`
-- add `NearITSDK` as dependency to your main project target
+- add `Yoga` and `React` dependencies
+- add `RNNearIt` as dependency
 
 The resulting `Podfile` should look like the following
 ```ruby
 # Uncomment the next line to define a global platform for your project
 platform :ios, '9.0'
-...
-target 'nearsdksample' do
-  ...
-  # Pods for nearsdksample
-  pod 'NearITSDK', '2.2.4'
-  ...
+
+target '<your-project-main-target>' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+
+  # Pods for <your-project-main-target>
+  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+    'BatchedBridge', # Required For React Native 0.45.0+
+    'Core',
+    'DevSupport'
+    # Add any other subspecs you want to use in your project
+  ]
+  
+  # React Native NearIt plugin
+  pod 'RNNearIt', :path => '../node_modules/react-native-nearit'
+
 end
-...
+
+# Required to avoid build errors
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
+end
 ```
 
 Run `pod install` to install the required dependencies
+
+**N.B:** To update pod after updating `react-native-nearit` npm package, run `pod install --repo-update` inside your project `ios` folder
 
 
 ### NearIT API Key
