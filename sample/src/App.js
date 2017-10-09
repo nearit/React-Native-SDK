@@ -113,14 +113,22 @@ class App extends React.Component {
   }
 
   async _onPressRequestNotificationPermissions () {
-    const permissionGranted = await NearIT.requestNotificationPermission()
+    let permissionGranted = await NearIT.checkNotificationPermission()
     console.log({permissionGranted})
+    if (permissionGranted == null) {
+      permissionGranted = await NearIT.requestNotificationPermission()
+      console.log({permissionGranted})
+    }
     this._showBanner(permissionGranted ? 'Notification Permission GRANTED' : 'Notification Permission NOT GRANTED')
   }
   
   async _onPressRequestLocationPermissions () {
-    const locationGranted = await NearIT.requestLocationPermission()
+    let locationGranted = await NearIT.checkLocationPermission()
     console.log({locationGranted})
+    if (locationGranted == null) {
+      locationGranted = await NearIT.requestLocationPermission()
+      console.log({locationGranted})
+    }
     this._showBanner(locationGranted ? 'Location Permission GRANTED' : 'Location Permission NOT GRANTED')
   }
 
