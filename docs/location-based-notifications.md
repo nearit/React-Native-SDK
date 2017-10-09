@@ -8,9 +8,24 @@ When you want to start the radar for **geofences and beacons** call this method:
 NearIT.startRadar()
 ```
 
-## Permissions
+## Location Permission
+To use `Location based Notifications` you first need to check `Location` permission
 
-To use `Location based Notifications` you first need to request `Location` permission by calling this method
+### Check
+To check `Location` permission call this method from ReactJS
+```js
+NearIT.checkNotificationPermission()
+```
+
+This call will return a value of:
+
+- `null`, in case the permission request has not been done yet
+- `TRUE`, in case the permission has been granted
+- `FALSE`, in case the permission has been denied
+
+### Request
+
+To request `Location` permission call this method
 ```js
 NearIT.requestLocationPermission()
 ```

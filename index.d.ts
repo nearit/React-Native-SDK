@@ -85,8 +85,12 @@ declare module 'react-native-nearit' {
 
       static setUserData(userDataObject: Map<string, any>): Promise<void>
 
+      static checkNotificationPermission(): Promise<boolean | null>
+
       static requestNotificationPermission(): Promise<boolean>
 
+      static checkLocationPermission(): Promise<boolean | null>
+      
       static requestLocationPermission(): Promise<boolean>
 
       static getCoupons(): Promise<NearItCoupon[]>

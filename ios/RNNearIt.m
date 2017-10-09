@@ -356,6 +356,32 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
 
 // MARK: NearIT Permissions request
 
+RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
+                  rejection:(RCTPromiseRejectBlock)reject)
+{
+    NITLogD(TAG, @"checkNotificationPermission");
+    
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+        UIUserNotificationSettings* notificationSettings = [RCTSharedApplication() currentUserNotificationSettings];
+        resolve(@(notificationSettings != UIUserNotificationTypeNone));
+    } else {
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        [[UNUserNotificationCenter currentNotificationCenter]getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+            
+            switch (settings.authorizationStatus) {
+                case UNAuthorizationStatusNotDetermined:
+                        resolve([NSNull null]);
+                    break;
+                
+                default:
+                        resolve(@(settings.authorizationStatus == UNAuthorizationStatusAuthorized));
+                    break;
+            }
+        }];
+#endif
+    }
+}
+
 RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
@@ -391,6 +417,22 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
     NITLogV(TAG, @"registerForRemoteNotifications");
     [RCTSharedApplication() registerForRemoteNotifications];
 #endif // TARGET_IPHONE_SIMULATOR
+}
+
+RCT_EXPORT_METHOD(checkLocationPermission:(RCTPromiseResolveBlock)resolve
+                  rejection:(RCTPromiseRejectBlock)reject)
+{
+    NITLogD(TAG, @"checkLocationPermission");
+    
+    switch (CLLocationManager.authorizationStatus) {
+        case kCLAuthorizationStatusNotDetermined:
+                resolve([NSNull null]);
+            break;
+
+        default:
+                resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
+            break;
+    }
 }
 
 RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve

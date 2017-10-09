@@ -124,8 +124,16 @@ export class NearItManager {
     return NearItSdk.setUserData(userDataObject)
   }
 
+  static checkNotificationPermission (): Promise<boolean | null> {
+    return NearItSdk.checkNotificationPermission()
+  }
+
   static requestNotificationPermission (): Promise<boolean> {
     return NearItSdk.requestNotificationPermission()
+  }
+
+  static checkLocationPermission (): Promise<boolean | null> {
+    return NearItSdk.checkLocationPermission()
   }
 
   static requestLocationPermission (): Promise<boolean> {
