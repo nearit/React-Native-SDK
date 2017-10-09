@@ -35,13 +35,18 @@ cat <<< 'EOF' > ./android/app/src/main/res/values/secrets.xml
 EOF
 ```
 
-- for `iOS`, edit `ios/AppDelegate.m`
-```objc
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  [NITManager setupWithApiKey:@"Your.API.Key"]; // Needed by NearIT plugin
-  ...
-}
+- for `iOS`, generate a `NearIt.plist` file
+```bash
+cat <<< 'EOF' > ./ios/nearsdksample/NearIt.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API Key</key>
+	<string>Your.API.Key</string>
+</dict>
+</plist>
+EOF
 ```
 
 Run on your target platform

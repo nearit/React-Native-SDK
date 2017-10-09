@@ -103,6 +103,13 @@ class App extends React.Component {
     } catch (err) {
       console.log('Could NOT get UserProfileID...', err)
     }
+
+    try {
+      await NearIT.setUserData({ gender: 'M' })
+      console.log('Successfully set UserData!')
+    } catch (err) {
+      console.log('Could NOT set UserData...', err)
+    }
   }
 
   async _onPressRequestNotificationPermissions () {
