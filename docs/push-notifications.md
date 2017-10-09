@@ -9,8 +9,22 @@ To enable push notification, you first need to follow the integration instructio
 
 <br>
 
-## Permission
-Then request `Notification` permission by calling this method from ReactJS
+## Notification Permission
+
+### Check
+To check `Notification` permission call this method from ReactJS
+```js
+NearIT.checkNotificationPermission()
+```
+
+This call will return a value of:
+
+- `null`, in case the permission request has not been done yet
+- `TRUE`, in case the permission has been granted
+- `FALSE`, in case the permission has been denied
+
+### Request
+To request `Notification` permission call this method from ReactJS
 ```js
 NearIT.requestNotificationPermission()
 ```

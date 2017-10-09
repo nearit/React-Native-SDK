@@ -363,7 +363,17 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   // NearIT Permissions request
 
   @ReactMethod
+  public void checkNotificationPermission(final Promise promise) {
+    promise.resolve(true);
+  }
+
+  @ReactMethod
   public void requestNotificationPermission(final Promise promise) {
+    promise.resolve(true);
+  }
+
+  @ReactMethod
+  public void checkLocationPermission(final Promise promise) {
     promise.resolve(true);
   }
 
