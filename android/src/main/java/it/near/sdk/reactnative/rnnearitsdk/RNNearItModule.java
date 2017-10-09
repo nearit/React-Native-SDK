@@ -343,9 +343,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   public void setUserData(final ReadableMap userData, final Promise promise) {
     final HashMap<String, String> userDataMap = new HashMap<>();
 
-    while (userData.keySetIterator().hasNextKey()) {
-      final String k = userData.keySetIterator().nextKey();
-      userDataMap.put(k, String.valueOf(userData.getDynamic(k)));
+    for (HashMap.Entry<String, Object> ud : userData.toHashMap().entrySet()) {
+      userDataMap.put(ud.getKey(), String.valueOf(ud.getValue()));
     }
 
     NearItManager.getInstance().setBatchUserData(userDataMap, new UserDataNotifier() {

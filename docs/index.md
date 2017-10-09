@@ -2,7 +2,7 @@
 > The official [NearIT](https://www.nearit.com) SDK plugin for [React Native](https://facebook.github.io/react-native/)
 
 [![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](https://github.com/panz3r/react-native-nearit-sdk/blob/master/LICENSE.md)
-[![GitHub release](https://img.shields.io/github/release/nearit/React-Native-SDK.svg)](https://github.com/nearit/react-native-nearit-sdk/releases)
+[![GitHub release](https://img.shields.io/github/release/nearit/React-Native-SDK/all.svg)](https://github.com/nearit/react-native-nearit-sdk/releases)
 [![npm](https://img.shields.io/npm/v/react-native-nearit.svg)](https://www.npmjs.com/package/react-native-nearit)
 
 [![React Native](https://img.shields.io/badge/RN-0.45.0+-green.svg)](https://facebook.github.io/react-native/)
