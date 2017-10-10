@@ -260,7 +260,7 @@ RCT_EXPORT_METHOD(stopRadar: (RCTPromiseResolveBlock) resolve
 // MARK: NearIT Feedback
 
 RCT_EXPORT_METHOD(sendFeedback: (NSString* _Nonnull)feedbackB64
-                        rating: (NSInteger* _Nonnull)rating
+                        rating: (NSInteger)rating
                        comment: (NSString* _Nullable)comment
                     resolution: (RCTPromiseResolveBlock) resolve
                      rejection: (RCTPromiseRejectBlock) reject)
@@ -276,7 +276,7 @@ RCT_EXPORT_METHOD(sendFeedback: (NSString* _Nonnull)feedbackB64
         NSString* feedbackComment = comment ? comment : @"";
         
         NITFeedbackEvent *feedbackEvent = [[NITFeedbackEvent alloc] initWithFeedback:feedback
-                                                                              rating:*rating
+                                                                              rating:rating
                                                                              comment:feedbackComment];
         
         [[NITManager defaultManager] sendEventWithEvent:feedbackEvent
