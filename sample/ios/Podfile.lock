@@ -18,7 +18,7 @@ PODS:
   - React/RCTWebSocket (0.48.1):
     - React/Core
     - React/RCTBlob
-  - RNNearIt (2.2.7-beta.5):
+  - RNNearIt (2.2.7-beta.6):
     - NearITSDK (= 2.2.4)
     - React
   - Yoga (0.48.1.React)
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   NearITSDK: a5eb344a2673db0c59e06a512f84cb2ea1f666c2
   React: c409fc3f984bbc91da9328ace90b0851759c8111
-  RNNearIt: bc2566b169203c77258a9f7342036e88d7bbc202
+  RNNearIt: a190fe7aa6c6044257f7c9c107b1433a0a54a54f
   Yoga: 1a0ed95233aeb0ed308fc70fabeb4348234a61d5
 
 PODFILE CHECKSUM: e0a64d713adf04105d0bcece2008407031091a0e
