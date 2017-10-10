@@ -12,7 +12,7 @@
     "react": "16.0.0-alpha.12",
     "react-native": "0.48.1",
     "react-native-iphone-x-helper": "^1.0.1",
-    "react-native-nearit": "^2.2.7-beta.4"
+    "react-native-nearit": "^2.2.7-beta.6"
   },
   "devDependencies": {
     "babel-preset-react-native-stage-0": "^1.0.1",
