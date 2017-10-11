@@ -356,6 +356,10 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
 
 // MARK: NearIT Permissions request
 
+-(BOOL)hasLocationPermission {
+    return CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
+}
+
 RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
@@ -363,7 +367,8 @@ RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationSettings* notificationSettings = [RCTSharedApplication() currentUserNotificationSettings];
-        resolve(@(notificationSettings != UIUserNotificationTypeNone));
+        BOOL notificationAuthorized = notificationSettings != UIUserNotificationTypeNone;
+        resolve(@(notificationAuthorized));
     } else {
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
         [[UNUserNotificationCenter currentNotificationCenter]getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
@@ -373,9 +378,11 @@ RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
                         resolve([NSNull null]);
                     break;
                 
-                default:
-                        resolve(@(settings.authorizationStatus == UNAuthorizationStatusAuthorized));
+                default: {
+                        BOOL notificationPermission = settings.authorizationStatus == UNAuthorizationStatusAuthorized;
+                        resolve(@(notificationPermission));
                     break;
+                }
             }
         }];
 #endif
@@ -414,6 +421,7 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
     }
 
 #if !TARGET_IPHONE_SIMULATOR
+    // Register Push notifications token only on real devices
     NITLogV(TAG, @"registerForRemoteNotifications");
     [RCTSharedApplication() registerForRemoteNotifications];
 #endif // TARGET_IPHONE_SIMULATOR
@@ -429,9 +437,10 @@ RCT_EXPORT_METHOD(checkLocationPermission:(RCTPromiseResolveBlock)resolve
                 resolve([NSNull null]);
             break;
 
-        default:
-                resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
+        default: {
+                resolve(@([self hasLocationPermission]));
             break;
+        }
     }
 }
 
@@ -450,7 +459,8 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
         [locationManager requestAlwaysAuthorization];
     } else {
         // resolve if user hase given 'Always' permission
-        resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
+        BOOL locationPermission = [self hasLocationPermission];
+        resolve(@(locationPermission));
     }
 }
 
