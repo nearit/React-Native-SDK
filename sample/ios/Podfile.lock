@@ -20,7 +20,7 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - RNNearIt (2.2.8-beta.1):
+  - RNNearIt (2.2.8-beta.2):
     - NearITSDK (= 2.2.5)
     - React
   - yoga (0.49.3.React)
@@ -43,7 +43,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   NearITSDK: 4f6eefd233f8af59682ee9ce2214b1ff32c3da92
   React: 5751f5630c58f7ef31a00cf03044878295bceff0
-  RNNearIt: d3773d67a7e1df7c79e3d314c517c9b9c8cff2df
+  RNNearIt: 6dbbd17179d43c7726bb5c706273c790b18cde65
   yoga: 6e56575501ecea04196f9c9f08b90cf97cd5da24
 
 PODFILE CHECKSUM: c7fa801c9f49a93403e6c7e9c8b9eeeb817ebc52
