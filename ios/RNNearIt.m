@@ -323,7 +323,13 @@ RCT_EXPORT_METHOD(sendTracking: (NSString* _Nonnull) trackingInfoB64
 RCT_EXPORT_METHOD(getUserProfileId: (RCTPromiseResolveBlock) resolve
                          rejection: (RCTPromiseRejectBlock) reject)
 {
-    resolve([[NITManager defaultManager] profileId]);
+    [[NITManager defaultManager] profileIdWithCompletionHandler:^(NSString * _Nullable profileId, NSError * _Nullable error) {
+        if (!error) {
+            resolve(profileId);
+        } else {
+            reject(E_USER_PROFILE_GET_ERROR, @"Could not get UserProfile", error);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(setUserProfileId: (NSString* _Nonnull) profileId
@@ -337,8 +343,13 @@ RCT_EXPORT_METHOD(setUserProfileId: (NSString* _Nonnull) profileId
 RCT_EXPORT_METHOD(resetUserProfile: (RCTPromiseResolveBlock) resolve
                          rejection: (RCTPromiseRejectBlock) reject)
 {
-    [[NITManager defaultManager] resetProfile];
-    resolve([NSNull null]);
+    [[NITManager defaultManager] resetProfileWithCompletionHandler:^(NSString * _Nullable profileId, NSError * _Nullable error) {
+        if (!error) {
+            resolve(profileId);
+        } else {
+            reject(E_USER_PROFILE_RESET_ERROR, @"Could not reset UserProfile", error);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
