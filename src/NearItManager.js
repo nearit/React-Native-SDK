@@ -116,7 +116,7 @@ export class NearItManager {
     return NearItSdk.setUserProfileId(profileId)
   }
 
-  static resetUserProfile (): Promise<null> {
+  static resetUserProfile (): Promise<string> {
     return NearItSdk.resetUserProfile()
   }
 
