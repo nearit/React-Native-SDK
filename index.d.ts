@@ -81,7 +81,7 @@ declare module 'react-native-nearit' {
 
       static setUserProfileId(profileId: string): Promise<string>
 
-      static resetUserProfile(): Promise<void>
+      static resetUserProfile(): Promise<string>
 
       static setUserData(userDataObject: Map<string, any>): Promise<void>
 
