@@ -22,12 +22,10 @@ NearIT.setUserData({
 **N.B:** If you try to set user data before creating a profile an error will be raised.
 
 ## Reset Profile
-If you want to reset your profile use this method:
+If you want to reset your user profile use this method:
 ```js
-NearIT.resetUserProfile()
+const newProfileId = await NearIT.resetUserProfile()
 ```
-Further calls to *getProfileId()* will return null.
-A creation of a new profile after the reset will create a profile with no user data.
 
 ## Link NearIT profiles with an external User Database
 
