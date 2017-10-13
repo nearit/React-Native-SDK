@@ -323,7 +323,13 @@ RCT_EXPORT_METHOD(sendTracking: (NSString* _Nonnull) trackingInfoB64
 RCT_EXPORT_METHOD(getUserProfileId: (RCTPromiseResolveBlock) resolve
                          rejection: (RCTPromiseRejectBlock) reject)
 {
-    resolve([[NITManager defaultManager] profileId]);
+    [[NITManager defaultManager] profileIdWithCompletionHandler:^(NSString * _Nullable profileId, NSError * _Nullable error) {
+        if (!error) {
+            resolve(profileId);
+        } else {
+            reject(E_USER_PROFILE_GET_ERROR, @"Could not get UserProfile", error);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(setUserProfileId: (NSString* _Nonnull) profileId
@@ -337,8 +343,13 @@ RCT_EXPORT_METHOD(setUserProfileId: (NSString* _Nonnull) profileId
 RCT_EXPORT_METHOD(resetUserProfile: (RCTPromiseResolveBlock) resolve
                          rejection: (RCTPromiseRejectBlock) reject)
 {
-    [[NITManager defaultManager] resetProfile];
-    resolve([NSNull null]);
+    [[NITManager defaultManager] resetProfileWithCompletionHandler:^(NSString * _Nullable profileId, NSError * _Nullable error) {
+        if (!error) {
+            resolve(profileId);
+        } else {
+            reject(E_USER_PROFILE_RESET_ERROR, @"Could not reset UserProfile", error);
+        }
+    }];
 }
 
 RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
@@ -356,6 +367,10 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
 
 // MARK: NearIT Permissions request
 
+-(BOOL)hasLocationPermission {
+    return CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
+}
+
 RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
@@ -363,7 +378,8 @@ RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
     
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationSettings* notificationSettings = [RCTSharedApplication() currentUserNotificationSettings];
-        resolve(@(notificationSettings != UIUserNotificationTypeNone));
+        BOOL notificationAuthorized = notificationSettings != UIUserNotificationTypeNone;
+        resolve(@(notificationAuthorized));
     } else {
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
         [[UNUserNotificationCenter currentNotificationCenter]getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
@@ -373,9 +389,11 @@ RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
                         resolve([NSNull null]);
                     break;
                 
-                default:
-                        resolve(@(settings.authorizationStatus == UNAuthorizationStatusAuthorized));
+                default: {
+                        BOOL notificationPermission = settings.authorizationStatus == UNAuthorizationStatusAuthorized;
+                        resolve(@(notificationPermission));
                     break;
+                }
             }
         }];
 #endif
@@ -414,6 +432,7 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
     }
 
 #if !TARGET_IPHONE_SIMULATOR
+    // Register Push notifications token only on real devices
     NITLogV(TAG, @"registerForRemoteNotifications");
     [RCTSharedApplication() registerForRemoteNotifications];
 #endif // TARGET_IPHONE_SIMULATOR
@@ -429,9 +448,10 @@ RCT_EXPORT_METHOD(checkLocationPermission:(RCTPromiseResolveBlock)resolve
                 resolve([NSNull null]);
             break;
 
-        default:
-                resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
+        default: {
+                resolve(@([self hasLocationPermission]));
             break;
+        }
     }
 }
 
@@ -450,7 +470,8 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
         [locationManager requestAlwaysAuthorization];
     } else {
         // resolve if user hase given 'Always' permission
-        resolve(@(CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways));
+        BOOL locationPermission = [self hasLocationPermission];
+        resolve(@(locationPermission));
     }
 }
 
