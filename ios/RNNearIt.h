@@ -12,7 +12,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <CoreLocation/CoreLocation.h>
-#import <NearITSDK/NearITSDK.h>
+#import <NearIT/NearIT.h>
 
 #import "RNNearItBackgroundQueue.h"
 
