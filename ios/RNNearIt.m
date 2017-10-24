@@ -430,12 +430,6 @@ RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
         }];
 #endif
     }
-
-#if !TARGET_IPHONE_SIMULATOR
-    // Register Push notifications token only on real devices
-    NITLogV(TAG, @"registerForRemoteNotifications");
-    [RCTSharedApplication() registerForRemoteNotifications];
-#endif // TARGET_IPHONE_SIMULATOR
 }
 
 RCT_EXPORT_METHOD(checkLocationPermission:(RCTPromiseResolveBlock)resolve
@@ -759,6 +753,14 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 }
 
 // MARK: Push Notifications handling
+
++ (void)registerForRemoteNotifications {
+#if !TARGET_IPHONE_SIMULATOR
+    // Register Push notifications token only on real devices
+    NITLogV(TAG, @"registerForRemoteNotifications");
+    [RCTSharedApplication() registerForRemoteNotifications];
+#endif // TARGET_IPHONE_SIMULATOR
+}
 
 + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *) deviceToken {
     [[NITManager defaultManager] setDeviceTokenWithData:deviceToken];

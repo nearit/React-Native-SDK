@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "NearITSDK", "2.2.5"
+  s.dependency "NearITSDK", "2.2.6"
 end
