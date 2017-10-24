@@ -1,8 +1,6 @@
 # Push Notifications
 
-To enable push notification you will need to enable **Push Capabilities** in your app.<br>
-
-**N.B:** Remember to open `ios/<your-app-name>.xcworkspace` file when opening XCode.
+To enable push notification you will need to enable **Push Capabilities** in your app.
 
 <br>
 

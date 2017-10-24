@@ -77,61 +77,8 @@ If you don't have a resources file, create a new `secrets.xml` file under your p
 <br>
 
 ## iOS
-To setup NearIT SDK for iOS, you'll need `Cocoapods`.
 
-### Cocoapod setup
-Follow the instructions to install Cocoapods [here](https://guides.cocoapods.org/using/getting-started.html#getting-started), then initialize the `Podfile` inside your project `ios` folder.
-```bash
-$ cd ios
-$ pod init
-```
-
-**NOTE:** The Podfile needs to be initialised in the `ios` directory of your project. Make sure to update cocoapods libs first by running `pod update`
-
-### Dependency setup
-Edit the created `Podfile` as follow:
-
-- set `platform` to `9.0`
-- add `Yoga` and `React` dependencies
-- add `RNNearIt` as dependency
-
-The resulting `Podfile` should look like the following
-```ruby
-# Uncomment the next line to define a global platform for your project
-platform :ios, '9.0'
-
-target '<your-project-main-target>' do
-  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-  # use_frameworks!
-
-  # Pods for <your-project-main-target>
-  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga'
-  pod 'React', :path => '../node_modules/react-native', :subspecs => [
-    'BatchedBridge', # Required For React Native 0.45.0+
-    'Core',
-    'DevSupport'
-    # Add any other subspecs you want to use in your project
-  ]
-  
-  # React Native NearIt plugin
-  pod 'RNNearIt', :path => '../node_modules/react-native-nearit'
-
-end
-
-# Required to avoid build errors
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    if target.name == "React"
-      target.remove_from_project
-    end
-  end
-end
-```
-
-Run `pod install` to install the required dependencies
-
-**N.B:** To update pod after updating `react-native-nearit` npm package, run `pod install --repo-update` inside your project `ios` folder
-
+To setup NearIT SDK for iOS
 
 ### NearIT API Key
 
