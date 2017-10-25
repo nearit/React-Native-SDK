@@ -22,6 +22,9 @@
   "peerDependencies": {
     "react-native": ">=0.45"
   },
+  "dependencies": {
+    "glob": "^7.1.2"
+  },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
     "flow-bin": "^0.54.1",
@@ -45,5 +48,10 @@
   },
   "standard": {
     "parser": "babel-eslint"
+  },
+  "rnpm": {
+    "commands": {
+      "postlink": "node node_modules/react-native-nearit/scripts/postlink/run.js"
+    }
   }
 }
