@@ -34,6 +34,8 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   
+  [RNNearIt registerForRemoteNotifications];
+  
   return YES;
 }
 
