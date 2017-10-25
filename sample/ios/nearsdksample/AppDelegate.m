@@ -8,11 +8,10 @@
  */
 
 #import "AppDelegate.h"
+#import "RNNearIt.h"
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-
-#import "RNNearIt.h"
 
 @implementation AppDelegate
 
@@ -33,13 +32,14 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-  
+
   [RNNearIt registerForRemoteNotifications];
-  
+
   return YES;
 }
 
-// Needed by NearIT plugin
+// Needed by NearIT plugin -- DO NOT REMOVE THIS COMMENT
+
 - (void)application:(UIApplication*) application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
   [RNNearIt didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
 }

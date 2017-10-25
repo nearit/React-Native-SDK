@@ -700,15 +700,15 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 - (NSDictionary*)bundleNITImage:(NITImage* _Nonnull) image
 {
     return @{
-             @"fullSize": (image.url ? image.url : [NSNull null]),
-             @"squareSize": (image.smallSizeURL ? image.smallSizeURL : [NSNull null])
+             @"fullSize": (image.url ? [image.url absoluteString] : [NSNull null]),
+             @"squareSize": (image.smallSizeURL ? [image.smallSizeURL absoluteString] : [NSNull null])
             };
 }
 
 - (NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull) cta {
     return @{
              @"label": cta.label,
-             @"url": cta.url
+             @"url": [cta.url absoluteString]
             };
 }
 

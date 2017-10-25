@@ -1,6 +1,6 @@
 {
   "name": "react-native-nearit",
-  "version": "2.2.8-beta.11",
+  "version": "2.2.8-beta.13",
   "author": "Mattia Panzeri <mattia.panzeri93@gmail.com>",
   "license": "MPL-2.0",
   "description": "The official NearIT SDK plugin for React Native",
@@ -21,6 +21,9 @@
   "nativePackage": true,
   "peerDependencies": {
     "react-native": ">=0.45"
+  },
+  "dependencies": {
+    "glob": "^7.1.2"
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
@@ -45,5 +48,10 @@
   },
   "standard": {
     "parser": "babel-eslint"
+  },
+  "rnpm": {
+    "commands": {
+      "postlink": "node node_modules/react-native-nearit/scripts/postlink/run.js"
+    }
   }
 }

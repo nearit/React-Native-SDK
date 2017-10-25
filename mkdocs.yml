@@ -11,3 +11,6 @@ pages:
     - 'Push Notifications - iOS' : 'push-notifications-ios.md'
     - 'In-app Content' : 'in-app-content.md'
     - 'User Profiling' : 'user-profilation.md'
+  - 'Advanced Topics' :
+    - 'Manual Installation - Android': 'manual-installation-android.md'
+    - 'Manual Installation - iOS': 'manual-installation-ios.md'
