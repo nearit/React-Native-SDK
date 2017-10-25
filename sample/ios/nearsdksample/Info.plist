@@ -21,7 +21,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>5</string>
+	<string>7</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -38,11 +38,11 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>This app uses Bluetooth communication to detect nearby beacons</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location access &apos;Always&apos; is required for Geofences and Beacons to work</string>
+	<string>Location access 'Always' is required for Geofences and Beacons to work</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location access &apos;Always&apos; is required for Geofences and Beacons to work</string>
+	<string>Location access 'Always' is required for Geofences and Beacons to work</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location access &apos;Always&apos; is required for Geofences and Beacons to work</string>
+	<string>Location access 'Always' is required for Geofences and Beacons to work</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

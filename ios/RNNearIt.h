@@ -12,7 +12,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <CoreLocation/CoreLocation.h>
-#import <NearITSDK/NearITSDK.h>
+#import <NearIT/NearIT.h>
 
 #import "RNNearItBackgroundQueue.h"
 
@@ -21,7 +21,8 @@
 @property int listeners;
 
 #if !TARGET_OS_TV
-    + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
+    + (void)registerForRemoteNotifications;
+    + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData* _Nonnull)deviceToken;
     + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo;
     + (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification;
     + (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler;

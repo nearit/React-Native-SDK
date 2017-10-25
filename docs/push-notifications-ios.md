@@ -1,8 +1,6 @@
 # Push Notifications
 
-To enable push notification you will need to enable **Push Capabilities** in your app.<br>
-
-**N.B:** Remember to open `ios/<your-app-name>.xcworkspace` file when opening XCode.
+To enable push notification you will need to enable **Push Capabilities** in your app.
 
 <br>
 
@@ -20,6 +18,17 @@ Edit your project `ios/<app-name>/AppDelegate.m` as follow
 - add `RNNearIT` notification handling methods
 
 ```obj-c
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  ...
+  // ReactNative initialization code
+  ...
+  
+  // Needed by NearIT plugin - Insert before return YES;
+  [RNNearIt registerForRemoteNotifications];
+
+  return YES;
+}
 ...
 // Needed by NearIT plugin
 - (void)application:(UIApplication*) application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {

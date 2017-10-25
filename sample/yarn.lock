@@ -2672,9 +2672,9 @@ react-native-iphone-x-helper@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.0.1.tgz#950dbdaca66f458689a7e9697c5beb9bd53f98f2"
 
-react-native-nearit@^2.2.8-beta.2:
-  version "2.2.8-beta.2"
-  resolved "https://registry.yarnpkg.com/react-native-nearit/-/react-native-nearit-2.2.8-beta.2.tgz#7b08a9ec46affb918079886efd02cd48aad24976"
+react-native-nearit@^2.2.8-beta.11:
+  version "2.2.8-beta.11"
+  resolved "https://registry.yarnpkg.com/react-native-nearit/-/react-native-nearit-2.2.8-beta.11.tgz#f5fbdca46747e671377fa50b80a789c0104101b8"
 
 react-native@0.49.3:
   version "0.49.3"
