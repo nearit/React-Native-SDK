@@ -4,25 +4,11 @@
 ## Setup
 After `git clone`-ing [nearit/React-Native-SDK](https://github.com/nearit/React-Native-SDK) repo
 
-Install and build `NearIt React Native SDK` package
-```bash
-cd React-Native-SDK
-# Install dependencies
-yarn
-# Compile and Pack plugin
-npm pack
-```
-
 Move into this `sample` directory and install required dependencies
 ```bash
-cd ./sample
+cd ./React-Native-SDK/sample
+# Install dependencies
 yarn
-```
-
-For `iOS`, run CocoaPods `pod install` inside `sample/ios`
-```bash
-cd ./ios
-pod install
 ```
 
 Set your NearIT API Key inside `android` and `ios` project
