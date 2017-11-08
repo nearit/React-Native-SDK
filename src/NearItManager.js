@@ -123,6 +123,10 @@ export class NearItManager {
   static setUserData (userDataObject: { [string]: any }): Promise<null> {
     return NearItSdk.setUserData(userDataObject)
   }
+  
+  static optOut (): Promise<null> {
+    return NearItSdk.optOut()
+  }
 
   static checkNotificationPermission (): Promise<boolean | null> {
     return NearItSdk.checkNotificationPermission()

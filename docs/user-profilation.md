@@ -39,3 +39,11 @@ NearIT.setUserProfileId(profileId);
 You can then set the relevant user-data to this profile with the aforementioned methods.
 
 **N.B:** Please keep in mind that you will be responsible of storing our profile identifier in your system.
+
+## Opt-out
+
+You can **opt-out** a profile and its devices:
+```js
+NearIT.optOut();
+```
+If the opt-out call is successful, the SDK **will cease to work**, which means the opted out device won't receive any notifications at all.
