@@ -58,6 +58,7 @@ NSString* const E_USER_PROFILE_RESET_ERROR = @"E_USER_PROFILE_RESET_ERROR";
 NSString* const E_USER_PROFILE_CREATE_ERROR = @"E_USER_PROFILE_CREATE_ERROR";
 NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
 NSString* const E_COUPONS_RETRIEVAL_ERROR = @"E_COUPONS_RETRIEVAL_ERROR";
+NSString* const E_OPT_OUT_ERROR = @"E_OPT_OUT_ERROR";
 
 // CLLocationManager
 CLLocationManager *locationManager;
@@ -356,11 +357,21 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
                    resolution: (RCTPromiseResolveBlock) resolve
                     rejection: (RCTPromiseRejectBlock) reject)
 {
-    [[NITManager defaultManager] setBatchUserDataWithDictionary:userData completionHandler:^(NSError * _Nullable error) {
-        if (!error) {
+    for(id key in userData) {
+        [[NITManager defaultManager] setDeferredUserDataWithKey:key value:[userData objectForKey:key]];
+    }
+    
+    resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(optOut: (RCTPromiseResolveBlock) resolve
+               rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] optOutWithCompletionHandler:^(BOOL success) {
+        if (success) {
             resolve([NSNull null]);
         } else {
-            reject(E_USER_PROFILE_DATA_ERROR, @"Could NOT set UserData", error);
+            reject(E_OPT_OUT_ERROR, @"Could NOT optOut user", nil);
         }
     }];
 }

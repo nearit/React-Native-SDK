@@ -14,7 +14,7 @@ yarn
 Set your NearIT API Key inside `android` and `ios` project
 - for `Android`, generate a `secrets.xml` file
 ```bash
-cat <<< 'EOF' > ./android/app/src/main/res/values/secrets.xml
+cat <<EOF > ./android/app/src/main/res/values/secrets.xml
 <resources>
     <string name="nearit_api_key" translatable="false">Your.API.Key</string>
 </resources>
@@ -23,7 +23,7 @@ EOF
 
 - for `iOS`, generate a `NearIt.plist` file
 ```bash
-cat <<< 'EOF' > ./ios/nearsdksample/NearIt.plist
+cat <<EOF > ./ios/nearsdksample/NearIt.plist
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

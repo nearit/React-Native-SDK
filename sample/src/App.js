@@ -34,6 +34,7 @@ class App extends React.Component {
     this._onPressRequestLocationPermissions = this._onPressRequestLocationPermissions.bind(this)
     this._onPressRefreshCfg = this._onPressRefreshCfg.bind(this)
     this._getCoupons = this._getCoupons.bind(this)
+    this._optOut = this._optOut.bind(this)
     this._testBanner = this._testBanner.bind(this)
 
     console.log({NearItConstants})
@@ -105,7 +106,7 @@ class App extends React.Component {
     }
 
     try {
-      await NearIT.setUserData({ gender: 'M' })
+      await NearIT.setUserData({ gender: 'M', age: 25 })
       console.log('Successfully set UserData!')
     } catch (err) {
       console.log('Could NOT set UserData...', err)
@@ -151,6 +152,17 @@ class App extends React.Component {
       this._showBanner(`You have ${coupons.length} coupon${coupons.length > 1 ? 's' : ''}!`, couponNotificationIcon)
     } catch (err) {
       console.log('Error while retrieving coupons', err)
+    }
+  }
+
+  async _optOut () {
+    console.log('OptingOut this device...')
+    try {
+      await NearIT.optOut()
+      this._showBanner(`OptOut successfull!`)
+    } catch (err) {
+      console.log('Error while opting-out', err)
+      this._showBanner(`OptOut failed!`)
     }
   }
 
@@ -245,6 +257,14 @@ class App extends React.Component {
               labelColor={accent}
               accessibilityLabel='Get NearIT Coupons'
               onPress={this._getCoupons}
+              style={styles.actionButton}
+            />
+            
+            <Button
+              label='OptOut'
+              labelColor={accent}
+              accessibilityLabel='OptOut device from NearIT'
+              onPress={this._optOut}
               style={styles.actionButton}
             />
             

@@ -85,6 +85,8 @@ declare module 'react-native-nearit' {
 
       static setUserData(userDataObject: Map<string, any>): Promise<void>
 
+      static optOut(): Promise<void>
+
       static checkNotificationPermission(): Promise<boolean | null>
 
       static requestNotificationPermission(): Promise<boolean>
