@@ -65,11 +65,17 @@ CLLocationManager *locationManager;
 
 @implementation RNNearIt
 
+RCT_EXPORT_MODULE()
+
 - (dispatch_queue_t)methodQueue
 {
     return dispatch_get_main_queue();
 }
-RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
 
 - (instancetype) init
 {

@@ -5,6 +5,12 @@ var emoji = require('../utils').emoji
 module.exports = () => {
   console.log(emoji.robot, 'Running Android postlink script')
 
+  // Gradle deps to inject
+  var googleServicesGradleDep = `classpath 'com.google.gms:google-services:3.1.1'`
+  var nearitRequiredCompileSdkVersion = `compileSdkVersion 26`
+  var nearitRequiredBuildToolsVersion= `buildToolsVersion "26.0.2"`
+
+  // Common build file paths
   var mainBuildGradlePath = path.join('android', 'build.gradle')
   var appBuildGradlePath = path.join('android', 'app', 'build.gradle')
 
@@ -18,9 +24,16 @@ module.exports = () => {
 
   // 1. Add google-services dependency definition
   var androidToolsGradleLink = mainBuildGradleContents.match(/classpath ["']com\.android\.tools\.build:gradle:.*["']/)[0]
-  var googleServicesGradleDep = `classpath 'com.google.gms:google-services:3.1.0'`
-  if (~mainBuildGradleContents.indexOf(googleServicesGradleDep)) {
-    console.log(emoji.ok, `"google-services" already added.`)
+  var gmsGradleLinkMatches = mainBuildGradleContents.match(/classpath ["']com\.google\.gms:google-services:.*["']/)
+  if (gmsGradleLinkMatches && gmsGradleLinkMatches.length > 0) {
+    if (~mainBuildGradleContents.indexOf(googleServicesGradleDep)) {
+      console.log(emoji.ok, `"google-services" already added.`)
+    } else {
+      console.log(emoji.running, `Updating "google-services" inside build definition`)
+      var gmsGradleLink = gmsGradleLinkMatches[0]
+      mainBuildGradleContents = mainBuildGradleContents.replace(gmsGradleLink, googleServicesGradleDep)
+      fs.writeFileSync(mainBuildGradlePath, mainBuildGradleContents)
+    }
   } else {
     console.log(emoji.running, `Adding "google-services" to the build definition`)
     mainBuildGradleContents = mainBuildGradleContents.replace(androidToolsGradleLink,
@@ -54,7 +67,6 @@ module.exports = () => {
 
   // 4. Update compile SDK and Tools versions
   var compileSdkVersion = appBuildGradleContents.match(/compileSdkVersion [0-9]{2}/)[0]
-  var nearitRequiredCompileSdkVersion = `compileSdkVersion 26`
   if (compileSdkVersion === nearitRequiredCompileSdkVersion) {
     console.log(emoji.ok, `"compileSdkVersion" already updated.`)
   } else {
@@ -63,8 +75,7 @@ module.exports = () => {
     fs.writeFileSync(appBuildGradlePath, appBuildGradleContents)
   }
 
-var buildToolsVersion = appBuildGradleContents.match(/buildToolsVersion "[0-9]*\.[0-9]*\.[0-9]*"/)[0]
-  var nearitRequiredBuildToolsVersion= `buildToolsVersion "26.0.2"`
+  var buildToolsVersion = appBuildGradleContents.match(/buildToolsVersion "[0-9]*\.[0-9]*\.[0-9]*"/)[0]
   if (buildToolsVersion === nearitRequiredBuildToolsVersion) {
     console.log(emoji.ok, `"buildToolsVersion" already updated.`)
   } else {
