@@ -35,15 +35,14 @@ import java.util.Map;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.communication.OptOutNotifier;
-import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.NearItUserProfile;
-import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.couponplugin.CouponListener;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.RecipeRefreshListener;
+import it.near.sdk.recipes.foreground.ProximityListener;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearUtils;
@@ -278,7 +277,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void sendTracking(final String trackinInfoData, final String status, final Promise promise) {
     try {
-      NearItManager.getInstance().getRecipesManager()
+      NearItManager.getInstance()
               .sendTracking(RNNearItUtils.trackingInfoFromBase64(trackinInfoData), status);
 
       promise.resolve(null);
