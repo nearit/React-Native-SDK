@@ -886,7 +886,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = nearsdksample/nearsdksample.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = C8YW5Q8LEU;
 				HEADER_SEARCH_PATHS = (
@@ -912,7 +912,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = nearsdksample/nearsdksample.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_TEAM = C8YW5Q8LEU;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply from: './versionCode.gradle'
 
 import com.android.build.OutputFile
 
@@ -97,12 +98,19 @@ android {
         applicationId "it.near.sdk.reactnative.sdksample"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
+        versionCode Integer.parseInt(VERSION_CODE)
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+
+    signingConfigs {
+        release {
+
+        }
+    }
+
     splits {
         abi {
             reset()
@@ -111,10 +119,12 @@ android {
             include "armeabi-v7a", "x86"
         }
     }
+
     buildTypes {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
@@ -146,4 +156,13 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
+// Load signing properties
+def signProps = new Properties()
+signProps.load(new FileInputStream(rootProject.file("keystores/release.keystore.properties")))
+android.signingConfigs.release.storeFile rootProject.file(signProps.keyStore)
+android.signingConfigs.release.storePassword signProps.keyStorePassword
+android.signingConfigs.release.keyAlias signProps.keyAlias
+android.signingConfigs.release.keyPassword signProps.keyAliasPassword
+
+// Apply 'com.google.gms.google-services' plugin - required by NearIT SDK
 apply plugin: 'com.google.gms.google-services'

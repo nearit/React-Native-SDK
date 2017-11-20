@@ -66,3 +66,4 @@ fastlane/screenshots
 #
 NearIt.plist
 secrets.xml
+release.keystore.properties
