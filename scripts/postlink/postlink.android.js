@@ -9,10 +9,12 @@ module.exports = () => {
   var googleServicesGradleDep = `classpath 'com.google.gms:google-services:3.1.1'`
   var nearitRequiredCompileSdkVersion = `compileSdkVersion 26`
   var nearitRequiredBuildToolsVersion= `buildToolsVersion "26.0.2"`
+  var androidLaunchMode = `android:launchMode="singleTask"`
 
   // Common build file paths
   var mainBuildGradlePath = path.join('android', 'build.gradle')
   var appBuildGradlePath = path.join('android', 'app', 'build.gradle')
+  var appManifestPath = path.join('android', 'app', 'src', 'main', 'AndroidManifest.xml')
 
   if (!fs.existsSync(mainBuildGradlePath) || !fs.existsSync(appBuildGradlePath)) {
     return Promise.reject(new Error(`Couldn't find 'build.gradle' files. You might need to update them manually. \
@@ -82,6 +84,18 @@ module.exports = () => {
     console.log(emoji.running, `Updating "buildToolsVersion" in the app build definition`)
     appBuildGradleContents = appBuildGradleContents.replace(buildToolsVersion, nearitRequiredBuildToolsVersion)
     fs.writeFileSync(appBuildGradlePath, appBuildGradleContents)
+  }
+
+  // 5. Set `launchMode` as `singleTask`
+  var appManifestContent = fs.readFileSync(appManifestPath, 'utf8')
+
+  if (~appManifestContent.indexOf(androidLaunchMode)) {
+    console.log(emoji.ok, `"launchMode" already set.`)
+  } else {
+    console.log(emoji.running, `Setting "launchMode" in the AndroidManifest.xml`)
+    var activityTag = appManifestContent.match(/<activity/)[0]
+    appManifestContent = appManifestContent.replace(activityTag, `${activityTag}\n        ${androidLaunchMode}`)
+    fs.writeFileSync(appManifestPath, appManifestContent)
   }
 
   return Promise.resolve()
