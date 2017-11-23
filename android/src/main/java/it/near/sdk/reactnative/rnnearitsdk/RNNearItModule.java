@@ -8,6 +8,7 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -48,6 +50,7 @@ import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearUtils;
 
 public class RNNearItModule extends ReactContextBaseJavaModule implements LifecycleEventListener,
+        ActivityEventListener,
         ProximityListener {
 
   // Module name
@@ -107,12 +110,13 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   public RNNearItModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
+    // Listen for Resume, Pause, Destroy events
+    reactContext.addLifecycleEventListener(this);
+    reactContext.addActivityEventListener(this);
+
     // Register LocalBroadcastReceiver to be used for Foreground notification handling
     final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(reactContext);
     localBroadcastManager.registerReceiver(new LocalBroadcastReceiver(), new IntentFilter(LOCAL_EVENTS_TOPIC));
-
-    // Listen for Resume, Pause, Destroy events
-    getReactApplicationContext().addLifecycleEventListener(this);
   }
 
   // Module definition
@@ -191,16 +195,29 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   @Override
   public void onHostResume() {
     NearItManager.getInstance().addProximityListener(this);
+    this.dispatchNotificationQueue();
   }
 
   @Override
   public void onHostPause() {
-    RNNearItPersistedQueue.defaultQueue().resetListeners();
     NearItManager.getInstance().removeProximityListener(this);
   }
 
   @Override
   public void onHostDestroy() {
+    RNNearItPersistedQueue.defaultQueue().resetListeners();
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    // Nothing to do here
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (NearUtils.carriesNearItContent(intent)) {
+      NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), true));
+    }
   }
 
   // ReactNative listeners management
@@ -208,18 +225,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   public void listenerRegistered(final Promise promise) {
     final int listenersCount = RNNearItPersistedQueue.defaultQueue().registerListener();
     Log.i(MODULE_NAME, String.format("listenerRegistered (Registered listeners: %d)", listenersCount));
-    // Try to flush background notifications when a listener is added
-    RNNearItPersistedQueue.dispatchNotificationsQueue(getReactApplicationContext(), new RNNearItPersistedQueue.NotificationDispatcher() {
-      @Override
-      public void onNotification(WritableMap notification) {
-        Log.i(MODULE_NAME, "Dispatching background notification");
-        try {
-          getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, notification);
-        } catch (Exception e) {
-          Log.i(MODULE_NAME, "Error dispatching backgrounded notification");
-        }
-      }
-    });
+    this.dispatchNotificationQueue();
     promise.resolve(true);
   }
 
@@ -425,6 +431,21 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   // Private methods
+  private void dispatchNotificationQueue() {
+    // Try to flush background notifications when a listener is added
+    RNNearItPersistedQueue.dispatchNotificationsQueue(getReactApplicationContext(), new RNNearItPersistedQueue.NotificationDispatcher() {
+      @Override
+      public void onNotification(WritableMap notification) {
+        Log.i(MODULE_NAME, "Dispatching background notification");
+        try {
+          getRCTDeviceEventEmitter().emit(NATIVE_EVENTS_TOPIC, notification);
+        } catch (Exception e) {
+          Log.i(MODULE_NAME, "Error dispatching backgrounded notification");
+        }
+      }
+    });
+  }
+
   private DeviceEventManagerModule.RCTDeviceEventEmitter getRCTDeviceEventEmitter() {
     return this.getReactApplicationContext()
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
