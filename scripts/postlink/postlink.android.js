@@ -1,5 +1,6 @@
 var fs = require('fs')
 var path = require('path')
+var glob = require('glob')
 var emoji = require('../utils').emoji
 
 module.exports = () => {
@@ -8,20 +9,23 @@ module.exports = () => {
   // Gradle deps to inject
   var googleServicesGradleDep = `classpath 'com.google.gms:google-services:3.1.1'`
   var nearitRequiredCompileSdkVersion = `compileSdkVersion 26`
-  var nearitRequiredBuildToolsVersion= `buildToolsVersion "26.0.2"`
-  var androidLaunchMode = `android:launchMode="singleTask"`
+  var nearitRequiredBuildToolsVersion = `buildToolsVersion "26.0.2"`
+  var rnNearItImport = `import it.near.sdk.reactnative.rnnearitsdk.RNNearItModule;`
+  var rnNearItOnPostCreateHook = `RNNearItModule.onPostCreate(getApplicationContext(), getIntent());`
+  var rnNearItOnPostCreateMethod = `    @Override\n    protected void onPostCreate(@Nullable Bundle savedInstanceState) {\n        super.onPostCreate(savedInstanceState);\n        RNNearItModule.onPostCreate(getApplicationContext(), getIntent());\n    }`
 
   // Common build file paths
+  var ignoreFolders = { ignore: ['node_modules/**', '**/build/**'] }
   var mainBuildGradlePath = path.join('android', 'build.gradle')
   var appBuildGradlePath = path.join('android', 'app', 'build.gradle')
-  var appManifestPath = path.join('android', 'app', 'src', 'main', 'AndroidManifest.xml')
+  var mainActivityPath = glob.sync('**/MainActivity.java', ignoreFolders)[0]
 
   if (!fs.existsSync(mainBuildGradlePath) || !fs.existsSync(appBuildGradlePath)) {
     return Promise.reject(new Error(`Couldn't find 'build.gradle' files. You might need to update them manually. \
     Please refer to plugin manual installation section for Android at \
     https://nearit-react-native-sdk.readthedocs.io/en/latest/manual-installation-android/`))
   }
-  
+
   var mainBuildGradleContents = fs.readFileSync(mainBuildGradlePath, 'utf8')
 
   // 1. Add google-services dependency definition
@@ -86,16 +90,33 @@ module.exports = () => {
     fs.writeFileSync(appBuildGradlePath, appBuildGradleContents)
   }
 
-  // 5. Set `launchMode` as `singleTask`
-  var appManifestContent = fs.readFileSync(appManifestPath, 'utf8')
+  // 5. Add `onPostCreate` passthrough to `MainActivity`
+  if (mainActivityPath) {
+    var mainActivityContents = fs.readFileSync(mainActivityPath, 'utf8')
+    if (~mainActivityContents.indexOf(rnNearItImport)) {
+      console.log(emoji.ok, `MainActivity.java imports already updated.`)
+    } else {
+      console.log(emoji.running, `Updating MainActivity.java imports`)
+      var reactNativeJavaImport = mainActivityContents.match(/import com\.facebook\.react\.ReactActivity;/)[0]
+      mainActivityContents = mainActivityContents.replace(reactNativeJavaImport,
+        `${reactNativeJavaImport}\n\n${rnNearItImport}`)
+      fs.writeFileSync(mainActivityPath, mainActivityContents)
+    }
 
-  if (~appManifestContent.indexOf(androidLaunchMode)) {
-    console.log(emoji.ok, `"launchMode" already set.`)
+    if (~mainActivityContents.indexOf(rnNearItOnPostCreateHook)) {
+      console.log(emoji.ok, `MainActivity.java onPostCreateHook already added.`)
+    } else {
+      console.log(emoji.running, `Adding onPostCreateHook to MainActivity.java`)
+      var reactNativeGetComponentMethod = mainActivityContents.match(/getMainComponentName\(\) \{[\s\S]*?\}/)[0]
+
+      mainActivityContents = mainActivityContents.replace(reactNativeGetComponentMethod,
+        `${reactNativeGetComponentMethod}\n\n\n${rnNearItOnPostCreateMethod}`)
+      fs.writeFileSync(mainActivityPath, mainActivityContents)
+    }
   } else {
-    console.log(emoji.running, `Setting "launchMode" in the AndroidManifest.xml`)
-    var activityTag = appManifestContent.match(/<activity/)[0]
-    appManifestContent = appManifestContent.replace(activityTag, `${activityTag}\n        ${androidLaunchMode}`)
-    fs.writeFileSync(appManifestPath, appManifestContent)
+    return Promise.reject(new Error(`Couldn't find Android activity entry point. You might need to update it manually. \
+      Please refer to plugin configuration section for Android at \
+      https://nearit-react-native-sdk.readthedocs.io/en/latest/manual-installation-android/ for more details`))
   }
 
   return Promise.resolve()
