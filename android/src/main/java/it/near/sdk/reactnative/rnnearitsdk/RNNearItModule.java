@@ -191,6 +191,12 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     });
   }
 
+  public static void onPostCreate(Context context, Intent intent) {
+    if (NearUtils.carriesNearItContent(intent)) {
+      NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(context, null, true));
+    }
+  }
+
   // ReactApp Lifecycle methods
   @Override
   public void onHostResume() {
