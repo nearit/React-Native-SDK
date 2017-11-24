@@ -43,10 +43,19 @@ module.exports = () => {
     var appDelegateMakeKeyAndVisible = `[self.window makeKeyAndVisible];`
     appDelegateContents = appDelegateContents.replace(appDelegateMakeKeyAndVisible,
             `${appDelegateMakeKeyAndVisible}\n\n  ${nearItAppDelegateRegisterMethodCall}\n`)
-
   }
 
-  // 3. Add Passthrough functions
+  // 3. Add didFinishLaunchingWithOptions method invocation
+  var nearItAppDelegateFinishLaunchingMethodCall = `[RNNearIt didFinishLaunchingWithOptions:launchOptions];`
+  if (~appDelegateContents.indexOf(nearItAppDelegateFinishLaunchingMethodCall)) {
+    console.log(emoji.ok, `"[RNNearIt didFinishLaunchingWithOptions:launchOptions];" already added.`)
+  } else {
+    console.log(emoji.running, `Editing AppDelegate.m to enable Remote Notification when app is killed`)
+    appDelegateContents = appDelegateContents.replace(nearItAppDelegateRegisterMethodCall,
+      `${nearItAppDelegateRegisterMethodCall}\n  ${nearItAppDelegateFinishLaunchingMethodCall}\n`)
+  }
+
+  // 4. Add Passthrough functions
   var nearItPassthroughComment = `// Needed by NearIT plugin -- DO NOT REMOVE THIS COMMENT`
   if (~appDelegateContents.indexOf(nearItPassthroughComment)) {
     console.log(emoji.ok, `Passthrough functions already added.`)
@@ -56,7 +65,6 @@ module.exports = () => {
     var nearItPassthroughFunctions = getPassthroughFunctionsCalls()
     appDelegateContents = appDelegateContents.replace(appDelegateEndTag,
             `${nearItPassthroughComment}\n${nearItPassthroughFunctions}\n\n${appDelegateEndTag}`)
-
   }
 
   // Commit changes to files
@@ -84,8 +92,8 @@ module.exports = () => {
   }
 
   // Commit changes to files
-  function writePatches() {
-    fs.writeFileSync(appDelegatePath, appDelegateContents);
+  function writePatches () {
+    fs.writeFileSync(appDelegatePath, appDelegateContents)
   }
 
   // Helper that filters an array with AppDelegate.m paths for a path with the app name inside it
