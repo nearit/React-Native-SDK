@@ -771,6 +771,15 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 
 // MARK: Push Notifications handling
 
++ (void)didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions {
+    if (launchOptions) {
+        NSDictionary *userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (userInfo) {
+            [self didReceiveRemoteNotification:userInfo];
+        }
+    }
+}
+
 + (void)registerForRemoteNotifications {
 #if !TARGET_IPHONE_SIMULATOR
     // Register Push notifications token only on real devices
