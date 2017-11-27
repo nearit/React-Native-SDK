@@ -15,6 +15,7 @@
 #import <NearIT/NearIT.h>
 
 #import "RNNearItBackgroundQueue.h"
+#import "RNNotificationsQueue.h"
 
 @interface RNNearIt : RCTEventEmitter <RCTBridgeModule, UNUserNotificationCenterDelegate, CLLocationManagerDelegate, NITManagerDelegate>
 
@@ -27,6 +28,7 @@
     + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo;
     + (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification;
     + (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler;
+    + (void)didReceiveNotification:(NSDictionary* _Nonnull)userInfo fromUserAction:(BOOL)fromUserAction;
 #endif
 
 @end

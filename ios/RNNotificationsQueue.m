@@ -6,14 +6,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#import "RNNearItBackgroundQueue.h"
+#import "RNNotificationsQueue.h"
 
-@implementation RNNearItBackgroundQueue
+@implementation RNNotificationsQueue
 
-NSMutableArray<NSDictionary *>* _Nullable backgroundQueue;
+NSMutableArray<NSDictionary *>* _Nullable notificationsQueue;
+BOOL isReady;
 
 + (nonnull instancetype)defaultQueue {
-    static RNNearItBackgroundQueue* sharedInstance = nil;
+    static RNNotificationsQueue* sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [self new];
@@ -23,30 +24,38 @@ NSMutableArray<NSDictionary *>* _Nullable backgroundQueue;
 }
 
 - (instancetype)init {
-    backgroundQueue = [NSMutableArray new];
+    notificationsQueue = [NSMutableArray new];
+    isReady = NO;
+    
     return self;
 }
 
-- (void)addNotification:(NSDictionary* _Nonnull)notification {
-    if (!backgroundQueue) return;
-    [backgroundQueue insertObject:notification atIndex:0];
+- (BOOL)addNotification:(NSDictionary* _Nonnull)notification {
+    if (!notificationsQueue || isReady) {
+        return NO;
+    }
+    
+    [notificationsQueue insertObject:notification atIndex:0];
+    return YES;
 }
 
 - (NSDictionary*)dispatchSingleNotification {
-    if (!backgroundQueue || backgroundQueue.count == 0) return nil;
+    if (!notificationsQueue || notificationsQueue.count == 0) return nil;
     
-    NSDictionary* notification = [backgroundQueue lastObject];
-    [backgroundQueue removeLastObject];
+    NSDictionary* notification = [notificationsQueue lastObject];
+    [notificationsQueue removeLastObject];
     
     return notification;
 }
 
 - (void)dispatchNotificationsQueue:(void (^)(NSDictionary* _Nonnull))block {
     NSDictionary* notification;
-    
+
     while ((notification = [self dispatchSingleNotification]) != nil) {
         block(notification);
     }
+
+    isReady = YES;
 }
 
 @end

@@ -6,18 +6,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef RNNearItBackgroundQueue_h
-#define RNNearItBackgroundQueue_h
+#ifndef RNNotificationsQueue_h
+#define RNNotificationsQueue_h
 
 #import <Foundation/Foundation.h>
 
-@interface RNNearItBackgroundQueue : NSObject
+@interface RNNotificationsQueue : NSObject
 
 + (nonnull instancetype)defaultQueue;
 
-- (void)addNotification:(NSDictionary* _Nonnull)notification;
+- (BOOL)addNotification:(NSDictionary* _Nonnull)notification;
 - (void)dispatchNotificationsQueue:(void (^ _Nonnull)(NSDictionary* _Nonnull))block;
 
 @end
 
-#endif /* RNNearItBackgroundQueue_h */
+#endif /* RNNotificationsQueue_h */
