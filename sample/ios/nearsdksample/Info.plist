@@ -21,7 +21,9 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>9</string>
+	<string>13</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -38,11 +40,11 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>This app uses Bluetooth communication to detect nearby beacons</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location access 'Always' is required for Geofences and Beacons to work</string>
+	<string>Location access &apos;Always&apos; is required for Geofences and Beacons to work</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location access 'Always' is required for Geofences and Beacons to work</string>
+	<string>Location access &apos;Always&apos; is required for Geofences and Beacons to work</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location access 'Always' is required for Geofences and Beacons to work</string>
+	<string>Location access &apos;Always&apos; is required for Geofences and Beacons to work</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -57,5 +59,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>fetch</string>
+  </array>
 </dict>
 </plist>

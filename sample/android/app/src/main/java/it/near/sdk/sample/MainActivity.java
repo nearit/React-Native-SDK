@@ -1,6 +1,12 @@
 package it.near.sdk.sample;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.facebook.react.ReactActivity;
+
+import it.near.sdk.reactnative.rnnearitsdk.RNNearItModule;
 
 public class MainActivity extends ReactActivity {
 
@@ -12,4 +18,12 @@ public class MainActivity extends ReactActivity {
     protected String getMainComponentName() {
         return "nearsdksample";
     }
+
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        RNNearItModule.onPostCreate(getApplicationContext(), getIntent());
+    }
+
 }

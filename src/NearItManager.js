@@ -164,6 +164,10 @@ export class NearItManager {
     })
   }
 
+  static triggerEvent (eventKey: string): Promise<null> {
+    return NearItSdk.triggerEvent(eventKey)
+  }
+
   static getCoupons (): Promise<NearItCoupon[]> {
     return NearItSdk.getCoupons()
   }

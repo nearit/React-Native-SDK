@@ -16,7 +16,7 @@
 + (nonnull instancetype)defaultQueue;
 
 - (void)addNotification:(NSDictionary* _Nonnull)notification;
-- (void)dispatchNotificationsQueue:(void (^)(NSDictionary* _Nonnull))block;
+- (void)dispatchNotificationsQueue:(void (^ _Nonnull)(NSDictionary* _Nonnull))block;
 
 @end
 

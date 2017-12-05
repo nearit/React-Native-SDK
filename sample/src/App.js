@@ -35,6 +35,7 @@ class App extends React.Component {
     this._onPressRefreshCfg = this._onPressRefreshCfg.bind(this)
     this._getCoupons = this._getCoupons.bind(this)
     this._optOut = this._optOut.bind(this)
+    this._customTrigger = this._customTrigger.bind(this)
     this._testBanner = this._testBanner.bind(this)
 
     console.log({NearItConstants})
@@ -166,6 +167,16 @@ class App extends React.Component {
     }
   }
 
+  async _customTrigger () {
+    console.log('Launching Custom Trigger event')
+    try {
+      await NearIT.triggerEvent('button_pressed')
+    } catch (err) {
+      console.log('Error while launching custom event', err)
+      this._showBanner(`Custom Trigger launch failed!`)
+    }
+  }
+
   _testBanner () {
     this._showBanner('Here I am!')
   }
@@ -273,6 +284,14 @@ class App extends React.Component {
               labelColor={accent}
               accessibilityLabel='Open NearIT Banner'
               onPress={this._testBanner}
+              style={styles.actionButton}
+            />
+            
+            <Button
+              label='Custom Trigger'
+              labelColor={accent}
+              accessibilityLabel='Launch Custom Trigger'
+              onPress={this._customTrigger}
               style={styles.actionButton}
             />
           </View>

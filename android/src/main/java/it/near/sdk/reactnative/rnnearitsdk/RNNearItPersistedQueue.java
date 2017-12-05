@@ -60,11 +60,6 @@ class RNNearItPersistedQueue {
   }
 
   static void addNotification(final Context context, final WritableMap notification) {
-    if (defaultQueue().hasListeners()) {
-      // Should not be here if there are listeners
-      return;
-    }
-
     final int lastNotificationIndex = context.getSharedPreferences(MODULE_NAME, Context.MODE_PRIVATE)
             .getInt(SP_LAST_NOTIFICATION_INDEX, 0);
 

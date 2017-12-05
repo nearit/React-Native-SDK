@@ -35,3 +35,30 @@ android {
 
 apply plugin: 'com.google.gms.google-services' // Include at the end of file
 ```
+
+In your project `android/src/main/java/<your-project-package>/MainActivity.java`,
+- Add the following import after the ReactNative one
+```java
+...
+import it.near.sdk.reactnative.rnnearitsdk.RNNearItModule;
+...
+```
+
+- Add the following method after `getComponentName`
+```java
+...
+public class MainActivity extends ReactActivity {
+    ...
+    @Override
+    protected String getMainComponentName() {
+        ...
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        RNNearItModule.onPostCreate(getApplicationContext(), getIntent());
+    }
+...
+}
+```

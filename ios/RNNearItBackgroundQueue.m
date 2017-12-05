@@ -10,7 +10,7 @@
 
 @implementation RNNearItBackgroundQueue
 
-NSMutableArray<NSDictionary *>* _Nullable notificationsQueue;
+NSMutableArray<NSDictionary *>* _Nullable backgroundQueue;
 
 + (nonnull instancetype)defaultQueue {
     static RNNearItBackgroundQueue* sharedInstance = nil;
@@ -23,21 +23,20 @@ NSMutableArray<NSDictionary *>* _Nullable notificationsQueue;
 }
 
 - (instancetype)init {
-    notificationsQueue = [NSMutableArray new];
-    
+    backgroundQueue = [NSMutableArray new];
     return self;
 }
 
 - (void)addNotification:(NSDictionary* _Nonnull)notification {
-    if (!notificationsQueue) return;
-    [notificationsQueue insertObject:notification atIndex:0];
+    if (!backgroundQueue) return;
+    [backgroundQueue insertObject:notification atIndex:0];
 }
 
 - (NSDictionary*)dispatchSingleNotification {
-    if (!notificationsQueue || notificationsQueue.count == 0) return nil;
+    if (!backgroundQueue || backgroundQueue.count == 0) return nil;
     
-    NSDictionary* notification = [notificationsQueue lastObject];
-    [notificationsQueue removeLastObject];
+    NSDictionary* notification = [backgroundQueue lastObject];
+    [backgroundQueue removeLastObject];
     
     return notification;
 }

@@ -100,8 +100,15 @@ RCT_EXPORT_MODULE()
         }
         
         // Delegates
-        [NITManager defaultManager].delegate = self;
         [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+
+        [NITManager defaultManager].delegate = self;
+        [[RNNotificationsQueue defaultQueue] dispatchNotificationsQueue:^(NSDictionary* _Nonnull data) {
+            // Post previously received notifications
+            [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
+                                                                object:self
+                                                              userInfo:@{@"data": data}];
+        }];
     }
     
     return self;
@@ -510,6 +517,17 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     }
 }
 
+// MARK: NearIT Custom Trigger
+RCT_EXPORT_METHOD(triggerEvent:(NSString* _Nonnull) eventKey
+                    resolution:(RCTPromiseResolveBlock)resolve
+                     rejection:(RCTPromiseRejectBlock)reject)
+{
+    // Trigger Custom Event Key
+    [[NITManager defaultManager] processCustomTriggerWithKey:eventKey];
+    // Resolve null, if a Recipe is triggered then the normal notification flow will run
+    resolve([NSNull null]);
+}
+
 // MARK: NearIT Coupons handling
 
 RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
@@ -755,21 +773,25 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 // MARK: Foreground Notifications handling
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)(void))completionHandler {
-
-    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
-    [data setObject:@YES forKey:@"fromUserAction"];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
-                                                        object:self
-                                                      userInfo:@{
-                                                                 @"data": data,
-                                                                 @"completionHandler": completionHandler
-                                                             }];
- 
-     completionHandler();
+    [RNNearIt didReceiveNotification:response.notification.request.content.userInfo fromUserAction:YES];
+    completionHandler();
 }
 
 // MARK: Push Notifications handling
+
++ (void)didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions {
+    if (launchOptions) {
+        UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+        if (notification && notification.userInfo) {
+            [self didReceiveNotification:notification.userInfo fromUserAction:YES];
+        }
+
+        NSDictionary* userInfo = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        if (userInfo) {
+            [self didReceiveNotification:userInfo fromUserAction:YES];
+        }
+    }
+}
 
 + (void)registerForRemoteNotifications {
 #if !TARGET_IPHONE_SIMULATOR
@@ -784,36 +806,38 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 }
 
 + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo {
-    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
-    [data setObject:@YES forKey:@"fromUserAction"];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
-                                                        object:self
-                                                      userInfo:@{@"data": data}];
+    [self didReceiveNotification:userInfo fromUserAction:YES];
 }
 
 + (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification {
-    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: notification.userInfo];
-    [data setObject:@YES forKey:@"fromUserAction"];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
-                                                        object:self
-                                                      userInfo:@{
-                                                                 @"data": data
-                                                             }];
+    if (notification.userInfo) {
+        [self didReceiveNotification:notification.userInfo fromUserAction:YES];
+    }
 }
 
 + (void)didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull) response withCompletionHandler:(void (^ _Nonnull)())completionHandler {
-    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: response.notification.request.content.userInfo];
-    [data setObject:@YES forKey:@"fromUserAction"];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
-                                                        object:self
-                                                      userInfo:@{
-                                                                 @"data": data,
-                                                                 @"completionHandler": completionHandler
-                                                                 }];
+    [self didReceiveNotification:response.notification.request.content.userInfo fromUserAction:YES];
+    completionHandler();
 }
+
++ (void)didReceiveNotification:(NSDictionary* _Nonnull)userInfo fromUserAction:(BOOL)fromUserAction {
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] initWithDictionary: userInfo];
+    [data setObject:@(fromUserAction) forKey:@"fromUserAction"];
+    
+    if (![[RNNotificationsQueue defaultQueue] addNotification:data]) {
+        // Notification was not queued, try foreground dispatching
+        [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
+                                                            object:self
+                                                          userInfo:@{@"data": data}];
+    }
+}
+
++ (void)application:(UIApplication* _Nonnull)application performFetchWithCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler {
+    [[NITManager defaultManager] application:application performFetchWithCompletionHandler:^(UIBackgroundFetchResult result) {
+        completionHandler(result);
+    }];
+}
+
 
 @end
 
