@@ -20,7 +20,7 @@ module.exports = () => {
     Please refer to plugin configuration section for iOS at \
     https://nearit-react-native-sdk.readthedocs.io/en/latest/manual-installation-ios/`))
   }
-  
+
   var infoPlistPaths = glob.sync('**/Info.plist', ignoreNodeModules)
   var infoPlistPath = findFileByAppName(infoPlistPaths, packageJson ? packageJson.name : null) || infoPlistPaths[0]
 
@@ -38,8 +38,6 @@ module.exports = () => {
     Please refer to plugin configuration section for iOS at \
     https://nearit-react-native-sdk.readthedocs.io/en/latest/manual-installation-ios/`))
   }
-
-  console.log({ projectPbxPath })
 
   var appDelegateContents = fs.readFileSync(appDelegatePath, 'utf8')
   var infoPlistContents = fs.readFileSync(infoPlistPath, 'utf8')
