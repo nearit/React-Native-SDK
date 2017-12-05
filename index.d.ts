@@ -95,6 +95,8 @@ declare module 'react-native-nearit' {
       
       static requestLocationPermission(): Promise<boolean>
 
+      static triggerEvent (eventKey: string): Promise<void>
+
       static getCoupons(): Promise<NearItCoupon[]>
 
     }
