@@ -193,7 +193,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
 
   public static void onPostCreate(Context context, Intent intent) {
     if (NearUtils.carriesNearItContent(intent)) {
-      NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(context, null, true));
+      NearUtils.parseContents(intent, new RNNearItCoreContentsListener(context, null, true));
     }
   }
 
@@ -222,7 +222,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   @Override
   public void onNewIntent(Intent intent) {
     if (NearUtils.carriesNearItContent(intent)) {
-      NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), true));
+      NearUtils.parseContents(intent, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), true));
     }
   }
 
@@ -245,7 +245,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   // NearIT SDK Listeners
   @Override
   public void foregroundEvent(Parcelable parcelable, TrackingInfo trackingInfo) {
-    NearUtils.parseCoreContents(parcelable, trackingInfo, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), false));
+    NearUtils.parseContents(parcelable, trackingInfo, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), false));
   }
 
   // NearIT Config
@@ -411,6 +411,16 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     promise.resolve(true);
   }
 
+  // NearIT Custom Trigger
+
+  @ReactMethod
+  public void triggerEvent(final String eventKey, final Promise promise) {
+    // Trigger Custom Event Key
+    NearItManager.getInstance().processCustomTrigger(eventKey);
+    // Resolve null, if a Recipe is triggered then the normal notification flow will run
+    promise.resolve(null);
+  }
+
   // NearIT Coupons
 
   @ReactMethod
@@ -476,7 +486,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     @Override
     public void onReceive(Context context, Intent intent) {
       if (intent != null && NearUtils.carriesNearItContent(intent)) {
-        NearUtils.parseCoreContents(intent, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), false));
+        NearUtils.parseContents(intent, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), false));
       }
     }
   }

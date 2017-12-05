@@ -24,7 +24,7 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.trackings.TrackingInfo;
-import it.near.sdk.utils.CoreContentsListener;
+import it.near.sdk.utils.ContentsListener;
 
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT;
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_COUPON;
@@ -47,7 +47,7 @@ import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_SIMP
 import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.NATIVE_EVENTS_TOPIC;
 
 
-public class RNNearItCoreContentsListener implements CoreContentsListener {
+public class RNNearItCoreContentsListener implements ContentsListener {
 
   private static final String TAG = "RNNearItCoreContents";
 
