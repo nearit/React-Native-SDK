@@ -517,6 +517,17 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     }
 }
 
+// MARK: NearIT Custom Trigger
+RCT_EXPORT_METHOD(triggerEvent:(NSString* _Nonnull) eventKey
+                    resolution:(RCTPromiseResolveBlock)resolve
+                     rejection:(RCTPromiseRejectBlock)reject)
+{
+    // Trigger Custom Event Key
+    [[NITManager defaultManager] processCustomTriggerWithKey:eventKey];
+    // Resolve null, if a Recipe is triggered then the normal notification flow will run
+    resolve([NSNull null]);
+}
+
 // MARK: NearIT Coupons handling
 
 RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
@@ -820,6 +831,13 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
                                                           userInfo:@{@"data": data}];
     }
 }
+
++ (void)application:(UIApplication* _Nonnull)application performFetchWithCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler {
+    [[NITManager defaultManager] application:application performFetchWithCompletionHandler:^(UIBackgroundFetchResult result) {
+        completionHandler(result);
+    }];
+}
+
 
 @end
 
