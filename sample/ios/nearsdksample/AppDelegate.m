@@ -34,7 +34,8 @@
   [self.window makeKeyAndVisible];
 
   [RNNearIt registerForRemoteNotifications];
-
+  [RNNearIt didFinishLaunchingWithOptions:launchOptions];
+  
   return YES;
 }
 
@@ -50,6 +51,12 @@
 
 - (void)application:(UIApplication*) application didReceiveRemoteNotification:(NSDictionary *)userInfo {
   [RNNearIt didReceiveRemoteNotification:userInfo];
+}
+
+// Needed by NearIT plugin -- Enable Background Updates -- DO NOT REMOVE THIS COMMENT
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  [RNNearIt application:application performFetchWithCompletionHandler:completionHandler];
 }
 
 @end
