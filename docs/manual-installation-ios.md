@@ -42,3 +42,22 @@ Edit your project `ios/<app-name>/AppDelegate.m` as follow
   [RNNearIt didReceiveRemoteNotification:userInfo];
 }
 ```
+
+- add `RNNearIT` background fetch handling method
+
+```obj-c
+...
+// Needed by NearIT plugin -- Enable Background Updates -- DO NOT REMOVE THIS COMMENT
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  [RNNearIt application:application performFetchWithCompletionHandler:completionHandler];
+}
+
+@end
+```
+
+### Enable Background Modes capability
+
+Inside Xcode, navigate to the “**Capabilities**” tab of your app. You will need to enable “**Background Modes**” capability and check "***Background fetch***".
+
+![capabilities](images/backgroundfetch_capabilities.png)
