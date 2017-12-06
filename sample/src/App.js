@@ -17,6 +17,11 @@ import customJsonNotificationIcon from "./assets/icon-code.png";
 const { Events, EventContent, Permissions, Statuses } = NearItConstants;
 
 class App extends React.Component {
+  sections = [
+    { name: "Home", icon: homeIcon },
+    { name: "User", icon: userIcon }
+  ];
+
   constructor() {
     super();
 
@@ -144,11 +149,11 @@ class App extends React.Component {
         </View>
 
         <BottomNavBar>
-          {["Home", "User"].map((v, i) => (
+          {this.sections.map((v, i) => (
             <BottomNavBarItem
               key={i}
-              icon={i === 0 ? homeIcon : userIcon}
-              text={v}
+              icon={v.icon}
+              text={v.name}
               selected={pageIndex === i}
               onPress={() => this._onPageSelected(i)}
             />
