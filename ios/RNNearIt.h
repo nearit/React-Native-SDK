@@ -23,7 +23,7 @@
 
 #if !TARGET_OS_TV
     + (void)registerForRemoteNotifications;
-    + (void)didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions;
+    + (void)application:(UIApplication* _Nonnull)application didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions;
     + (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData* _Nonnull)deviceToken;
     + (void)didReceiveRemoteNotification:(NSDictionary* _Nonnull) userInfo;
     + (void)didReceiveLocalNotification:(UILocalNotification* _Nonnull) notification;

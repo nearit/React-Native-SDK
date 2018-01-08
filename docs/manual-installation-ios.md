@@ -23,7 +23,7 @@ Edit your project `ios/<app-name>/AppDelegate.m` as follow
   
   // Needed by NearIT plugin - Insert before return YES;
   [RNNearIt registerForRemoteNotifications];
-  [RNNearIt didFinishLaunchingWithOptions:launchOptions];
+  [RNNearIt application:application didFinishLaunchingWithOptions:launchOptions];
 
   return YES;
 }

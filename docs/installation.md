@@ -73,17 +73,3 @@ To interact with `NearIT` SDK from your React code use the `NearItManager` class
 ```js
 import NearIT from 'react-native-nearit'
 ```
-
-<br>
-
-## Manual Configuration Refresh ##
-
-The SDK **initialization is done automatically** and handles the task of syncing the recipes with our servers when your app starts up.
-<br>
-However, if you need to sync the recipes configuration more often, you can call this method:
-
-```js
-NearIT.refreshConfig();
-```
-
-This call return a [Promise](https://developer.mozilla.org/it/docs/Web/JavaScript/Reference/Global_Objects/Promise) that is `resolved` as soon as the operation is completed successfully or `rejected` in case of errors.

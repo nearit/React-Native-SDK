@@ -34,7 +34,7 @@
   [self.window makeKeyAndVisible];
 
   [RNNearIt registerForRemoteNotifications];
-  [RNNearIt didFinishLaunchingWithOptions:launchOptions];
+  [RNNearIt application:application didFinishLaunchingWithOptions:launchOptions];
   
   return YES;
 }

@@ -1,21 +1,28 @@
-import React from 'react'
-import { Animated, Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import React from "react";
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View
+} from "react-native";
 
 export default ({ accessibilityLabel, label, labelColor, onPress, style }) => (
   <TouchableWithoutFeedback
     accessibilityLabel={accessibilityLabel}
-    accessibilityComponentType='button'
+    accessibilityComponentType="button"
     onPress={onPress}
   >
     <View style={[styles.container, style]}>
-      <Text style={[styles.label, { color: labelColor }]}>{label.toUpperCase()}</Text>
+      <Text style={styles.label}>{label.toUpperCase()}</Text>
     </View>
   </TouchableWithoutFeedback>
-)
+);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     paddingTop: 5,
     paddingBottom: 5,
     paddingLeft: 25,
@@ -23,7 +30,7 @@ const styles = StyleSheet.create({
     borderRadius: 50
   },
   label: {
-    color: '#FFF',
-    fontWeight: 'bold',
+    color: "#FFF",
+    fontWeight: "bold"
   }
-})
+});

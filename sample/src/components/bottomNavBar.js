@@ -1,31 +1,18 @@
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { ifIphoneX } from 'react-native-iphone-x-helper'
-
-const BASE_HEIGHT = 56
+import React from "react";
+import { StyleSheet, View } from "react-native";
 
 export default ({ backgroundColor, children }) => (
-  <View style={[
-    styles.bottomNavigationBarContainer,
-    { backgroundColor }
-  ]}
-  >
-    {children}
-  </View>
-)
+  <View style={styles.bottomNavigationBarContainer}>{children}</View>
+);
 
 const styles = StyleSheet.create({
   bottomNavigationBarContainer: {
-    ...ifIphoneX({
-      height: BASE_HEIGHT + 25,
-      paddingBottom: 25
-    }, {
-      height: BASE_HEIGHT
-    }),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    height: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
     borderTopWidth: 1,
-    borderTopColor: '#00000055'
+    borderTopColor: "#00000055",
+    backgroundColor: "#9F92FF"
   }
-})
+});

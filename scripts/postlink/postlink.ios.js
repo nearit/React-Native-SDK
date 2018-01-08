@@ -66,9 +66,9 @@ module.exports = () => {
   }
 
   // 3. Add didFinishLaunchingWithOptions method invocation
-  var nearItAppDelegateFinishLaunchingMethodCall = `[RNNearIt didFinishLaunchingWithOptions:launchOptions];`
+  var nearItAppDelegateFinishLaunchingMethodCall = `[RNNearIt application:application didFinishLaunchingWithOptions:launchOptions];`
   if (~appDelegateContents.indexOf(nearItAppDelegateFinishLaunchingMethodCall)) {
-    console.log(emoji.ok, `"[RNNearIt didFinishLaunchingWithOptions:launchOptions];" already added.`)
+    console.log(emoji.ok, `"[RNNearIt application:application didFinishLaunchingWithOptions:launchOptions];" already added.`)
   } else {
     console.log(emoji.running, `Editing AppDelegate.m to enable Remote Notification when app is killed`)
     appDelegateContents = appDelegateContents.replace(nearItAppDelegateRegisterMethodCall,
