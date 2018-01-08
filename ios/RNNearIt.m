@@ -779,7 +779,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 
 // MARK: Push Notifications handling
 
-+ (void)didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions {
++ (void)application:(UIApplication* _Nonnull)application didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions {
     if (launchOptions) {
         UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         if (notification && notification.userInfo) {
@@ -791,6 +791,8 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
             [self didReceiveNotification:userInfo fromUserAction:YES];
         }
     }
+
+    [application setMinimumBackgroundFetchInterval:7200]; // 2 hours
 }
 
 + (void)registerForRemoteNotifications {
