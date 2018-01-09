@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">RNNearItSdk</string>
 
+    <string name="near_framework_type" translatable="false">react-native</string>
+
     <string name="nearit_api_key">Your.API.Key</string>
 </resources>
