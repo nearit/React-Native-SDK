@@ -840,6 +840,10 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
     }];
 }
 
+// MARK: Customization
++ (void)disableDefaultRangingNotifications {
+    [NITManager defaultManager].showForegroundNotification = false;
+}
 
 @end
 
