@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   Animated,
   Image,
@@ -6,7 +6,7 @@ import {
   Text,
   TouchableWithoutFeedback,
   View
-} from "react-native";
+} from 'react-native'
 
 export default ({ accessibilityLabel, label, labelColor, onPress, style }) => (
   <TouchableWithoutFeedback
@@ -18,11 +18,14 @@ export default ({ accessibilityLabel, label, labelColor, onPress, style }) => (
       <Text style={styles.label}>{label.toUpperCase()}</Text>
     </View>
   </TouchableWithoutFeedback>
-);
+)
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#333",
+    backgroundColor: '#333',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingTop: 5,
     paddingBottom: 5,
     paddingLeft: 25,
@@ -30,7 +33,7 @@ const styles = StyleSheet.create({
     borderRadius: 50
   },
   label: {
-    color: "#FFF",
-    fontWeight: "bold"
+    color: '#FFF',
+    fontWeight: 'bold'
   }
-});
+})

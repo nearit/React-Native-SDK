@@ -1,5 +1,8 @@
 export { default as BottomNavBar } from './bottomNavBar'
 export { default as BottomNavBarItem } from './bottomNavBarItem'
 export { default as Button } from './button'
+export { default as Card } from './card'
 export { default as Dialog } from './dialog'
+export { default as FeedbackCard } from './feedbackCard'
 export { default as Header } from './header'
+export { default as RatingBar } from './ratingBar'
