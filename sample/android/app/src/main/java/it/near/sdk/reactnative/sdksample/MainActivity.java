@@ -1,8 +1,7 @@
-package it.near.sdk.sample;
+package it.near.sdk.reactnative.sdksample;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.facebook.react.ReactActivity;
 

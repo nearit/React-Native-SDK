@@ -1,4 +1,4 @@
-package it.near.sdk.sample;
+package it.near.sdk.reactnative.sdksample;
 
 import android.app.Application;
 

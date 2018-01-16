@@ -1,5 +1,5 @@
 apply plugin: "com.android.application"
-apply from: './versionCode.gradle'
+apply from: "./versionCode.gradle"
 
 import com.android.build.OutputFile
 
@@ -72,6 +72,10 @@ import com.android.build.OutputFile
  *   extraPackagerArgs: []
  * ]
  */
+
+project.ext.react = [
+    entryFile: "index.js"
+]
 
 apply from: "../../node_modules/react-native/react.gradle"
 
@@ -164,5 +168,4 @@ android.signingConfigs.release.storePassword signProps.keyStorePassword
 android.signingConfigs.release.keyAlias signProps.keyAlias
 android.signingConfigs.release.keyPassword signProps.keyAliasPassword
 
-// Apply 'com.google.gms.google-services' plugin - required by NearIT SDK
 apply plugin: 'com.google.gms.google-services'
