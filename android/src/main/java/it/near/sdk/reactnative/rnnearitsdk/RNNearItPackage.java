@@ -17,6 +17,8 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.Collections;
 import java.util.List;
 
+import it.near.sdk.NearItManager;
+
 public class RNNearItPackage implements ReactPackage {
 
     @Override
@@ -33,5 +35,9 @@ public class RNNearItPackage implements ReactPackage {
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Collections.emptyList();
+    }
+
+    public static void disableDefaultRangingNotifications() {
+        NearItManager.getInstance().disableDefaultRangingNotifications();
     }
 }
