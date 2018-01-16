@@ -103,6 +103,7 @@ RCT_EXPORT_MODULE()
         [UNUserNotificationCenter currentNotificationCenter].delegate = self;
 
         [NITManager defaultManager].delegate = self;
+        [NITManager setFrameworkName:@"react-native"];
         [[RNNotificationsQueue defaultQueue] dispatchNotificationsQueue:^(NSDictionary* _Nonnull data) {
             // Post previously received notifications
             [[NSNotificationCenter defaultCenter] postNotificationName:RN_LOCAL_EVENTS_TOPIC
