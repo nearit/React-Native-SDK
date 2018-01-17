@@ -1,4 +1,5 @@
 # React Native NearIT SDK
+
 > The official [NearIT](https://www.nearit.com) SDK plugin for [React Native](https://facebook.github.io/react-native/)
 
 [![license](https://img.shields.io/github/license/panz3r/react-native-nearit-sdk.svg)](https://github.com/panz3r/react-native-nearit-sdk/blob/master/LICENSE.md)
@@ -16,6 +17,7 @@
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
 ## Recipes
+
 NearIT allows to manage apps by defining "recipes". Those are simple rules made of 3 ingredients:
 
 * **WHO**: define the target users
@@ -25,6 +27,7 @@ NearIT allows to manage apps by defining "recipes". Those are simple rules made 
 <br>
 
 ## How it works
+
 [**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features quickly.
 Once the settings are configured, **everyone** - even people without technical skills - can manage context-aware mobile content.
 
@@ -33,11 +36,12 @@ Once the settings are configured, **everyone** - even people without technical s
 <br>
 
 ## Installation
+
 Minimum Requirements:
 
-- **React Native**: 0.45.0+
-- **Android** Min SDK: ***16***
-- **iOS** Min Platform: ***iOS 9***
+* **React Native**: 0.45.0+
+* **Android** Min SDK: **_16_**
+* **iOS** Min Platform: **_iOS 9_**
 
 To start using the SDK, add this plugin to your React Native project
 
@@ -54,7 +58,17 @@ $ react-native link react-native-nearit
 <br/>
 
 ## Integration guide
+
 For information on how to integrate all NearIT features in your app, visit the [documentation website](https://nearit-react-native-sdk.readthedocs.io/)
 
+<br/>
+
+## Sample Integration
+
+A sample ReactNative app integrating `react-native-nearit` SDK is available at [panz3r/nearit-react-native-sample-app](https://github.com/panz3r/nearit-react-native-sample-app)
+
+<br/>
+
 ---
+
 Made with :sparkles: & :heart: by [Mattia Panzeri](https://github.com/panz3r) and [contributors](https://github.com/nearit/React-Native-SDK/graphs/contributors)
