@@ -16,7 +16,6 @@ import android.util.Log;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.google.gson.Gson;
 
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -96,7 +95,7 @@ public class RNNearItCoreContentsListener implements ContentsListener {
     // Create EventContent map
     final WritableMap contentMap = new WritableNativeMap();
     contentMap.putString(EVENT_CONTENT_MESSAGE, customJSON.notificationMessage);
-    contentMap.putString(EVENT_CONTENT_DATA, new Gson().toJson(customJSON.content));
+    contentMap.putMap(EVENT_CONTENT_DATA, RNNearItUtils.toWritableMap(customJSON.content));
 
     // Notify JS
     sendEventWithContent(EVENT_TYPE_CUSTOM_JSON, contentMap, trackingInfo);
