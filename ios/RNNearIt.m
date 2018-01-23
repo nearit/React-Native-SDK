@@ -393,7 +393,7 @@ RCT_EXPORT_METHOD(optOut: (RCTPromiseResolveBlock) resolve
 // MARK: NearIT Permissions request
 
 -(BOOL)hasLocationPermission {
-    return CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways;
+    return CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways || CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse;
 }
 
 RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
@@ -501,7 +501,7 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     NITLogV(TAG, @"didChangeAuthorizationStatus status=%d", status);
     
     if (status != kCLAuthorizationStatusNotDetermined) {
-        if (status == kCLAuthorizationStatusAuthorizedAlways) {
+        if (status == kCLAuthorizationStatusAuthorizedAlways || status == kCLAuthorizationStatusAuthorizedWhenInUse) {
             [self sendEventWithLocationPermissionStatus: PERMISSION_LOCATION_GRANTED];
             
             NITLogI(TAG, @"NITManager start");
