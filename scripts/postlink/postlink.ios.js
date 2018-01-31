@@ -21,7 +21,9 @@ module.exports = () => {
     https://nearit-react-native-sdk.readthedocs.io/en/latest/manual-installation-ios/`))
   }
 
-  var infoPlistPaths = glob.sync('**/Info.plist', ignoreNodeModules)
+  var infoPlistPaths = glob.sync('**/Info.plist', {
+    ignore: [].concat(ignoreNodeModules.ignore, [ '**/*-tvOS/Info.plist', '**/*Tests/Info.plist' ])
+  })
   var infoPlistPath = findFileByAppName(infoPlistPaths, packageJson ? packageJson.name : null) || infoPlistPaths[0]
 
   if (!infoPlistPath) {
