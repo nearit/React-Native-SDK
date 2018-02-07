@@ -841,6 +841,10 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
     }];
 }
 
++ (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    return [[NITManager defaultManager] application:app openURL:url options:options];
+}
+
 // MARK: Customization
 + (void)disableDefaultRangingNotifications {
     [NITManager defaultManager].showForegroundNotification = false;
