@@ -8,6 +8,7 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -43,7 +44,6 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.recipes.NearITEventHandler;
-import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.foreground.ProximityListener;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
@@ -60,6 +60,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   static final String NATIVE_EVENTS_TOPIC = "RNNearItEvent";
   private static final String NATIVE_PERMISSIONS_TOPIC = "RNNearItPermissions";
 
+  @SuppressWarnings("WeakerAccess")
   // Local Events topic (used by LocalBroadcastReceiver to handle foreground notifications)
   static final String LOCAL_EVENTS_TOPIC = "RNNearItLocalEvents";
 
@@ -93,7 +94,6 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   private static final String PERMISSION_LOCATION_DENIED = "NearIt.Permissions.Location.Denied";
 
   // Error codes
-  private static final String E_REFRESH_CONFIG_ERROR = "E_REFRESH_CONFIG_ERROR";
   private static final String E_START_RADAR_ERROR = "E_START_RADAR_ERROR";
   private static final String E_STOP_RADAR_ERROR = "E_STOP_RADAR_ERROR";
   private static final String E_SEND_TRACKING_ERROR = "E_SEND_TRACKING_ERROR";
@@ -106,7 +106,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   private static final String E_COUPONS_RETRIEVAL_ERROR = "E_COUPONS_RETRIEVAL_ERROR";
   private static final String E_OPT_OUT_ERROR = "E_OPT_OUT_ERROR";
 
-
+  @SuppressWarnings("WeakerAccess")
   public RNNearItModule(ReactApplicationContext reactContext) {
     super(reactContext);
 
@@ -174,8 +174,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
       private Map<String, Object> getStatusConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put("notified", Recipe.NOTIFIED_STATUS);
-            put("engaged", Recipe.ENGAGED_STATUS);
+            put("notified", Recipe.RECEIVED);
+            put("engaged", Recipe.OPENED);
           }
         });
       }
@@ -191,6 +191,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     });
   }
 
+  @SuppressWarnings("unused")
   public static void onPostCreate(Context context, Intent intent) {
     if (NearUtils.carriesNearItContent(intent)) {
       NearUtils.parseContents(intent, new RNNearItCoreContentsListener(context, null, true));
@@ -227,6 +228,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   // ReactNative listeners management
+  @SuppressWarnings("unused")
   @ReactMethod
   public void listenerRegistered(final Promise promise) {
     final int listenersCount = RNNearItPersistedQueue.defaultQueue().registerListener();
@@ -235,6 +237,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     promise.resolve(true);
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void listenerUnregistered(final Promise promise) {
     final int listenersCount = RNNearItPersistedQueue.defaultQueue().unregisterListener();
@@ -248,23 +251,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     NearUtils.parseContents(parcelable, trackingInfo, new RNNearItCoreContentsListener(getReactApplicationContext(), getRCTDeviceEventEmitter(), false));
   }
 
-  // NearIT Config
-  @ReactMethod
-  public void refreshConfig(final Promise promise) {
-    NearItManager.getInstance().refreshConfigs(new RecipeRefreshListener() {
-      @Override
-      public void onRecipesRefresh() {
-        promise.resolve(null);
-      }
-
-      @Override
-      public void onRecipesRefreshFail() {
-        promise.reject(E_REFRESH_CONFIG_ERROR, "refreshConfig failed");
-      }
-    });
-  }
-
   // NearIT Radar
+  @SuppressWarnings("unused")
+  @SuppressLint("MissingPermission")
   @ReactMethod
   public void startRadar(final Promise promise) {
     try {
@@ -275,6 +264,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     }
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void stopRadar(final Promise promise) {
     try {
@@ -286,6 +276,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   // NearIT Trackings
+  @SuppressWarnings("unused")
   @ReactMethod
   public void sendTracking(final String trackinInfoData, final String status, final Promise promise) {
     try {
@@ -299,6 +290,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   // NearIT Feedback
+  @SuppressWarnings("unused")
   @ReactMethod
   public void sendFeedback(final String feedbackB64, final int rating, final String comment, final Promise promise) {
     final Feedback feedback;
@@ -322,6 +314,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   }
 
   // NearIT UserProfiling
+  @SuppressWarnings("unused")
   @ReactMethod
   public void getUserProfileId(final Promise promise) {
     NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
@@ -337,6 +330,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     });
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void setUserProfileId(final String profileId, final Promise promise) {
     try {
@@ -347,6 +341,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     }
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void resetUserProfile(final Promise promise) {
     NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
@@ -362,6 +357,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     });
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void setUserData(final ReadableMap userData, final Promise promise) {
     try {
@@ -374,6 +370,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     }
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void optOut(final Promise promise) {
     NearItManager.getInstance().optOut(new OptOutNotifier() {
@@ -391,21 +388,25 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
 
   // NearIT Permissions request
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void checkNotificationPermission(final Promise promise) {
     promise.resolve(true);
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void requestNotificationPermission(final Promise promise) {
     promise.resolve(true);
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void checkLocationPermission(final Promise promise) {
     promise.resolve(true);
   }
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void requestLocationPermission(final Promise promise) {
     promise.resolve(true);
@@ -413,16 +414,17 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
 
   // NearIT Custom Trigger
 
+  @SuppressWarnings("unused")
   @ReactMethod
   public void triggerEvent(final String eventKey, final Promise promise) {
     // Trigger Custom Event Key
-    NearItManager.getInstance().processCustomTrigger(eventKey);
+    NearItManager.getInstance().triggerInAppEvent(eventKey);
     // Resolve null, if a Recipe is triggered then the normal notification flow will run
     promise.resolve(null);
   }
 
   // NearIT Coupons
-
+  @SuppressWarnings("unused")
   @ReactMethod
   public void getCoupons(final Promise promise) {
     NearItManager.getInstance().getCoupons(new CouponListener() {
@@ -467,6 +469,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
   }
 
+  @SuppressWarnings("unused")
   private void sendEventWithLocationPermissionStatus(final String permissionStatus) {
     try {
       // Create Event map to send to JS
