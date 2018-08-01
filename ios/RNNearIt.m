@@ -357,7 +357,7 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
                     rejection: (RCTPromiseRejectBlock) reject)
 {
     for(id key in userData) {
-        [[NITManager defaultManager] setDeferredUserDataWithKey:key value:[userData objectForKey:key]];
+        [[NITManager defaultManager] setUserDataWithKey:key value:[userData objectForKey:key]];
     }
     
     resolve([NSNull null]);
@@ -509,7 +509,7 @@ RCT_EXPORT_METHOD(triggerEvent:(NSString* _Nonnull) eventKey
                      rejection:(RCTPromiseRejectBlock)reject)
 {
     // Trigger Custom Event Key
-    [[NITManager defaultManager] processCustomTriggerWithKey:eventKey];
+    [[NITManager defaultManager] triggerInAppEventWithKey:eventKey];
     // Resolve null, if a Recipe is triggered then the normal notification flow will run
     resolve([NSNull null]);
 }
