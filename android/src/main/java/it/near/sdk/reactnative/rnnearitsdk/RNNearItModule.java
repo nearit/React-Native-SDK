@@ -375,6 +375,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
   @ReactMethod
   public void setUserData(final String key, final String value, final Promise promise) {
     try {
+      Log.d("RNNearItModule", "setting user data: "+key+", "+value);
       NearItManager.getInstance().setUserData(key, value);
       promise.resolve(null);
     } catch (Exception e) {
@@ -394,6 +395,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
       }
       NearMultipleChoiceDataPoint multiChoiceData = new NearMultipleChoiceDataPoint(data);
 
+      Log.d("RNNearItModule", "setting user data: "+key+", "+data);
       NearItManager.getInstance().setUserData(key, multiChoiceData);
       promise.resolve(null);
     } catch (Exception e) {
