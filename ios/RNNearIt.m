@@ -47,7 +47,6 @@ NSString* const PERMISSION_LOCATION_GRANTED = @"NearIt.Permissions.Location.Gran
 NSString* const PERMISSION_LOCATION_DENIED = @"NearIt.Permissions.Location.Denied";
 
 // Error codes
-NSString* const E_REFRESH_CONFIG_ERROR = @"E_REFRESH_CONFIG_ERROR";
 NSString* const E_START_RADAR_ERROR = @"E_START_RADAR_ERROR";
 NSString* const E_STOP_RADAR_ERROR = @"E_STOP_RADAR_ERROR";
 NSString* const E_SEND_TRACKING_ERROR = @"E_SEND_TRACKING_ERROR";
@@ -240,20 +239,6 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
     [self handleNearContent:content
                trackingInfo:nil
              fromUserAction:YES];
-}
-
-// MARK: NearIT Config
-
-RCT_EXPORT_METHOD(refreshConfig: (RCTPromiseResolveBlock) resolve
-                       rejecter: (RCTPromiseRejectBlock) reject)
-{
-    [[NITManager defaultManager] refreshConfigWithCompletionHandler:^(NSError * _Nullable error) {
-        if (!error) {
-            resolve([NSNull null]);
-        } else {
-            reject(E_REFRESH_CONFIG_ERROR, @"refreshConfig failed", nil);
-        }
-    }];
 }
 
 // MARK: NearIT Radar
