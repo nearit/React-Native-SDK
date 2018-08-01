@@ -39,6 +39,7 @@ import java.util.Map;
 import it.near.sdk.NearItManager;
 import it.near.sdk.communication.OptOutNotifier;
 import it.near.sdk.operation.NearItUserProfile;
+import it.near.sdk.operation.values.NearMultipleChoiceDataPoint;
 import it.near.sdk.reactions.couponplugin.CouponListener;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
@@ -367,6 +368,36 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(E_USER_PROFILE_DATA_ERROR, "Error while setting UserData");
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @ReactMethod
+  public void setUserData(final String key, final String value, final Promise promise) {
+    try {
+      NearItManager.getInstance().setUserData(key, value);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(E_USER_PROFILE_DATA_ERROR, "Error while setting userData");
+    }
+  }
+
+  @SuppressWarnings("unused")
+  @ReactMethod
+  public void setMultiChoiceUserData(final String key, final ReadableMap userData, final Promise promise) {
+    try {
+      HashMap<String, Boolean> data = new HashMap<>();
+      for (Map.Entry<String, Object> entry : userData.toHashMap().entrySet()) {
+        if(entry.getValue() instanceof Boolean){
+          data.put(entry.getKey(), (Boolean) entry.getValue());
+        }
+      }
+      NearMultipleChoiceDataPoint multiChoiceData = new NearMultipleChoiceDataPoint(data);
+
+      NearItManager.getInstance().setUserData(key, multiChoiceData);
+      promise.resolve(null);
+    } catch (Exception e) {
+      promise.reject(E_USER_PROFILE_DATA_ERROR, "Error while setting userData");
     }
   }
 
