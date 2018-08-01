@@ -363,6 +363,35 @@ RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
     resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) key
+                        value: (NSString* _Nonnull) value
+                   resolution: (RCTPromiseResolveBlock) resolve
+                    rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] setUserDataWithKey:key value:value];
+    
+    resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) dataKey
+                     userData: (NSDictionary* _Nonnull) userData
+                   resolution: (RCTPromiseResolveBlock) resolve
+                    rejection: (RCTPromiseRejectBlock) reject)
+{
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
+    for(id key in userData) {
+        NSObject* object = [userData objectForKey:key];
+        if ([object class] == [NSNumber class])
+        {
+            data[key] = @(object);
+        }
+        
+    }
+    [[NITManager defaultManager] setUserDataWithKey:dataKey multiValue:data];
+    
+    resolve([NSNull null]);
+}
+
 RCT_EXPORT_METHOD(optOut: (RCTPromiseResolveBlock) resolve
                rejection: (RCTPromiseRejectBlock) reject)
 {
