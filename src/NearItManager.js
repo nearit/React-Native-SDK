@@ -120,6 +120,14 @@ export class NearItManager {
     return NearItSdk.setUserData(userDataObject)
   }
 
+  static setUserData (key: String, userDataObject: { [string]: boolean }): Promise<null> {
+    return NearItSdk.setUserData(userDataObject)
+  }
+
+  static setUserData (key: String, value: String): Promise<null> {
+    return NearItSdk.setUserData(key, value)
+  }
+
   static optOut (): Promise<null> {
     return NearItSdk.optOut()
   }
