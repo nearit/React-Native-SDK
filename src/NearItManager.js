@@ -88,10 +88,6 @@ export class NearItManager {
       })
   }
 
-  static refreshConfig (): Promise<null> {
-    return NearItSdk.refreshConfig()
-  }
-
   static startRadar (): Promise<null> {
     return NearItSdk.startRadar()
   }
