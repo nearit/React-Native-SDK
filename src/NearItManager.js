@@ -120,7 +120,7 @@ export class NearItManager {
     return NearItSdk.setMultiChoiceUserData(key, userDataObject)
   }
 
-  static setUserData (key: String, value: String): Promise<null> {
+  static setUserData (key: string, value: string): Promise<null> {
     return NearItSdk.setUserData(key, value)
   }
 
