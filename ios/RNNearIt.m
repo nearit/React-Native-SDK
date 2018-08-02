@@ -352,17 +352,6 @@ RCT_EXPORT_METHOD(resetUserProfile: (RCTPromiseResolveBlock) resolve
     }];
 }
 
-RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
-                   resolution: (RCTPromiseResolveBlock) resolve
-                    rejection: (RCTPromiseRejectBlock) reject)
-{
-    for(id key in userData) {
-        [[NITManager defaultManager] setUserDataWithKey:key value:[userData objectForKey:key]];
-    }
-    
-    resolve([NSNull null]);
-}
-
 RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) key
                         value: (NSString* _Nonnull) value
                    resolution: (RCTPromiseResolveBlock) resolve
