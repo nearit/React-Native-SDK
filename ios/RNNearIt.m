@@ -362,7 +362,7 @@ RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) key
     resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) dataKey
+RCT_EXPORT_METHOD(setMultiChoiceUserData: (NSString* _Nonnull) dataKey
                      userData: (NSDictionary* _Nonnull) userData
                    resolution: (RCTPromiseResolveBlock) resolve
                     rejection: (RCTPromiseRejectBlock) reject)
