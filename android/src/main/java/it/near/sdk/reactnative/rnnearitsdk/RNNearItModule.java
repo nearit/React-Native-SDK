@@ -397,7 +397,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
       }
       }
       if (!data.isEmpty()) {
-        NearMultipleChoiceDataPoint multiChoiceData = new NearMultipleChoiceDataPoint(data);
+        multiChoiceData = new NearMultipleChoiceDataPoint(data);
       }
 
       Log.d("RNNearItModule", "setting user data: "+key+", "+data);
