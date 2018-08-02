@@ -353,7 +353,7 @@ RCT_EXPORT_METHOD(resetUserProfile: (RCTPromiseResolveBlock) resolve
 }
 
 RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) key
-                        value: (NSString* _Nonnull) value
+                        value: (NSString* _Nullable) value
                    resolution: (RCTPromiseResolveBlock) resolve
                     rejection: (RCTPromiseRejectBlock) reject)
 {
@@ -363,7 +363,7 @@ RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) key
 }
 
 RCT_EXPORT_METHOD(setMultiChoiceUserData: (NSString* _Nonnull) dataKey
-                     userData: (NSDictionary* _Nonnull) userData
+                     userData: (NSDictionary* _Nullable) userData
                    resolution: (RCTPromiseResolveBlock) resolve
                     rejection: (RCTPromiseRejectBlock) reject)
 {
