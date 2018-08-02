@@ -376,6 +376,7 @@ RCT_EXPORT_METHOD(setMultiChoiceUserData: (NSString* _Nonnull) dataKey
         }
         
     }
+    NITLogD(TAG, @"setting multichoice data key=%@ values=%@", dataKey, data);
     [[NITManager defaultManager] setUserDataWithKey:dataKey multiValue:data];
     
     resolve([NSNull null]);
