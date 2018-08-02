@@ -383,7 +383,7 @@ RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) dataKey
         NSObject* object = [userData objectForKey:key];
         if ([object class] == [NSNumber class])
         {
-            data[key] = @(object);
+            data[key] = object;
         }
         
     }
