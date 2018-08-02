@@ -88,10 +88,6 @@ export class NearItManager {
       })
   }
 
-  static refreshConfig (): Promise<null> {
-    return NearItSdk.refreshConfig()
-  }
-
   static startRadar (): Promise<null> {
     return NearItSdk.startRadar()
   }
@@ -120,8 +116,12 @@ export class NearItManager {
     return NearItSdk.resetUserProfile()
   }
 
-  static setUserData (userDataObject: { [string]: any }): Promise<null> {
-    return NearItSdk.setUserData(userDataObject)
+  static setMultiChoiceUserData (key: String, userDataObject: { [string]: boolean }): Promise<null> {
+    return NearItSdk.setMultiChoiceUserData(key, userDataObject)
+  }
+
+  static setUserData (key: string, value: string): Promise<null> {
+    return NearItSdk.setUserData(key, value)
   }
 
   static optOut (): Promise<null> {
