@@ -370,11 +370,7 @@ RCT_EXPORT_METHOD(setMultiChoiceUserData: (NSString* _Nonnull) dataKey
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     for(id key in userData) {
         NSObject* object = [userData objectForKey:key];
-        if ([object class] == [NSNumber class])
-        {
-            data[key] = object;
-        }
-        
+        data[key] = object;
     }
     NSLog(@"setting multichoice data key=%@ values=%@", dataKey, data);
     [[NITManager defaultManager] setUserDataWithKey:dataKey multiValue:data];
