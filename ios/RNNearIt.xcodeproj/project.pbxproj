@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */; };
 		303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */; };
-		307D9F861F9F7D7A00BFBA46 /* libNearIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 307D9F851F9F7D7A00BFBA46 /* libNearIT.a */; };
 		3850096C202C576D0076609B /* NearITResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38500944202B04C00076609B /* NearITResources.bundle */; };
+		38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 307D9F851F9F7D7A00BFBA46 /* libNearIT.a */; };
 		B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNNearIt.m */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				307D9F861F9F7D7A00BFBA46 /* libNearIT.a in Frameworks */,
+				38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +59,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		38E31BFD21130F510058EE9D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
@@ -71,6 +78,7 @@
 				B3E7B5881CC2AC0600A0062D /* RNNearIt.h */,
 				B3E7B5891CC2AC0600A0062D /* RNNearIt.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				38E31BFD21130F510058EE9D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,7 +109,7 @@
 		58B511D31A9E6C8500147676 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
@@ -192,6 +200,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Debug;
 		};
@@ -229,6 +238,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "arm64 armv7 armv7s x86_64";
 			};
 			name = Release;
 		};

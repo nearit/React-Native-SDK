@@ -94,7 +94,7 @@ public class RNNearItUtils {
   }
 
   static String feedbackToBase64(final Feedback feedback) throws Exception {
-    String base64 = null;
+    String base64;
 
     final Parcel parcel = Parcel.obtain();
     try {
@@ -112,13 +112,13 @@ public class RNNearItUtils {
   }
 
   static Feedback feedbackFromBase64(final String base64) throws Exception {
-    Feedback feedback = null;
+    Feedback feedback;
     final Parcel parcel = Parcel.obtain();
     try {
       final ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
       final byte[] buffer = new byte[1024];
       final GZIPInputStream zis = new GZIPInputStream(new ByteArrayInputStream(Base64.decode(base64, 0)));
-      int len = 0;
+      int len;
       while ((len = zis.read(buffer)) != -1) {
         byteBuffer.write(buffer, 0, len);
       }
@@ -135,6 +135,7 @@ public class RNNearItUtils {
   }
 
   // ReadableArray Utils
+  @SuppressWarnings("WeakerAccess")
   public static JSONArray toJSONArray(ReadableArray readableArray) throws JSONException {
     JSONArray jsonArray = new JSONArray();
 
@@ -166,6 +167,7 @@ public class RNNearItUtils {
     return jsonArray;
   }
 
+  @SuppressWarnings("WeakerAccess")
   public static Object[] toArray(JSONArray jsonArray) throws JSONException {
     Object[] array = new Object[jsonArray.length()];
 
@@ -185,6 +187,7 @@ public class RNNearItUtils {
     return array;
   }
 
+  @SuppressWarnings("WeakerAccess")
   public static Object[] toArray(ReadableArray readableArray) {
     Object[] array = new Object[readableArray.size()];
 
@@ -216,6 +219,7 @@ public class RNNearItUtils {
     return array;
   }
 
+  @SuppressWarnings("WeakerAccess")
   public static WritableArray toWritableArray(Object[] array) {
     WritableArray writableArray = Arguments.createArray();
 
@@ -240,7 +244,7 @@ public class RNNearItUtils {
       if (value instanceof Map) {
         writableArray.pushMap(toWritableMap((Map<String, Object>) value));
       }
-      if (value.getClass().isArray()) {
+      if (value != null && value.getClass().isArray()) {
         writableArray.pushArray(toWritableArray((Object[]) value));
       }
     }
@@ -304,6 +308,7 @@ public class RNNearItUtils {
     return map;
   }
 
+  @SuppressWarnings("WeakerAccess")
   public static Map<String, Object> toMap(ReadableMap readableMap) {
     Map<String, Object> map = new HashMap<>();
     ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
@@ -339,10 +344,9 @@ public class RNNearItUtils {
 
   public static WritableMap toWritableMap(Map<String, Object> map) {
     WritableMap writableMap = Arguments.createMap();
-    Iterator iterator = map.entrySet().iterator();
 
-    while (iterator.hasNext()) {
-      Map.Entry pair = (Map.Entry) iterator.next();
+    for (Object o : map.entrySet()) {
+      Map.Entry pair = (Map.Entry) o;
       Object value = pair.getValue();
 
       if (value == null) {

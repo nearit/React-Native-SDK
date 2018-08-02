@@ -47,7 +47,6 @@ NSString* const PERMISSION_LOCATION_GRANTED = @"NearIt.Permissions.Location.Gran
 NSString* const PERMISSION_LOCATION_DENIED = @"NearIt.Permissions.Location.Denied";
 
 // Error codes
-NSString* const E_REFRESH_CONFIG_ERROR = @"E_REFRESH_CONFIG_ERROR";
 NSString* const E_START_RADAR_ERROR = @"E_START_RADAR_ERROR";
 NSString* const E_STOP_RADAR_ERROR = @"E_STOP_RADAR_ERROR";
 NSString* const E_SEND_TRACKING_ERROR = @"E_SEND_TRACKING_ERROR";
@@ -145,8 +144,8 @@ RCT_EXPORT_MODULE()
                         @"status": EVENT_STATUS
                      },
              @"Statuses": @{
-                        @"notified": NITRecipeNotified,
-                        @"engaged": NITRecipeEngaged
+                        @"notified": NITRecipeReceived,
+                        @"engaged": NITRecipeOpened
                      },
              @"Permissions": @{
                         @"LocationGranted": PERMISSION_LOCATION_GRANTED,
@@ -240,20 +239,6 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
     [self handleNearContent:content
                trackingInfo:nil
              fromUserAction:YES];
-}
-
-// MARK: NearIT Config
-
-RCT_EXPORT_METHOD(refreshConfig: (RCTPromiseResolveBlock) resolve
-                       rejecter: (RCTPromiseRejectBlock) reject)
-{
-    [[NITManager defaultManager] refreshConfigWithCompletionHandler:^(NSError * _Nullable error) {
-        if (!error) {
-            resolve([NSNull null]);
-        } else {
-            reject(E_REFRESH_CONFIG_ERROR, @"refreshConfig failed", nil);
-        }
-    }];
 }
 
 // MARK: NearIT Radar
@@ -367,13 +352,28 @@ RCT_EXPORT_METHOD(resetUserProfile: (RCTPromiseResolveBlock) resolve
     }];
 }
 
-RCT_EXPORT_METHOD(setUserData: (NSDictionary* _Nonnull) userData
+RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) key
+                        value: (NSString* _Nullable) value
                    resolution: (RCTPromiseResolveBlock) resolve
                     rejection: (RCTPromiseRejectBlock) reject)
 {
+    [[NITManager defaultManager] setUserDataWithKey:key value:value];
+    
+    resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setMultiChoiceUserData: (NSString* _Nonnull) dataKey
+                     userData: (NSDictionary* _Nullable) userData
+                   resolution: (RCTPromiseResolveBlock) resolve
+                    rejection: (RCTPromiseRejectBlock) reject)
+{
+    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     for(id key in userData) {
-        [[NITManager defaultManager] setDeferredUserDataWithKey:key value:[userData objectForKey:key]];
+        NSObject* object = [userData objectForKey:key];
+        data[key] = object;
     }
+    NSLog(@"setting multichoice data key=%@ values=%@", dataKey, data);
+    [[NITManager defaultManager] setUserDataWithKey:dataKey multiValue:data];
     
     resolve([NSNull null]);
 }
@@ -524,7 +524,7 @@ RCT_EXPORT_METHOD(triggerEvent:(NSString* _Nonnull) eventKey
                      rejection:(RCTPromiseRejectBlock)reject)
 {
     // Trigger Custom Event Key
-    [[NITManager defaultManager] processCustomTriggerWithKey:eventKey];
+    [[NITManager defaultManager] triggerInAppEventWithKey:eventKey];
     // Resolve null, if a Recipe is triggered then the normal notification flow will run
     resolve([NSNull null]);
 }

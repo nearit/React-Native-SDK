@@ -8,6 +8,7 @@
 
 package it.near.sdk.reactnative.rnnearitsdk;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -76,6 +77,7 @@ class RNNearItPersistedQueue {
     }
   }
 
+  @SuppressLint("ApplySharedPref")
   static void dispatchNotificationsQueue(final Context context, RNNearItPersistedQueue.NotificationDispatcher dispatcher) {
     if (!defaultQueue().hasListeners()) {
       // Should not be here if there are no listeners

@@ -1,7 +1,10 @@
 {
   "name": "react-native-nearit",
-  "version": "2.6.0-beta.3",
+  "version": "2.9.0-beta.1",
   "author": "Mattia Panzeri <mattia.panzeri93@gmail.com>",
+  "contributors": [
+    "Federico Boschini <federico@nearit.com>"
+  ],
   "license": "MPL-2.0",
   "description": "The official NearIT SDK plugin for React Native",
   "keywords": [
@@ -26,6 +29,7 @@
     "glob": "^7.1.2"
   },
   "devDependencies": {
+    "react-native": ">=0.45",
     "babel-eslint": "^7.0.0",
     "flow-bin": "^0.54.1",
     "flow-copy-source": "^1.2.1",

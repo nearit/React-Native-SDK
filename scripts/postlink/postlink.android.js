@@ -7,9 +7,10 @@ module.exports = () => {
   console.log(emoji.robot, 'Running Android postlink script')
 
   // Gradle deps to inject
-  var googleServicesGradleDep = `classpath 'com.google.gms:google-services:3.1.1'`
-  var nearitRequiredCompileSdkVersion = `compileSdkVersion 26`
-  var nearitRequiredBuildToolsVersion = `buildToolsVersion "26.0.2"`
+  
+  var googleServicesGradleDep = `classpath 'com.google.gms:google-services:4.0.1'`
+  var nearitRequiredCompileSdkVersion = `compileSdkVersion 27`
+  var nearitRequiredBuildToolsVersion = `buildToolsVersion "27.0.3"`
   var rnNearItImport = `import it.near.sdk.reactnative.rnnearitsdk.RNNearItModule;`
   var rnNearItOnPostCreateHook = `RNNearItModule.onPostCreate(getApplicationContext(), getIntent());`
   var rnNearItOnPostCreateMethod = `    @Override\n    protected void onPostCreate(@Nullable Bundle savedInstanceState) {\n        super.onPostCreate(savedInstanceState);\n        RNNearItModule.onPostCreate(getApplicationContext(), getIntent());\n    }`
@@ -50,12 +51,22 @@ module.exports = () => {
   // 2. Add google maven repository
   var jcenterMavenRepository = mainBuildGradleContents.match(/mavenLocal\(\)\n {8}jcenter\(\)/)[0]
   var googleMavenRepository = `maven { url "https://maven.google.com" }`
+  var googleRepository = `google()`
   if (~mainBuildGradleContents.indexOf(googleMavenRepository)) {
-    console.log(emoji.ok, `"google" repository already added.`)
+    console.log(emoji.ok, `"google" maven repository already added.`)
   } else {
-    console.log(emoji.running, `Adding "google" repository to the build definition`)
+    console.log(emoji.running, `Adding "google" maven repository to the build definition`)
     mainBuildGradleContents = mainBuildGradleContents.replace(jcenterMavenRepository,
             `${jcenterMavenRepository}\n        ${googleMavenRepository}`)
+    fs.writeFileSync(mainBuildGradlePath, mainBuildGradleContents)
+  }
+
+  if (~mainBuildGradleContents.indexOf(googleRepository)) {
+    console.log(emoji.ok, `"google()" repository already added.`)
+  } else {
+    console.log(emoji.running, `Adding "google()" repository to the build definition`)
+    mainBuildGradleContents = mainBuildGradleContents.replace(jcenterMavenRepository,
+            `${googleRepository}\n        ${jcenterMavenRepository}\n`)
     fs.writeFileSync(mainBuildGradlePath, mainBuildGradleContents)
   }
 

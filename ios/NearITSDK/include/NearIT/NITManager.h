@@ -19,6 +19,7 @@
 @class UILocalNotification;
 @class NITTrackingInfo;
 @class NITReactionBundle;
+@class NITInboxItem;
 
 @protocol NITManaging <NSObject>
 
@@ -53,23 +54,30 @@
 - (void)setDeviceTokenWithData:(NSData* _Nonnull)token;
 - (BOOL)processRecipeSimpleWithUserInfo:(NSDictionary<NSString*, id> * _Nullable)userInfo;
 - (void)sendTrackingWithTrackingInfo:(NITTrackingInfo * _Nullable)trackingInfo event:(NSString* _Nullable)event;
-- (void)setUserDataWithKey:(NSString* _Nonnull)key value:(NSString* _Nullable)value completionHandler:(void (^_Nullable)(NSError* _Nullable error))handler DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use setDeferredUserDataWithKey");
-- (void)setBatchUserDataWithDictionary:(NSDictionary<NSString*, id>* _Nonnull)valuesDictiornary completionHandler:(void (^_Nullable)(NSError* _Nullable error))handler DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use setDeferredUserDataWithKey");
-- (void)setDeferredUserDataWithKey:(NSString * _Nonnull)key value:(NSString * _Nonnull)value;
+- (void)setUserDataWithKey:(NSString* _Nonnull)key value:(NSString* _Nullable)value completionHandler:(void (^_Nullable)(NSError* _Nullable error))handler DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use setUserData(\"MY_KEY\", value:\"MY_VALUE\")");
+- (void)setBatchUserDataWithDictionary:(NSDictionary<NSString*, id>* _Nonnull)valuesDictiornary completionHandler:(void (^_Nullable)(NSError* _Nullable error))handler DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use setUserData(\"MY_KEY\", value:\"MY_VALUE\")");
+- (void)setDeferredUserDataWithKey:(NSString * _Nonnull)key value:(NSString * _Nullable)value
+DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use setUserDataWithKey(\"MY_KEY\", value:\"MY_VALUE\")");
+- (void)setUserDataWithKey:(NSString* _Nonnull)key value:(NSString* _Nullable)value;
+- (void)setUserDataWithKey:(NSString* _Nonnull)key multiValue:(NSDictionary<NSString*, NSNumber*>* _Nullable)value;
 - (void)sendEventWithEvent:(NITEvent* _Nonnull)event completionHandler:(void (^_Nullable)(NSError* _Nullable error))handler;
 - (void)couponsWithCompletionHandler:(void (^ _Nullable)(NSArray<NITCoupon*>* _Nullable, NSError* _Nullable))handler;
 - (void)recipesWithCompletionHandler:(void (^_Nullable)(NSArray<NITRecipe*>* _Nullable recipes, NSError * _Nullable error))completionHandler;
 - (void)processRecipeWithId:(NSString* _Nonnull)recipeId;
 - (BOOL)processRecipeWithUserInfo:(NSDictionary<NSString *,id> * _Nonnull)userInfo completion:(void (^_Nullable)(NITReactionBundle* _Nullable object, NITTrackingInfo * _Nullable trackingInfo, NSError* _Nullable error))completionHandler;
+- (BOOL)processRecipeWithResponse:(UNNotificationResponse*)response completion:(void (^_Nullable)(NITReactionBundle* _Nullable object, NITTrackingInfo * _Nullable trackingInfo, NSError* _Nullable error))completionHandler;
 - (void)resetProfile DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use resetProfileWithCompletionHandler");
 - (void)resetProfileWithCompletionHandler:(void (^_Nonnull)(NSString* _Nullable profileId, NSError* _Nullable error))handler;
 - (NSString* _Nullable)profileId DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use profileIdWithCompletionHandler");
 - (void)profileIdWithCompletionHandler:(void (^_Nonnull)(NSString* _Nullable profileId, NSError* _Nullable error))handler;
 - (void)setProfileId:(NSString * _Nonnull)profileId;
 - (void)optOutWithCompletionHandler:(void (^_Nonnull)(BOOL success))handler;
-- (void)processCustomTriggerWithKey:(NSString* _Nonnull)key;
+- (void)processCustomTriggerWithKey:(NSString* _Nonnull)key
+DEPRECATED_ATTRIBUTE DEPRECATED_MSG_ATTRIBUTE("Use triggerInAppEventWithKey");
+- (void)triggerInAppEventWithKey:(NSString* _Nonnull)key;
 - (void)application:(UIApplication* _Nonnull)application performFetchWithCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler;
 - (void)parseContent:(id _Nonnull)content trackingInfo:(NITTrackingInfo* _Nonnull)trackingInfo contentDelegate:(id<NITContentDelegate> _Nonnull)contentDelegate;
 - (BOOL)application:(UIApplication* _Nonnull)application openURL:(NSURL* _Nonnull)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id>* _Nullable)options;
+- (void)inboxWithCompletion:(void(^_Nonnull)(NSArray<NITInboxItem*>* _Nullable items, NSError* _Nullable error))completion;
 
 @end
