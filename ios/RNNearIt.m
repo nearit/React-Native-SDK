@@ -144,8 +144,8 @@ RCT_EXPORT_MODULE()
                         @"status": EVENT_STATUS
                      },
              @"Statuses": @{
-                        @"notified": NITRecipeNotified,
-                        @"engaged": NITRecipeEngaged
+                        @"notified": NITRecipeReceived,
+                        @"engaged": NITRecipeOpened
                      },
              @"Permissions": @{
                         @"LocationGranted": PERMISSION_LOCATION_GRANTED,
