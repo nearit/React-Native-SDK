@@ -175,8 +175,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
       private Map<String, Object> getStatusConstants() {
         return Collections.unmodifiableMap(new HashMap<String, Object>() {
           {
-            put("notified", Recipe.RECEIVED);
-            put("engaged", Recipe.OPENED);
+            put("received", Recipe.RECEIVED);
+            put("opened", Recipe.OPENED);
           }
         });
       }
