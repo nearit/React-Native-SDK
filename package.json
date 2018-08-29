@@ -52,10 +52,5 @@
   },
   "standard": {
     "parser": "babel-eslint"
-  },
-  "rnpm": {
-    "commands": {
-      "postlink": "node node_modules/react-native-nearit/scripts/postlink/run.js"
-    }
   }
 }
