@@ -45,13 +45,13 @@ class NearITPermissions {
         return getDidAskOnce('permission').then(didAsk => {
           if (didAsk) {
             return NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(
-              permissionTypes['location'],
+              permissionTypes['location']
             ).then(shouldShow => ('denied'))
           }
 
           return 'never_asked'
         })
-      },
+      }
     )
   }
 
@@ -60,7 +60,7 @@ class NearITPermissions {
 
     return PermissionsAndroid.request(
       permissionTypes['location'],
-      rationale,
+      rationale
     ).then(result => {
       // PermissionsAndroid.request() to native module resolves to boolean
       // rather than string if running on OS version prior to Android M
@@ -79,5 +79,4 @@ class NearITPermissions {
   requestNotification: () => Promise<Status> = () => {
     return 'always'
   }
-
 }

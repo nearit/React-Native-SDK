@@ -30,5 +30,4 @@ class NearITPermissions {
 
   requestNotification: () => Promise<Status> = () =>
     PermissionsIOS.requestPermission('notification')
-
 }
