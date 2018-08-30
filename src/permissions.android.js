@@ -18,7 +18,7 @@ const permissionTypes = {
 const RESULTS = {
   [PermissionsAndroid.RESULTS.GRANTED]: 'always',
   [PermissionsAndroid.RESULTS.DENIED]: 'denied',
-  [PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN]: 'denied',
+  [PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN]: 'denied'
 }
 
 const STORAGE_KEY = '@RNNermissions:didAskPermission:'
@@ -36,16 +36,16 @@ class NearITPermissions {
     Promise.reject(new Error("'openSettings' is deprecated on android"))
 
   checkLocation: () => Promise<Status> = () => {
-    return PermissionsAndroid.check(permissionTypes[permission]).then(
+    return PermissionsAndroid.check(permissionTypes['location']).then(
       isAuthorized => {
         if (isAuthorized) {
           return 'always'
         }
 
-        return getDidAskOnce(permission).then(didAsk => {
+        return getDidAskOnce('permission').then(didAsk => {
           if (didAsk) {
             return NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(
-              permissionTypes[permission],
+              permissionTypes['location'],
             ).then(shouldShow => ('denied'))
           }
 
@@ -59,7 +59,7 @@ class NearITPermissions {
     let rationale
 
     return PermissionsAndroid.request(
-      permissionTypes[permission],
+      permissionTypes['location'],
       rationale,
     ).then(result => {
       // PermissionsAndroid.request() to native module resolves to boolean
@@ -68,7 +68,7 @@ class NearITPermissions {
         return result ? 'always' : 'denied'
       }
 
-      return setDidAskOnce(permission).then(() => RESULTS[result])
+      return setDidAskOnce('location').then(() => RESULTS[result])
     })
   }
 
@@ -76,7 +76,7 @@ class NearITPermissions {
     return 'always'
   }
 
-  requestNotification: () => Promise<Status> = () =>{
+  requestNotification: () => Promise<Status> = () => {
     return 'always'
   }
 
