@@ -1,4 +1,4 @@
-const config = require('react-native/local-cli/core/config');
+const config = require('react-native/local-cli/core/Config');
 const PbxFile = require('xcode/lib/pbxFile');
 const path = require('path');
 const xcode = require('xcode');
