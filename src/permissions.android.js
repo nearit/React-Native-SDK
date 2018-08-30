@@ -29,7 +29,7 @@ const setDidAskOnce = (permission: string) =>
 const getDidAskOnce = (permission: string) =>
   AsyncStorage.getItem(STORAGE_KEY + permission).then(item => !!item)
 
-class NearITPermissions {
+export class NearITPermissions {
   canOpenSettings: () => Promise<boolean> = () => Promise.resolve(false)
 
   openSettings: () => Promise<*> = () =>
@@ -73,10 +73,10 @@ class NearITPermissions {
   }
 
   checkNotification: () => Promise<Status> = () => {
-    return 'always'
+    return Promise.resolve('always')
   }
 
   requestNotification: () => Promise<Status> = () => {
-    return 'always'
+    return Promise.resolve('always')
   }
 }

@@ -12,7 +12,7 @@ const PermissionsIOS = NativeModules.RNNPermissions
 
 type Status = 'always' | 'denied' | 'when_in_use' | 'never_asked'
 
-class NearITPermissions {
+export class NearITPermissions {
   canOpenSettings: () => Promise<boolean> = () =>
     PermissionsIOS.canOpenSettings()
 
