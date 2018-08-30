@@ -1,4 +1,4 @@
-const config = require('react-native/local-cli/core/Config');
+const config = require('react-native/local-cli/core/index');
 const PbxFile = require('xcode/lib/pbxFile');
 const path = require('path');
 const xcode = require('xcode');
@@ -7,7 +7,7 @@ const createGroupWithMessage = require('react-native/local-cli/link/ios/createGr
 
 function addNearITiOSResources() {
     const iOSconfig = config.getProjectConfig().ios;
-    const pw_iOSconfig = config.getDependencyConfig('react-native-nearit').ios;
+    const nearit_iOSconfig = config.getDependencyConfig('react-native-nearit').ios;
 
     const project = xcode.project(iOSconfig.pbxprojPath).parseSync();
 
@@ -22,7 +22,7 @@ function addNearITiOSResources() {
             if (file != null) {
                 if (file.path == 'libRNNearIt.a') {
                     createGroupWithMessage(project, 'Resources');
-                    project.addResourceFile(path.relative(iOSconfig.sourceDir, path.join(pw_iOSconfig.sourceDir, 'NearITResources.bundle')), {'target' : uuid }, null);
+                    project.addResourceFile(path.relative(iOSconfig.sourceDir, path.join(nearit_iOSconfig.sourceDir, 'NearITResources.bundle')), {'target' : uuid }, null);
                 }
             }
         }
