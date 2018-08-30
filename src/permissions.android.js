@@ -30,12 +30,15 @@ const getDidAskOnce = (permission: string) =>
   AsyncStorage.getItem(STORAGE_KEY + permission).then(item => !!item)
 
 export class NearITPermissions {
-  canOpenSettings: () => Promise<boolean> = () => Promise.resolve(false)
+  canOpenSettings (): Promise<boolean> {
+    return Promise.resolve(false)
+  }
 
-  openSettings: () => Promise<*> = () =>
-    Promise.reject(new Error("'openSettings' is deprecated on android"))
+  openSettings (): Promise<*> {
+    return Promise.reject(new Error("'openSettings' is deprecated on android"))
+  }
 
-  checkLocation: () => Promise<Status> = () => {
+  checkLocation (): Promise<Status> {
     return PermissionsAndroid.check(permissionTypes['location']).then(
       isAuthorized => {
         if (isAuthorized) {
@@ -55,7 +58,7 @@ export class NearITPermissions {
     )
   }
 
-  requestLocation: () => Promise<Status> = () => {
+  requestLocation (): Promise<Status> {
     let rationale
 
     return PermissionsAndroid.request(
@@ -72,11 +75,11 @@ export class NearITPermissions {
     })
   }
 
-  checkNotification: () => Promise<Status> = () => {
+  checkNotification (): Promise<Status> {
     return Promise.resolve('always')
   }
 
-  requestNotification: () => Promise<Status> = () => {
+  requestNotification (): Promise<Status> {
     return Promise.resolve('always')
   }
 }
