@@ -105,9 +105,10 @@ RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)typ
             status = [RNNLocationPermission getStatus];
             break;
         }
-        case RNNPermissionTypeNotification:
+        case RNNPermissionTypeNotification: {
             status = [RNNNotificationPermission getStatus];
             break;
+        }
         default:
             break;
     }
@@ -117,13 +118,11 @@ RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)typ
 
 RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-    NSString *status;
 
     switch (type) {
-        case RNNPermissionTypeLocation: {
+        case RNNPermissionTypeLocation:
             return [RNNLocationPermission request:resolve];
-        }
-        case RNNTypeNotification:
+        case RNNPermissionTypeNotification:
             return [RNNNotificationPermission request:resolve];
         default:
             break;
