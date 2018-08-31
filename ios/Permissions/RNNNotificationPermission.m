@@ -30,46 +30,42 @@ static NSString* RNNDidAskForNotification = @"RNNDidAskForNotification";
 
 - (void)requestWithCompletionHandler:(void (^)(NSString*))completionHandler {
     NSString *status = [self.class getStatus];
-    switch (status) {
-        case RNNStatusNeverAsked: {
-            self.completionHandler = completionHandler;
+    if ([status isEqualToString:RNNStatusNeverAsked]) {
+        self.completionHandler = completionHandler;
 
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                    selector:@selector(applicationDidBecomeActive)
-                                                        name:UIApplicationDidBecomeActiveNotification
-                                                    object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                selector:@selector(applicationDidBecomeActive)
+                                                    name:UIApplicationDidBecomeActiveNotification
+                                                object:nil];
 
-            UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil];
-            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
 
-            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:RNNDidAskForNotification];
-            [[NSUserDefaults standardUserDefaults] synchronize];
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:RNNDidAskForNotification];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    } else if ([status isEqualToString:RNNStatusDenied]) {
+        if (@(UIApplicationOpenSettingsURLString != nil)) {
+
+            NSNotificationCenter * __weak center = [NSNotificationCenter defaultCenter];
+            id __block token = [center addObserverForName:UIApplicationDidBecomeActiveNotification
+                                                    object:nil
+                                                    queue:nil
+                                                usingBlock:^(NSNotification *note) {
+                                                    [center removeObserver:token];
+                                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                                                    completionHandler(RNNNotificationPermission.getStatus);
+                                                    });
+                                                }];
+
+            NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            [[UIApplication sharedApplication] openURL:url];
+        } else {
+            NSLog(@"E_OPEN_SETTINGS_ERROR: Can't open app settings");
+            completionHandler(status)
         }
-        case RNNStatusDenied: {
-            if (@(UIApplicationOpenSettingsURLString != nil)) {
-
-                NSNotificationCenter * __weak center = [NSNotificationCenter defaultCenter];
-                id __block token = [center addObserverForName:UIApplicationDidBecomeActiveNotification
-                                                       object:nil
-                                                        queue:nil
-                                                   usingBlock:^(NSNotification *note) {
-                                                       [center removeObserver:token];
-                                                       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                                                        completionHandler(RNNNotificationPermission.getStatus);
-                                                       });
-                                                   }];
-
-                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                [[UIApplication sharedApplication] openURL:url];
-            } else {
-                NSLog(@"E_OPEN_SETTINGS_ERROR: Can't open app settings");
-                completionHandler(status)
-            }
-        }
-        default: {
-            completionHandler(status);
-        }
+    } else {
+        completionHandler(status);
     }
 }
 

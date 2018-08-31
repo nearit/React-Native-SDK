@@ -33,40 +33,37 @@
 
 - (void)requestWithCompletionHandler:(void (^)(NSString *))completionHandler {
     NSString *status = [RNNLocationPermission getStatus];
-    switch (status) {
-        case RNNStatusNeverAsked: {
-            self.completionHandler = completionHandler;
+    if ([status isEqualToString:RNNStatusNeverAsked]) {
+        self.completionHandler = completionHandler;
 
-            if (self.locationManager == nil) {
-                self.locationManager = [[CLLocationManager alloc] init];
-                self.locationManager.delegate = self;
-            }
-
-            [self.locationManager requestAlwaysAuthorization];
+        if (self.locationManager == nil) {
+            self.locationManager = [[CLLocationManager alloc] init];
+            self.locationManager.delegate = self;
         }
-        case RNNStatusDenied: {
-            if (@(UIApplicationOpenSettingsURLString != nil)) {
 
-                NSNotificationCenter * __weak center = [NSNotificationCenter defaultCenter];
-                id __block token = [center addObserverForName:UIApplicationDidBecomeActiveNotification
-                                                       object:nil
-                                                        queue:nil
-                                                   usingBlock:^(NSNotification *note) {
-                                                       [center removeObserver:token];
-                                                       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                                                        completionHandler(RNNLocationPermission.getStatus);
-                                                       });
-                                                   }];
+        [self.locationManager requestAlwaysAuthorization];
+    } else if ([status isEqualToString:RNNStatusDenied]) {
+        if (@(UIApplicationOpenSettingsURLString != nil)) {
 
-                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                [[UIApplication sharedApplication] openURL:url];
-            } else {
-                NSLog(@"E_OPEN_SETTINGS_ERROR: Can't open app settings");
-                completionHandler(status)
-            }
+            NSNotificationCenter * __weak center = [NSNotificationCenter defaultCenter];
+            id __block token = [center addObserverForName:UIApplicationDidBecomeActiveNotification
+                                                    object:nil
+                                                    queue:nil
+                                                usingBlock:^(NSNotification *note) {
+                                                    [center removeObserver:token];
+                                                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                                                    completionHandler(RNNLocationPermission.getStatus);
+                                                    });
+                                                }];
+
+            NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+            [[UIApplication sharedApplication] openURL:url];
+        } else {
+            NSLog(@"E_OPEN_SETTINGS_ERROR: Can't open app settings");
+            completionHandler(status)
         }
-        default:
-            completionHandler(status);
+    } else {
+        completionHandler(status);
     }
 }
 
