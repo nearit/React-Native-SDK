@@ -95,7 +95,7 @@ RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve rejecter:(RCTProm
 
 // MARK: Check and request permissions
 
-RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)type json:(id)json resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     NSString *status;
 
@@ -115,7 +115,7 @@ RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)typ
     resolve(status);
 }
 
-RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type json:(id)json resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     switch (type) {
         case RNNPermissionTypeLocation:
