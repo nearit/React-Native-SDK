@@ -62,7 +62,7 @@ static NSString* RNNDidAskForNotification = @"RNNDidAskForNotification";
             [[UIApplication sharedApplication] openURL:url];
         } else {
             NSLog(@"E_OPEN_SETTINGS_ERROR: Can't open app settings");
-            completionHandler(status)
+            completionHandler(status);
         }
     } else {
         completionHandler(status);
