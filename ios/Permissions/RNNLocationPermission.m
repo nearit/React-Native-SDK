@@ -32,7 +32,7 @@
 }
 
 - (void)requestWithCompletionHandler:(void (^)(NSString *))completionHandler {
-    NSString *status = [RNNLocationPermission getStatus];
+    NSString *status = [self.class getStatus];
     if ([status isEqualToString:RNNStatusNeverAsked]) {
         self.completionHandler = completionHandler;
 
