@@ -11,7 +11,7 @@
 static NSString* RNNDidAskForNotification = @"RNNDidAskForNotification";
 
 @interface RNNNotificationPermission()
-@property (copy) void (^completionHandler)(NSString*)
+@property (copy) void (^completionHandler)(NSString*);
 @end
 
 @implementation RNNNotificationPermission
