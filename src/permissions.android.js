@@ -45,7 +45,7 @@ export class NearITPermissions {
           return 'always'
         }
 
-        return getDidAskOnce('permission').then(didAsk => {
+        return getDidAskOnce('location').then(didAsk => {
           if (didAsk) {
             return NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(
               permissionTypes['location']
