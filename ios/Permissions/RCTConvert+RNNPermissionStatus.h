@@ -20,9 +20,9 @@ static NSString* RNNStatusGrantedAlways = @"always";
 static NSString* RNNStatusGrantedWhenInUse = @"when_in_use";
 
 typedef NS_ENUM(NSInteger, RNNPermissionType) {
-    RNNTypeUnknown,
-    RNNTypeLocation,
-    RNNTypeNotification
+    RNNPermissionTypeUnknown,
+    RNNPermissionTypeLocation,
+    RNNPermissionTypeNotification
 };
 
 @interface RCTConvert (RNNPermissionStatus)
