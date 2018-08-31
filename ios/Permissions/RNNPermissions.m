@@ -74,7 +74,7 @@ RCT_REMAP_METHOD(canOpenSettings, canOpenSettings:(RCTPromiseResolveBlock)resolv
     resolve(@(UIApplicationOpenSettingsURLString != nil));
 }
 
-RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(openSettings, openSettings:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     if (@(UIApplicationOpenSettingsURLString != nil)) {
 
@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve rejecter:(RCTProm
                                                 queue:nil
                                            usingBlock:^(NSNotification *note) {
                                                [center removeObserver:token];
-                                               resolve([self getPermissionStatus]);
+                                               resolve([self getPermissionStatus:type]);
                                            }];
 
         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
@@ -97,22 +97,7 @@ RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve rejecter:(RCTProm
 
 RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-    NSString *status;
-
-    switch (type) {
-        case RNNPermissionTypeLocation: {
-            status = [RNNLocationPermission getStatus];
-            break;
-        }
-        case RNNPermissionTypeNotification: {
-            status = [RNNNotificationPermission getStatus];
-            break;
-        }
-        default:
-            break;
-    }
-
-    resolve(status);
+    resolve([self getPermissionStatus:type]);
 }
 
 RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
@@ -125,6 +110,24 @@ RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type resol
         default:
             break;
     }
+}
+
+- (NSString *) getPermissionStatus:(RNNPermissionType)permissionType
+{
+    NSString *status;
+    switch (permissionType) {
+        case RNNPermissionTypeLocation: {
+            status = [RNNLocationPermission getStatus];
+            break;
+        }
+        case RNNPermissionTypeNotification: {
+            status = [RNNNotificationPermission getStatus];
+            break;
+        }
+        default:
+            break;
+    }
+    return status;
 }
 
 - (void) requestLocation:(RCTPromiseResolveBlock)resolve
