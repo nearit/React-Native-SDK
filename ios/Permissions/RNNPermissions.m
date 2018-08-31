@@ -69,11 +69,6 @@ RCT_EXPORT_MODULE();
 
 // MARK: Open app settings
 
-RCT_REMAP_METHOD(canOpenSettings, canOpenSettings:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
-    resolve(@(UIApplicationOpenSettingsURLString != nil));
-}
-
 RCT_REMAP_METHOD(openSettings, openSettings:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     if (@(UIApplicationOpenSettingsURLString != nil)) {
@@ -89,6 +84,8 @@ RCT_REMAP_METHOD(openSettings, openSettings:(RNNPermissionType)type resolve:(RCT
 
         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
         [[UIApplication sharedApplication] openURL:url];
+    } else {
+        reject(@"E_OPEN_SETTINGS_ERROR", @"Can't open app settings", nil);
     }
 }
 

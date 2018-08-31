@@ -30,10 +30,6 @@ const getDidAskOnce = (permission: string) =>
   AsyncStorage.getItem(STORAGE_KEY + permission).then(item => !!item)
 
 export class NearITPermissions {
-  static canOpenSettings (): Promise<boolean> {
-    return Promise.resolve(false)
-  }
-
   static openSettings (): Promise<*> {
     return Promise.reject(new Error("'openSettings' is deprecated on android"))
   }
