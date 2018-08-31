@@ -13,8 +13,8 @@ const PermissionsIOS = NativeModules.RNNPermissions
 type Status = 'always' | 'denied' | 'when_in_use' | 'never_asked'
 
 export class NearITPermissions {
-  static openSettingsForLocation (): Promise<Status> {
-    return PermissionsIOS.openSettings('location')
+  static openSettings (): Promise<*> {
+    return PermissionsIOS.openSettings()
   }
 
   static checkLocation (): Promise<Status> {
@@ -23,10 +23,6 @@ export class NearITPermissions {
 
   static requestLocation (): Promise<Status> {
     return PermissionsIOS.requestPermission('location')
-  }
-
-  static openSettingsForNotification (): Promise<Status> {
-    return PermissionsIOS.openSettings('notification')
   }
 
   static checkNotification (): Promise<Status> {

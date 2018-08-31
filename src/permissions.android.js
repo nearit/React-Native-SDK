@@ -30,7 +30,7 @@ const getDidAskOnce = (permission: string) =>
   AsyncStorage.getItem(STORAGE_KEY + permission).then(item => !!item)
 
 export class NearITPermissions {
-  static openSettingsForLocation (): Promise<*> {
+  static openSettings (): Promise<*> {
     return Promise.reject(new Error("'openSettings' is deprecated on android"))
   }
 
@@ -69,10 +69,6 @@ export class NearITPermissions {
 
       return setDidAskOnce('location').then(() => RESULTS[result])
     })
-  }
-
-  static openSettingsForNotification (): Promise<*> {
-    return Promise.reject(new Error("'openSettings' is deprecated on android"))
   }
 
   static checkNotification (): Promise<Status> {

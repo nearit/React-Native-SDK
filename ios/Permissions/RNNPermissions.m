@@ -69,7 +69,7 @@ RCT_EXPORT_MODULE();
 
 // MARK: Open app settings
 
-RCT_REMAP_METHOD(openSettings, openSettings:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(openSettings, openSettings:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     if (@(UIApplicationOpenSettingsURLString != nil)) {
 
@@ -79,7 +79,7 @@ RCT_REMAP_METHOD(openSettings, openSettings:(RNNPermissionType)type resolve:(RCT
                                                 queue:nil
                                            usingBlock:^(NSNotification *note) {
                                                [center removeObserver:token];
-                                               resolve([self getPermissionStatus:type]);
+                                               resolve(@YES);
                                            }];
 
         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
