@@ -116,7 +116,7 @@ RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)typ
     resolve(status);
 }
 
-RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type json:(id)json resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
 
     switch (type) {
