@@ -21,7 +21,7 @@ const RESULTS = {
   [PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN]: 'denied'
 }
 
-const STORAGE_KEY = '@RNNermissions:didAskPermission:'
+const STORAGE_KEY = '@RNNAsked:'
 
 const setDidAskOnce = (permission: string) =>
   AsyncStorage.setItem(STORAGE_KEY + permission, 'true')
