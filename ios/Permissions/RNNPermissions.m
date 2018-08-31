@@ -33,6 +33,7 @@
 #endif
 
 #import "RNNLocationPermission.h"
+#import "RNNNotificationPermission.h"
 
 @interface RNNPermissions()
 @property (strong, nonatomic) RNNLocationPermission *locationMgr;
