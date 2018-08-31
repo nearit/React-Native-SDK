@@ -24,7 +24,7 @@
             return RNNStatusGrantedAlways;
         case kCLAuthorizationStatusAuthorizedWhenInUse:
             return RNNStatusGrantedWhenInUse;
-        case kCLAuthorizationStatusUndetermined:
+        case kCLAuthorizationStatusNotDetermined:
             return RNNStatusNeverAsked;
         default:
             return RNNStatusDenied;
@@ -33,7 +33,7 @@
 
 - (void)requestWithCompletionHandler:(void (^)(NSString *))completionHandler {
     NSString *status = [RNNLocationPermission getStatus];
-    if (status == RNNPermissionStatusUndetermined) {
+    if (status == RNNStatusNeverAsked) {
         self.completionHandler = completionHandler;
 
         if (self.locationManager == nil) {
