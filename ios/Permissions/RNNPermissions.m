@@ -104,9 +104,9 @@ RCT_REMAP_METHOD(getPermissionStatus, getPermissionStatus:(RNNPermissionType)typ
             status = [RNNLocationPermission getStatus];
             break;
         }
-        // case RNNPermissionTypeNotification:
-        //     status = [RNNNotificationPermission getStatus];
-        //     break;
+        case RNNPermissionTypeNotification:
+            status = [RNNNotificationPermission getStatus];
+            break;
         default:
             break;
     }
@@ -122,8 +122,8 @@ RCT_REMAP_METHOD(requestPermission, permissionType:(RNNPermissionType)type resol
         case RNNPermissionTypeLocation: {
             return [RNNLocationPermission request:resolve];
         }
-        // case RNNTypeNotification:
-        //     return [RNNNotificationPermission request:resolve];
+        case RNNTypeNotification:
+            return [RNNNotificationPermission request:resolve];
         default:
             break;
     }
