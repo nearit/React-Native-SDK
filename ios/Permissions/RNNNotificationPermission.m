@@ -27,7 +27,7 @@ static NSString* RNNDidAskForNotification = @"RNNDidAskForNotification";
     }
 }
 
-- (void)request:(UIUserNotificationType)types completionHandler:(void (^)(NSString*))completionHandler {
+- (void)requestWithCompletionHandler:(void (^)(NSString*))completionHandler {
     NSString *status = [self.class getStatus];
 
     if (status == RNNStatusNeverAsked) {
@@ -38,7 +38,7 @@ static NSString* RNNDidAskForNotification = @"RNNDidAskForNotification";
                                                      name:UIApplicationDidBecomeActiveNotification
                                                    object:nil];
 
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeSound |    UIUserNotificationTypeAlert | UIUserNotificationTypeBadge) categories:nil];
         [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
         [[UIApplication sharedApplication] registerForRemoteNotifications];
 
