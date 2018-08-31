@@ -17,7 +17,7 @@ export class NearITPermissions {
     return PermissionsIOS.canOpenSettings()
   }
 
-  static openSettings (): Promise<*> {
+  static openSettings (): Promise<Status> {
     return PermissionsIOS.openSettings()
   }
 
