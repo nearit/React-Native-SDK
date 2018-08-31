@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve rejecter:(RCTProm
                                                 queue:nil
                                            usingBlock:^(NSNotification *note) {
                                                [center removeObserver:token];
-                                               resolve(@YES);
+                                               resolve([self getPermissionStatus]);
                                            }];
 
         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
