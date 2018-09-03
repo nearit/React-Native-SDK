@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:3.1.4'
     }
 }
 
@@ -34,7 +34,7 @@ android {
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 27
     }
 
     lintOptions {
@@ -45,5 +45,5 @@ android {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
-    api 'it.near.sdk:nearit:2.9.4'
+    api 'it.near.sdk:nearit:2.9.5'
 }

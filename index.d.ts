@@ -26,8 +26,8 @@ declare module 'react-native-nearit' {
     }
 
     interface NearItStatuses {
-      notified: string
-      engaged: string
+      received: string
+      opened: string
     }
 
     interface NearItEvent {
