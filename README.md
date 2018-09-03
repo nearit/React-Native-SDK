@@ -60,7 +60,7 @@ $ react-native link react-native-nearit
 
 ## Integration guide
 
-For information on how to integrate all NearIT features in your app, visit the [documentation website](https://nearit-react-native-sdk.readthedocs.io/)
+For information on how to integrate all NearIT features in your app, visit the [documentation website](https://docs.nearit.com/react-native/installation/)
 
 <br/>
 
