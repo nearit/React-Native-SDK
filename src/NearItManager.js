@@ -25,8 +25,8 @@ type NearItEventContent = {
 }
 
 type NearItStatuses = {
-  notified: string,
-  engaged: string
+  received: string,
+  opened: string
 }
 
 type NearItConstants = {
