@@ -12,7 +12,7 @@
 [![Android](https://img.shields.io/badge/Android-16-blue.svg)](https://developer.android.com/about/dashboards/index.html#Platform)
 [![iOS](https://img.shields.io/badge/iOS-9-blue.svg)](https://developer.apple.com/ios/)
 
-[![Documentation Status](https://readthedocs.org/projects/nearit-react-native-sdk/badge/?version=latest)](https://nearit-react-native-sdk.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://img.shields.io/badge/docs-visit-green.svg)](https://docs.nearit.com/react-native/installation/)
 [![Gitter](https://img.shields.io/gitter/room/nearit/Lobby.svg)](https://gitter.im/nearit/Lobby)
 
 NearIT allows to engage app users by sending **context-aware targeted content**.
