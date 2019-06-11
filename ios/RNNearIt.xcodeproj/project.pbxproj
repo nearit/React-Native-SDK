@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */; };
 		303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */; };
+		380DC25422AFF66C006047E7 /* RNNearItConsts.m in Sources */ = {isa = PBXBuildFile; fileRef = 380DC25322AFF66C006047E7 /* RNNearItConsts.m */; };
 		3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */; };
 		38D7ED5C2136E8D7008F1212 /* NearITResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38500944202B04C00076609B /* NearITResources.bundle */; };
 		38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 307D9F851F9F7D7A00BFBA46 /* libNearIT.a */; };
@@ -35,6 +36,8 @@
 		303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotificationsQueue.m; sourceTree = "<group>"; };
 		303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotificationsQueue.h; sourceTree = "<group>"; };
 		307D9F851F9F7D7A00BFBA46 /* libNearIT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNearIT.a; path = NearITSDK/libNearIT.a; sourceTree = "<group>"; };
+		380DC25222AFF66C006047E7 /* RNNearItConsts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNearItConsts.h; sourceTree = "<group>"; };
+		380DC25322AFF66C006047E7 /* RNNearItConsts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNearItConsts.m; sourceTree = "<group>"; };
 		38500944202B04C00076609B /* NearITResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = NearITResources.bundle; path = NearITSDK/NearITResources.bundle; sourceTree = "<group>"; };
 		3894AFF522AEB1370001CA25 /* RNNearItUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNearItUtils.h; sourceTree = "<group>"; };
 		3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNearItUtils.m; sourceTree = "<group>"; };
@@ -72,6 +75,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				380DC25222AFF66C006047E7 /* RNNearItConsts.h */,
+				380DC25322AFF66C006047E7 /* RNNearItConsts.m */,
 				3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */,
 				3894AFF522AEB1370001CA25 /* RNNearItUtils.h */,
 				38500944202B04C00076609B /* NearITResources.bundle */,
@@ -156,6 +161,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				380DC25422AFF66C006047E7 /* RNNearItConsts.m in Sources */,
 				3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */,
 				303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */,
