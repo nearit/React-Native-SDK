@@ -67,37 +67,76 @@ declare module 'react-native-nearit' {
 
       static removeContentsListener (subscription: EmitterSubscription): void
 
-      static refreshConfig(): Promise<void>
+      // Radar related methods
 
-      static startRadar(): Promise<void>
+      static startRadar()
 
-      static stopRadar(): Promise<void>
+      static stopRadar()
 
-      static sendTracking(trackingInfo: string, status: string): Promise<void>
+      // Trackings related methods
+
+      static sendTracking(trackingInfo: string, status: string)
       
-      static sendFeedback(feedbackId: string, rating: NearItRating, comment: string = ''): Promise<void>
+      // Feedback related methods
 
-      static getUserProfileId(): Promise<string>
+      static sendFeedback(feedbackId: string, rating: NearItRating, comment?: string): Promise<void>
 
-      static setUserProfileId(profileId: string): Promise<string>
+      // ProfileId related methods
+      static getProfileId(): Promise<string>
 
-      static resetUserProfile(): Promise<string>
+      static setProfileId(profileId: string)
 
-      static setUserData(userDataObject: Map<string, any>): Promise<void>
+      static resetProfileId(): Promise<string>
+
+      // User data related methods
+
+      static setUserData(key: string, value?: string)
+
+      static setMultiChoiceUserData(key: string, userDataObject: { [key: string]: boolean })
+
+      static getUserData(): Promise<any>
+
+      // Opt-out related methods
 
       static optOut(): Promise<void>
 
-      static checkNotificationPermission(): Promise<boolean | null>
+      // In-app events related methods
 
-      static requestNotificationPermission(): Promise<boolean>
+      static triggerEvent(eventKey: string)
 
-      static checkLocationPermission(): Promise<boolean | null>
+      // Coupon related methods
       
-      static requestLocationPermission(): Promise<boolean>
-
-      static triggerEvent (eventKey: string): Promise<void>
-
       static getCoupons(): Promise<NearItCoupon[]>
+
+      static showCouponList(): Promise<null>
+
+      // Notification history related methods
+
+      // TODO: return type
+      static getNotificationHistory(): Promise<null>
+
+      static showNotificationHistory(): Promise<null>
+
+      static setNotificationHistoryUpdateListener (listener: (event: any) => void): EmitterSubscription
+
+      static markNotificatinHistoryAsOld(): Promise<null>
+
+      // Permissions related methods
+
+      static requestPermissions(expanation?: string): Promise<null>
+
+      static isBluetoothEnabled(): Promise<boolean>
+
+      static areLocationServicesOn(): Promise<boolean>
+
+      static isLocationGranted(): Promise<boolean>
+
+      static isNotificationGranted(): Promise<boolean>
+
+      // Content related methods
+
+      // TODO: param type
+      static showContent(content: any): Promise<null>
 
     }
 
