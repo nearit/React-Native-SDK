@@ -13,6 +13,7 @@
 		3817F1A421382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */; };
 		3817F1A521382E5C0019F552 /* RNNLocationPermission.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F1A021382E5C0019F552 /* RNNLocationPermission.m */; };
 		3817F1A621382E5C0019F552 /* RNNPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F1A221382E5C0019F552 /* RNNPermissions.m */; };
+		3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */; };
 		38D7ED5C2136E8D7008F1212 /* NearITResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38500944202B04C00076609B /* NearITResources.bundle */; };
 		38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 307D9F851F9F7D7A00BFBA46 /* libNearIT.a */; };
 		B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNNearIt.m */; };
@@ -47,6 +48,8 @@
 		3817F1A121382E5C0019F552 /* RNNPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNPermissions.h; path = Permissions/RNNPermissions.h; sourceTree = "<group>"; };
 		3817F1A221382E5C0019F552 /* RNNPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNPermissions.m; path = Permissions/RNNPermissions.m; sourceTree = "<group>"; };
 		38500944202B04C00076609B /* NearITResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = NearITResources.bundle; path = NearITSDK/NearITResources.bundle; sourceTree = "<group>"; };
+		3894AFF522AEB1370001CA25 /* RNNearItUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNearItUtils.h; sourceTree = "<group>"; };
+		3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNearItUtils.m; sourceTree = "<group>"; };
 		B3E7B5881CC2AC0600A0062D /* RNNearIt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNearIt.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RNNearIt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNearIt.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -81,6 +84,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */,
+				3894AFF522AEB1370001CA25 /* RNNearItUtils.h */,
 				3817F19C21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.h */,
 				3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */,
 				3817F19E21382E5C0019F552 /* RNNLocationPermission.h */,
@@ -142,6 +147,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -176,6 +182,7 @@
 				3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */,
 				303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */,
+				3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */,
 				3817F1A621382E5C0019F552 /* RNNPermissions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
