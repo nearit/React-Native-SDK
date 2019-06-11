@@ -64,10 +64,6 @@
     [couponDictionary setObject:(coupon.redeemedAt ? coupon.redeemedAt : [NSNull null])
                          forKey:@"redeemedAt"];
     
-    if (coupon.claims.count > 0) {
-        [couponDictionary setObject:(coupon.claims[0].recipeId ? coupon.claims[0].recipeId : [NSNull null]) forKey:@"recipeId"];
-    }
-    
     if (coupon.icon) {
         if (coupon.icon.url || coupon.icon.smallSizeURL) {
             [couponDictionary setObject:[self bundleNITImage:coupon.icon] forKey:@"image"];

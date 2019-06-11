@@ -29,7 +29,7 @@
 //  Copyright © 2019 NearIT. All rights reserved.
 //
 
-#import <NearITSDK/NearITSDK.h>
+#import <NearIT/NearIT.h>
 
 @interface RNNearItUtils
 
