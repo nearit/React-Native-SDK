@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */; };
 		303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */; };
-		3817F1A321382E5C0019F552 /* RNNNotificationPermission.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F19D21382E5C0019F552 /* RNNNotificationPermission.m */; };
-		3817F1A421382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */; };
-		3817F1A521382E5C0019F552 /* RNNLocationPermission.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F1A021382E5C0019F552 /* RNNLocationPermission.m */; };
-		3817F1A621382E5C0019F552 /* RNNPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F1A221382E5C0019F552 /* RNNPermissions.m */; };
 		3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */; };
 		38D7ED5C2136E8D7008F1212 /* NearITResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38500944202B04C00076609B /* NearITResources.bundle */; };
 		38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 307D9F851F9F7D7A00BFBA46 /* libNearIT.a */; };
@@ -39,14 +35,6 @@
 		303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotificationsQueue.m; sourceTree = "<group>"; };
 		303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotificationsQueue.h; sourceTree = "<group>"; };
 		307D9F851F9F7D7A00BFBA46 /* libNearIT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNearIT.a; path = NearITSDK/libNearIT.a; sourceTree = "<group>"; };
-		3817F19B21382E5C0019F552 /* RNNNotificationPermission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNNotificationPermission.h; path = Permissions/RNNNotificationPermission.h; sourceTree = "<group>"; };
-		3817F19C21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+RNNPermissionStatus.h"; path = "Permissions/RCTConvert+RNNPermissionStatus.h"; sourceTree = "<group>"; };
-		3817F19D21382E5C0019F552 /* RNNNotificationPermission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNNotificationPermission.m; path = Permissions/RNNNotificationPermission.m; sourceTree = "<group>"; };
-		3817F19E21382E5C0019F552 /* RNNLocationPermission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNLocationPermission.h; path = Permissions/RNNLocationPermission.h; sourceTree = "<group>"; };
-		3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+RNNPermissionStatus.m"; path = "Permissions/RCTConvert+RNNPermissionStatus.m"; sourceTree = "<group>"; };
-		3817F1A021382E5C0019F552 /* RNNLocationPermission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNLocationPermission.m; path = Permissions/RNNLocationPermission.m; sourceTree = "<group>"; };
-		3817F1A121382E5C0019F552 /* RNNPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNPermissions.h; path = Permissions/RNNPermissions.h; sourceTree = "<group>"; };
-		3817F1A221382E5C0019F552 /* RNNPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNPermissions.m; path = Permissions/RNNPermissions.m; sourceTree = "<group>"; };
 		38500944202B04C00076609B /* NearITResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = NearITResources.bundle; path = NearITSDK/NearITResources.bundle; sourceTree = "<group>"; };
 		3894AFF522AEB1370001CA25 /* RNNearItUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNearItUtils.h; sourceTree = "<group>"; };
 		3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNearItUtils.m; sourceTree = "<group>"; };
@@ -86,14 +74,6 @@
 			children = (
 				3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */,
 				3894AFF522AEB1370001CA25 /* RNNearItUtils.h */,
-				3817F19C21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.h */,
-				3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */,
-				3817F19E21382E5C0019F552 /* RNNLocationPermission.h */,
-				3817F1A021382E5C0019F552 /* RNNLocationPermission.m */,
-				3817F19B21382E5C0019F552 /* RNNNotificationPermission.h */,
-				3817F19D21382E5C0019F552 /* RNNNotificationPermission.m */,
-				3817F1A121382E5C0019F552 /* RNNPermissions.h */,
-				3817F1A221382E5C0019F552 /* RNNPermissions.m */,
 				38500944202B04C00076609B /* NearITResources.bundle */,
 				303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */,
 				303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */,
@@ -176,14 +156,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3817F1A321382E5C0019F552 /* RNNNotificationPermission.m in Sources */,
-				3817F1A421382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m in Sources */,
-				3817F1A521382E5C0019F552 /* RNNLocationPermission.m in Sources */,
 				3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */,
 				B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */,
 				303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */,
 				3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */,
-				3817F1A621382E5C0019F552 /* RNNPermissions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

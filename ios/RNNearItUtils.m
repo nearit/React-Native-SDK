@@ -29,7 +29,7 @@
 //  Copyright © 2019 Facebook. All rights reserved.
 //
 
-#import "NearITUtils.h"
+#import "RNNearItUtils.h"
 
 #define TAG @"RNNearItUtils"
 
