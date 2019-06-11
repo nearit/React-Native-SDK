@@ -26,6 +26,8 @@
 #import <NearIT/NITLog.h>
 #import <NearIT/NITReactionBundle.h>
 #import <NearIT/NITContentLink.h>
+#import <NearIT/NITNotificationUpdateDelegate.h>
+#import <NearIT/NITHistoryItem.h>
 
 //! Project version number for NearITSDK.
 FOUNDATION_EXPORT double NearITSDKVersionNumber;
