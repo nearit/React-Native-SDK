@@ -21,11 +21,6 @@ NSString* const RN_LOCAL_EVENTS_TOPIC = @"RNNearItLocalEvents";
 
 // Event types
 NSString* const EVENT_TYPE_PERMISSIONS = @"NearIt.Events.PermissionStatus";
-NSString* const EVENT_TYPE_SIMPLE = @"NearIt.Events.SimpleNotification";
-NSString* const EVENT_TYPE_CUSTOM_JSON = @"NearIt.Events.CustomJSON";
-NSString* const EVENT_TYPE_COUPON = @"NearIt.Events.Coupon";
-NSString* const EVENT_TYPE_CONTENT = @"NearIt.Events.Content";
-NSString* const EVENT_TYPE_FEEDBACK = @"NearIt.Events.Feedback";
 
 // Events content
 NSString* const EVENT_TYPE = @"type";
@@ -360,7 +355,7 @@ RCT_EXPORT_METHOD(getUserData: (RCTPromiseResolveBlock) resolve
         if (!error) {
             
         } else {
-            reject(E_PROFILE_GET_USER_DATA_ERROR,
+            reject(E_PROFILE_GET_USER_DATA_ERROR, @"Could NOT get user data", nil);
         }
     }];
 }

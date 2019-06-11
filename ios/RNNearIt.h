@@ -16,6 +16,7 @@
 #import <NearIT/NearIT.h>
 
 #import "RNNearItUtils.h"
+#import "RNNearItConsts.h"
 #import "RNNearItBackgroundQueue.h"
 #import "RNNotificationsQueue.h"
 
