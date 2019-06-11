@@ -48,16 +48,13 @@ NSString* const PERMISSION_LOCATION_GRANTED = @"NearIt.Permissions.Location.Gran
 NSString* const PERMISSION_LOCATION_DENIED = @"NearIt.Permissions.Location.Denied";
 
 // Error codes
-NSString* const E_START_RADAR_ERROR = @"E_START_RADAR_ERROR";
-NSString* const E_STOP_RADAR_ERROR = @"E_STOP_RADAR_ERROR";
-NSString* const E_SEND_TRACKING_ERROR = @"E_SEND_TRACKING_ERROR";
 NSString* const E_SEND_FEEDBACK_ERROR = @"E_SEND_FEEDBACK_ERROR";
-NSString* const E_USER_PROFILE_GET_ERROR = @"E_USER_PROFILE_GET_ERROR";
-NSString* const E_USER_PROFILE_SET_ERROR = @"E_USER_PROFILE_SET_ERROR";
-NSString* const E_USER_PROFILE_RESET_ERROR = @"E_USER_PROFILE_RESET_ERROR";
-NSString* const E_USER_PROFILE_CREATE_ERROR = @"E_USER_PROFILE_CREATE_ERROR";
-NSString* const E_USER_PROFILE_DATA_ERROR = @"E_USER_PROFILE_DATA_ERROR";
+NSString* const E_PROFILE_ID_GET_ERROR = @"E_PROFILE_ID_GET_ERROR";
+NSString* const E_PROFILE_ID_RESET_ERROR = @"E_PROFILE_ID_RESET_ERROR";
+NSString* const E_PROFILE_GET_USER_DATA_ERROR = @"E_PROFILE_GET_USER_DATA_ERROR";
+NSString* const E_COUPONS_PARSING_ERROR = @"E_COUPONS_PARSING_ERROR";
 NSString* const E_COUPONS_RETRIEVAL_ERROR = @"E_COUPONS_RETRIEVAL_ERROR";
+NSString* const E_NOTIFICATION_HISTORY_RETRIEVAL_ERROR = @"E_NOTIFICATION_HISTORY_RETRIEVAL_ERROR";
 NSString* const E_OPT_OUT_ERROR = @"E_OPT_OUT_ERROR";
 
 // CLLocationManager
@@ -242,23 +239,37 @@ RCT_EXPORT_METHOD(listenerUnregistered: (RCTPromiseResolveBlock) resolve
              fromUserAction:YES];
 }
 
-// MARK: NearIT Radar
+// MARK: Radar related methods
 
-RCT_EXPORT_METHOD(startRadar: (RCTPromiseResolveBlock) resolve
-                   rejection: (RCTPromiseRejectBlock) reject)
+RCT_EXPORT_METHOD(startRadar)
 {
     [[NITManager defaultManager] start];
-    resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(stopRadar: (RCTPromiseResolveBlock) resolve
-                  rejection: (RCTPromiseRejectBlock) reject)
+RCT_EXPORT_METHOD(stopRadar)
 {
     [[NITManager defaultManager] stop];
-    resolve([NSNull null]);
 }
 
-// MARK: NearIT Feedback
+// MARK: NearIT Trackings
+
+RCT_EXPORT_METHOD(sendTracking: (NSString* _Nonnull) trackingInfoB64
+                  status: (NSString* _Nonnull) status)
+{
+    NSData* trackingInfoData = [[NSData alloc] initWithBase64EncodedString:trackingInfoB64
+                                                                   options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    
+    NITTrackingInfo *trackingInfo = [NSKeyedUnarchiver unarchiveObjectWithData:trackingInfoData];
+    
+    if (trackingInfo) {
+        NITLogD(TAG, @"NITManager :: track event (%@) with trackingInfo (%@)", status, trackingInfo);
+        [[NITManager defaultManager] sendTrackingWithTrackingInfo:trackingInfo event:status];
+    } else {
+        NITLogD(TAG, @"NITManager :: failed to send tracking for event (%@) with trackingInfo (%@)", status, trackingInfo);
+    }
+}
+
+// MARK: Feedback related methods
 
 RCT_EXPORT_METHOD(sendFeedback: (NSString* _Nonnull)feedbackB64
                         rating: (NSInteger)rating
@@ -291,82 +302,47 @@ RCT_EXPORT_METHOD(sendFeedback: (NSString* _Nonnull)feedbackB64
     }
 }
 
+// MARK: ProfileId related methods
 
-// MARK: NearIT Trackings
-
-RCT_EXPORT_METHOD(sendTracking: (NSString* _Nonnull) trackingInfoB64
-                        status: (NSString* _Nonnull) status
-                    resolution: (RCTPromiseResolveBlock) resolve
-                     rejection: (RCTPromiseRejectBlock) reject)
-{
-    
-    if (IS_EMPTY(trackingInfoB64)) {
-        reject(E_SEND_TRACKING_ERROR, @"Missing trackingInfo parameter", nil);
-    } else {
-        NSData* trackingInfoData = [[NSData alloc] initWithBase64EncodedString:trackingInfoB64
-                                                                       options:NSDataBase64DecodingIgnoreUnknownCharacters];
-        
-        NITTrackingInfo *trackingInfo = [NSKeyedUnarchiver unarchiveObjectWithData:trackingInfoData];
-        
-        if (trackingInfo) {
-            NITLogD(TAG, @"NITManager :: track event (%@) with trackingInfo (%@)", status, trackingInfo);
-            [[NITManager defaultManager] sendTrackingWithTrackingInfo:trackingInfo event:status];
-            resolve([NSNull null]);
-        } else {
-            NITLogD(TAG, @"NITManager :: failed to send tracking for event (%@) with trackingInfo (%@)", status, trackingInfo);
-            reject(E_SEND_TRACKING_ERROR, @"Failed to send tracking", nil);
-        }
-    }
-}
-
-// MARK: NearIT UserProfiling
-
-RCT_EXPORT_METHOD(getUserProfileId: (RCTPromiseResolveBlock) resolve
-                         rejection: (RCTPromiseRejectBlock) reject)
+RCT_EXPORT_METHOD(getProfileId: (RCTPromiseResolveBlock) resolve
+                  rejection: (RCTPromiseRejectBlock) reject)
 {
     [[NITManager defaultManager] profileIdWithCompletionHandler:^(NSString * _Nullable profileId, NSError * _Nullable error) {
         if (!error) {
             resolve(profileId);
         } else {
-            reject(E_USER_PROFILE_GET_ERROR, @"Could not get UserProfile", error);
+            reject(E_PROFILE_ID_GET_ERROR, @"Could not get UserProfile", error);
         }
     }];
 }
 
-RCT_EXPORT_METHOD(setUserProfileId: (NSString* _Nonnull) profileId
-                        resolution: (RCTPromiseResolveBlock) resolve
-                         rejection: (RCTPromiseRejectBlock) reject)
+RCT_EXPORT_METHOD(setProfileId: (NSString* _Nonnull) profileId)
 {
     [[NITManager defaultManager] setProfileId:profileId];
-    resolve(profileId);
 }
 
-RCT_EXPORT_METHOD(resetUserProfile: (RCTPromiseResolveBlock) resolve
-                         rejection: (RCTPromiseRejectBlock) reject)
+RCT_EXPORT_METHOD(resetProfileId: (RCTPromiseResolveBlock) resolve
+                  rejection: (RCTPromiseRejectBlock) reject)
 {
     [[NITManager defaultManager] resetProfileWithCompletionHandler:^(NSString * _Nullable profileId, NSError * _Nullable error) {
         if (!error) {
             resolve(profileId);
         } else {
-            reject(E_USER_PROFILE_RESET_ERROR, @"Could not reset UserProfile", error);
+            reject(E_PROFILE_ID_RESET_ERROR, @"Could not reset UserProfile", error);
         }
     }];
 }
 
+// MARK: User data related methods
+
 RCT_EXPORT_METHOD(setUserData: (NSString* _Nonnull) key
-                        value: (NSString* _Nullable) value
-                   resolution: (RCTPromiseResolveBlock) resolve
-                    rejection: (RCTPromiseRejectBlock) reject)
+                  value: (NSString* _Nullable) value)
 {
     [[NITManager defaultManager] setUserDataWithKey:key value:value];
-    
-    resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(setMultiChoiceUserData: (NSString* _Nonnull) dataKey
-                     userData: (NSDictionary* _Nullable) userData
-                   resolution: (RCTPromiseResolveBlock) resolve
-                    rejection: (RCTPromiseRejectBlock) reject)
+                  userData: (NSDictionary* _Nullable) userData)
 {
     NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
     for(id key in userData) {
@@ -375,9 +351,21 @@ RCT_EXPORT_METHOD(setMultiChoiceUserData: (NSString* _Nonnull) dataKey
     }
     NSLog(@"setting multichoice data key=%@ values=%@", dataKey, data);
     [[NITManager defaultManager] setUserDataWithKey:dataKey multiValue:data];
-    
-    resolve([NSNull null]);
 }
+
+RCT_EXPORT_METHOD(getUserData: (RCTPromiseResolveBlock) resolve
+                    rejection: (RCTPromiseRejectBlock) reject)
+{
+    [[NITManager defaultManager] getUserDataWithCompletionHandler:^(NSDictionary<NSString *,id> * _Nullable userData, NSError * _Nullable error) {
+        if (!error) {
+            
+        } else {
+            reject(E_PROFILE_GET_USER_DATA_ERROR,
+        }
+    }];
+}
+
+// MARK: NearIT UserProfiling
 
 RCT_EXPORT_METHOD(optOut: (RCTPromiseResolveBlock) resolve
                rejection: (RCTPromiseRejectBlock) reject)
@@ -393,15 +381,13 @@ RCT_EXPORT_METHOD(optOut: (RCTPromiseResolveBlock) resolve
 
 // MARK: NearIT Permissions request
 
--(BOOL)hasLocationPermission {
+- (BOOL)hasLocationPermission {
     return CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways || CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse;
 }
 
-RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
-                  rejection:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isNotificationGranted: (RCTPromiseResolveBlock) resolve
+                              rejection: (RCTPromiseRejectBlock) reject)
 {
-    NITLogD(TAG, @"checkNotificationPermission");
-    
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         UIUserNotificationSettings* notificationSettings = [RCTSharedApplication() currentUserNotificationSettings];
         BOOL notificationAuthorized = notificationSettings != UIUserNotificationTypeNone;
@@ -426,40 +412,8 @@ RCT_EXPORT_METHOD(checkNotificationPermission:(RCTPromiseResolveBlock)resolve
     }
 }
 
-RCT_EXPORT_METHOD(requestNotificationPermission:(RCTPromiseResolveBlock)resolve
-                  rejection:(RCTPromiseRejectBlock)reject)
-{
-    if (RCTRunningInAppExtension()) {
-        return;
-    }
-    
-    NITLogD(TAG, @"requestNotificationPermission");
-    
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        UIUserNotificationType allNotificationTypes = (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-        
-        [RCTSharedApplication() registerUserNotificationSettings:settings];
-        
-        // Unfortunately on iOS 9 or below, there's no way to tell whether the user accepted or
-        // rejected the permissions popup
-        resolve(@(YES));
-    } else {
-        // iOS 10 or later
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-        // For iOS 10 display notification (sent via APNS)
-        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-        UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-        
-        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
-            resolve(@(granted));
-        }];
-#endif
-    }
-}
-
-RCT_EXPORT_METHOD(checkLocationPermission:(RCTPromiseResolveBlock)resolve
-                  rejection:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(isLocationGranted: (RCTPromiseResolveBlock) resolve
+                          rejection: (RCTPromiseRejectBlock) reject)
 {
     NITLogD(TAG, @"checkLocationPermission");
     
@@ -474,25 +428,12 @@ RCT_EXPORT_METHOD(checkLocationPermission:(RCTPromiseResolveBlock)resolve
         }
     }
 }
-
-RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
-                  rejection:(RCTPromiseRejectBlock)reject)
+                   
+// MARK: In-App events related methods
+       
+RCT_EXPORT_METHOD(triggerInAppEvent:(NSString* _Nonnull) eventKey)
 {
-    NITLogD(TAG, @"requestLocationPermission");
-    
-    if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
-        // resolve null
-        resolve([NSNull null]);
-        
-        // Request location permission to user
-        locationManager = [[CLLocationManager alloc] init];
-        locationManager.delegate = self;
-        [locationManager requestAlwaysAuthorization];
-    } else {
-        // resolve if user hase given 'Always' permission
-        BOOL locationPermission = [self hasLocationPermission];
-        resolve(@(locationPermission));
-    }
+    [[NITManager defaultManager] triggerInAppEventWithKey:eventKey];
 }
 
 // MARK: CLLocationManagerDelegate
@@ -519,28 +460,17 @@ RCT_EXPORT_METHOD(requestLocationPermission:(RCTPromiseResolveBlock)resolve
     }
 }
 
-// MARK: NearIT Custom Trigger
-RCT_EXPORT_METHOD(triggerEvent:(NSString* _Nonnull) eventKey
-                    resolution:(RCTPromiseResolveBlock)resolve
-                     rejection:(RCTPromiseRejectBlock)reject)
-{
-    // Trigger Custom Event Key
-    [[NITManager defaultManager] triggerInAppEventWithKey:eventKey];
-    // Resolve null, if a Recipe is triggered then the normal notification flow will run
-    resolve([NSNull null]);
-}
-
 // MARK: NearIT Coupons handling
 
-RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
-                  rejection:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getCoupons: (RCTPromiseResolveBlock)resolve
+                   rejection: (RCTPromiseRejectBlock)reject)
 {
     NSMutableArray *coupons = [[NSMutableArray alloc] init];
     
     [[NITManager defaultManager] couponsWithCompletionHandler:^(NSArray<NITCoupon *> *coupones, NSError *error) {
         if (!error) {
             for(NITCoupon *c in coupones) {
-                [coupons addObject:[self bundleNITCoupon:c]];
+                [coupons addObject:[RNNearItUtils bundleNITCoupon:c]];
             }
 
             resolve(coupons);
@@ -598,14 +528,14 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
         
         id image;
         if (nearContent.image) {
-            image = [self bundleNITImage:nearContent.image];
+            image = [RNNearItUtils bundleNITImage:nearContent.image];
         } else {
             image = [NSNull null];
         }
         
         id cta;
         if (nearContent.link) {
-            cta = [self bundleNITContentLink:nearContent.link];
+            cta = [RNNearItUtils bundleNITContentLink:nearContent.link];
         } else {
             cta = [NSNull null];
         }
@@ -663,7 +593,7 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
         
         NSDictionary* eventContent = @{
                                        EVENT_CONTENT_MESSAGE: message,
-                                       EVENT_CONTENT_COUPON: [self bundleNITCoupon:coupon]
+                                       EVENT_CONTENT_COUPON: [RNNearItUtils bundleNITCoupon:coupon]
                                     };
         
         [self sendEventWithContent:eventContent
@@ -701,52 +631,6 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
         
         return NO;
     }
-}
-
-// MARK: Internal contents handling
-
-- (NSDictionary*)bundleNITCoupon:(NITCoupon* _Nonnull) coupon
-{
-    NSMutableDictionary* couponDictionary = [[NSMutableDictionary alloc] init];
-    [couponDictionary setObject:(coupon.title ? coupon.title : [NSNull null])
-                         forKey:@"name"];
-    [couponDictionary setObject:(coupon.couponDescription ? coupon.couponDescription : [NSNull null])
-                         forKey:@"description"];
-    [couponDictionary setObject:(coupon.value ? coupon.value : [NSNull null])
-                         forKey:@"value"];
-    [couponDictionary setObject:(coupon.expiresAt ? coupon.expiresAt : [NSNull null])
-                         forKey:@"expiresAt"];
-    [couponDictionary setObject:(coupon.redeemableFrom ? coupon.redeemableFrom : [NSNull null])
-                         forKey:@"redeemableFrom"];
-    
-    if (coupon.claims.count > 0) {
-        [couponDictionary setObject:coupon.claims[0].serialNumber forKey:@"serial"];
-        [couponDictionary setObject:coupon.claims[0].claimedAt forKey:@"claimedAt"];
-        [couponDictionary setObject:(coupon.claims[0].redeemedAt ? coupon.claims[0].redeemedAt : [NSNull null]) forKey:@"redeemedAt"];
-    }
-    
-    if (coupon.icon) {
-        if (coupon.icon.url || coupon.icon.smallSizeURL) {
-            [couponDictionary setObject:[self bundleNITImage:coupon.icon] forKey:@"image"];
-        }
-    }
-    
-    return couponDictionary;
-}
-
-- (NSDictionary*)bundleNITImage:(NITImage* _Nonnull) image
-{
-    return @{
-             @"fullSize": (image.url ? [image.url absoluteString] : [NSNull null]),
-             @"squareSize": (image.smallSizeURL ? [image.smallSizeURL absoluteString] : [NSNull null])
-            };
-}
-
-- (NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull) cta {
-    return @{
-             @"label": cta.label,
-             @"url": [cta.url absoluteString]
-            };
 }
 
 
@@ -852,4 +736,3 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 }
 
 @end
-
