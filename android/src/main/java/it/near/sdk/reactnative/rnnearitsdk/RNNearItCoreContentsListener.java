@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017 Mattia Panzeri <mattia.panzeri93@gmail.com>
+ * Last changes by Federico Boschini <federico@nearit.com>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -48,113 +49,113 @@ import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.NATIVE_EVENTS_T
 
 public class RNNearItCoreContentsListener implements ContentsListener {
 
-  private static final String TAG = "RNNearItCoreContents";
+    private static final String TAG = "RNNearItCoreContents";
 
-  private Context context;
-  private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
-  private boolean fromUserAction;
+    private Context context;
+    private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
+    private boolean fromUserAction;
 
 
-  RNNearItCoreContentsListener(@NonNull Context context, @Nullable DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
-    this.context = context;
-    this.eventEmitter = eventEmitter;
-    this.fromUserAction = fromUserAction;
-  }
-
-  @Override
-  public void gotContentNotification(Content content, TrackingInfo trackingInfo) {
-    // Create EventContent map
-    final WritableMap contentMap = new WritableNativeMap();
-    contentMap.putString(EVENT_CONTENT_MESSAGE, content.notificationMessage);
-    contentMap.putString(EVENT_CONTENT_TITLE, (content.title != null ? content.title : ""));
-    contentMap.putString(EVENT_CONTENT_TEXT, (content.contentString != null ? content.contentString : ""));
-    if (content.getImageLink() != null) {
-      contentMap.putMap(EVENT_CONTENT_IMAGE, RNNearItUtils.bundleImageSet(content.getImageLink()));
-    }
-    if (content.getCta() != null) {
-      contentMap.putMap(EVENT_CONTENT_CTA, RNNearItUtils.bundleContentLink(content.getCta()));
+    RNNearItCoreContentsListener(@NonNull Context context, @Nullable DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
+        this.context = context;
+        this.eventEmitter = eventEmitter;
+        this.fromUserAction = fromUserAction;
     }
 
-    // Notify JS
-    sendEventWithContent(EVENT_TYPE_CONTENT, contentMap, trackingInfo);
-  }
+    @Override
+    public void gotContentNotification(Content content, TrackingInfo trackingInfo) {
+        // Create EventContent map
+        final WritableMap contentMap = new WritableNativeMap();
+        contentMap.putString(EVENT_CONTENT_MESSAGE, content.notificationMessage);
+        contentMap.putString(EVENT_CONTENT_TITLE, (content.title != null ? content.title : ""));
+        contentMap.putString(EVENT_CONTENT_TEXT, (content.contentString != null ? content.contentString : ""));
+        if (content.getImageLink() != null) {
+            contentMap.putMap(EVENT_CONTENT_IMAGE, RNNearItUtils.bundleImageSet(content.getImageLink()));
+        }
+        if (content.getCta() != null) {
+            contentMap.putMap(EVENT_CONTENT_CTA, RNNearItUtils.bundleContentLink(content.getCta()));
+        }
 
-  @Override
-  public void gotCouponNotification(Coupon coupon, TrackingInfo trackingInfo) {
-    // Create EventContent map
-    final WritableMap contentMap = new WritableNativeMap();
-    contentMap.putString(EVENT_CONTENT_MESSAGE, coupon.notificationMessage);
-    contentMap.putMap(EVENT_CONTENT_COUPON, RNNearItUtils.bundleCoupon(coupon));
-
-    // Notify JS
-    sendEventWithContent(EVENT_TYPE_COUPON, contentMap, trackingInfo);
-  }
-
-  @Override
-  public void gotCustomJSONNotification(CustomJSON customJSON, TrackingInfo trackingInfo) {
-    // Create EventContent map
-    final WritableMap contentMap = new WritableNativeMap();
-    contentMap.putString(EVENT_CONTENT_MESSAGE, customJSON.notificationMessage);
-    contentMap.putMap(EVENT_CONTENT_DATA, RNNearItUtils.toWritableMap(customJSON.content));
-
-    // Notify JS
-    sendEventWithContent(EVENT_TYPE_CUSTOM_JSON, contentMap, trackingInfo);
-  }
-
-  @Override
-  public void gotSimpleNotification(SimpleNotification simpleNotification, TrackingInfo trackingInfo) {
-    // Create EventContent map
-    final WritableMap contentMap = new WritableNativeMap();
-    contentMap.putString(EVENT_CONTENT_MESSAGE, simpleNotification.notificationMessage);
-
-    // Notify JS
-    sendEventWithContent(EVENT_TYPE_SIMPLE, contentMap, trackingInfo);
-  }
-
-  @Override
-  public void gotFeedbackNotification(Feedback feedback, TrackingInfo trackingInfo) {
-    try {
-      // Create EventContent map
-      final WritableMap contentMap = new WritableNativeMap();
-      contentMap.putString(EVENT_CONTENT_MESSAGE, feedback.notificationMessage);
-      contentMap.putString(EVENT_CONTENT_QUESTION, feedback.question);
-      contentMap.putString(EVENT_CONTENT_FEEDBACK, RNNearItUtils.feedbackToBase64(feedback));
-
-      // Notify JS
-      sendEventWithContent(EVENT_TYPE_FEEDBACK, contentMap, trackingInfo);
-    } catch (Exception e) {
-      Log.e(TAG, "Error while encoding feedback event", e);
+        // Notify JS
+        sendEventWithContent(EVENT_TYPE_CONTENT, contentMap, trackingInfo);
     }
-  }
 
-  // Private methods
-  private void sendEventWithContent(final String eventType, @Nullable WritableMap contentMap, final TrackingInfo trackingInfo) {
-    Log.d(TAG, String.format("sendEventWithContent: (eventType: %s)", eventType));
-    try {
-      // Encode TrackingInfo
-      final String trackingInfoData = RNNearItUtils.trackingInfoToBase64(trackingInfo);
+    @Override
+    public void gotCouponNotification(Coupon coupon, TrackingInfo trackingInfo) {
+        // Create EventContent map
+        final WritableMap contentMap = new WritableNativeMap();
+        contentMap.putString(EVENT_CONTENT_MESSAGE, coupon.notificationMessage);
+        contentMap.putMap(EVENT_CONTENT_COUPON, RNNearItUtils.bundleCoupon(coupon));
 
-      // Create Event map to send to JS
-      final WritableMap eventMap = new WritableNativeMap();
-      eventMap.putString(EVENT_TYPE, eventType);
-      if (contentMap != null) {
-        eventMap.putMap(EVENT_CONTENT, contentMap);
-      }
-      eventMap.putString(EVENT_TRACKING_INFO, trackingInfoData);
-      eventMap.putBoolean(EVENT_FROM_USER_ACTION, fromUserAction);
-
-      if (eventEmitter != null && RNNearItPersistedQueue.defaultQueue().hasListeners()) {
-        // Send event to JS
-        Log.d(TAG, "Listeners available, will send notification to JS now");
-        this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
-      } else {
-        // Defer event notification when at least a listener is available
-        Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItPersistedQueue");
-        RNNearItPersistedQueue.addNotification(context, eventMap);
-      }
-    } catch (Exception e) {
-      Log.e(TAG, "Error while sending event to JS");
+        // Notify JS
+        sendEventWithContent(EVENT_TYPE_COUPON, contentMap, trackingInfo);
     }
-  }
+
+    @Override
+    public void gotCustomJSONNotification(CustomJSON customJSON, TrackingInfo trackingInfo) {
+        // Create EventContent map
+        final WritableMap contentMap = new WritableNativeMap();
+        contentMap.putString(EVENT_CONTENT_MESSAGE, customJSON.notificationMessage);
+        contentMap.putMap(EVENT_CONTENT_DATA, RNNearItUtils.bundleCustomJson(customJSON));
+
+        // Notify JS
+        sendEventWithContent(EVENT_TYPE_CUSTOM_JSON, contentMap, trackingInfo);
+    }
+
+    @Override
+    public void gotSimpleNotification(SimpleNotification simpleNotification, TrackingInfo trackingInfo) {
+        // Create EventContent map
+        final WritableMap contentMap = new WritableNativeMap();
+        contentMap.putString(EVENT_CONTENT_MESSAGE, simpleNotification.notificationMessage);
+
+        // Notify JS
+        sendEventWithContent(EVENT_TYPE_SIMPLE, contentMap, trackingInfo);
+    }
+
+    @Override
+    public void gotFeedbackNotification(Feedback feedback, TrackingInfo trackingInfo) {
+        try {
+            // Create EventContent map
+            final WritableMap contentMap = new WritableNativeMap();
+            contentMap.putString(EVENT_CONTENT_MESSAGE, feedback.notificationMessage);
+            contentMap.putString(EVENT_CONTENT_QUESTION, feedback.question);
+            contentMap.putMap(EVENT_CONTENT_FEEDBACK, RNNearItUtils.bundleFeedback(feedback));
+
+            // Notify JS
+            sendEventWithContent(EVENT_TYPE_FEEDBACK, contentMap, trackingInfo);
+        } catch (Exception e) {
+            Log.e(TAG, "Error while encoding feedback event", e);
+        }
+    }
+
+    // Private methods
+    private void sendEventWithContent(final String eventType, @Nullable WritableMap contentMap, final TrackingInfo trackingInfo) {
+        Log.d(TAG, String.format("sendEventWithContent: (eventType: %s)", eventType));
+        try {
+            // Encode TrackingInfo
+            final String trackingInfoData = RNNearItUtils.bundleTrackingInfo(trackingInfo);
+
+            // Create Event map to send to JS
+            final WritableMap eventMap = new WritableNativeMap();
+            eventMap.putString(EVENT_TYPE, eventType);
+            if (contentMap != null) {
+                eventMap.putMap(EVENT_CONTENT, contentMap);
+            }
+            eventMap.putString(EVENT_TRACKING_INFO, trackingInfoData);
+            eventMap.putBoolean(EVENT_FROM_USER_ACTION, fromUserAction);
+
+            if (eventEmitter != null && RNNearItPersistedQueue.defaultQueue().hasListeners()) {
+                // Send event to JS
+                Log.d(TAG, "Listeners available, will send notification to JS now");
+                this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
+            } else {
+                // Defer event notification when at least a listener is available
+                Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItPersistedQueue");
+                RNNearItPersistedQueue.addNotification(context, eventMap);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while sending event to JS");
+        }
+    }
 
 }
