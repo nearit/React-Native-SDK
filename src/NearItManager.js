@@ -88,41 +88,52 @@ export class NearItManager {
       })
   }
 
-  static startRadar (): Promise<null> {
-    return NearItSdk.startRadar()
+  // Radar related methods
+
+  static startRadar () {
+    NearItSdk.startRadar()
   }
 
-  static stopRadar (): Promise<null> {
-    return NearItSdk.stopRadar()
+  static stopRadar () {
+    NearItSdk.stopRadar()
   }
 
-  static sendTracking (trackingInfo: string, status: string): Promise<null> {
-    return NearItSdk.sendTracking(trackingInfo, status)
+  // Trackings related methods
+
+  static sendTracking (trackingInfo: string, status: string) {
+    NearItSdk.sendTracking(trackingInfo, status)
   }
 
   static sendFeedback (feedbackId: string, rating: NearItRating, comment: string = ''): Promise<null> {
     return NearItSdk.sendFeedback(feedbackId, rating, comment)
   }
 
-  static getUserProfileId (): Promise<string> {
-    return NearItSdk.getUserProfileId()
+  // ProfileId related methods
+
+  static getProfileId (): Promise<string> {
+    return NearItSdk.getProfileId()
   }
 
-  static setUserProfileId (profileId: string): Promise<string> {
-    return NearItSdk.setUserProfileId(profileId)
+  static setProfileId (profileId: string) {
+    NearItSdk.setProfileId(profileId)
   }
 
-  static resetUserProfile (): Promise<string> {
-    return NearItSdk.resetUserProfile()
+  static resetProfileId (): Promise<string> {
+    return NearItSdk.resetProfileId()
   }
 
-  static setMultiChoiceUserData (key: String, userDataObject: { [string]: boolean }): Promise<null> {
-    return NearItSdk.setMultiChoiceUserData(key, userDataObject)
+  // User data related methods
+
+  static setMultiChoiceUserData (key: String, userDataObject: { [string]: boolean }) {
+    NearItSdk.setMultiChoiceUserData(key, userDataObject)
   }
 
-  static setUserData (key: string, value: string): Promise<null> {
-    return NearItSdk.setUserData(key, value)
+  static setUserData (key: string, value: ?string) {
+    NearItSdk.setUserData(key, value)
   }
+
+
+  // Opt-out related methods
 
   static optOut (): Promise<null> {
     return NearItSdk.optOut()
