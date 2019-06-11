@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017 Mattia Panzeri <mattia.panzeri93@gmail.com>
+ * Last changes by Federico Boschini <federico@nearit.com>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -64,7 +65,10 @@ type EmitterSubscription = {
   remove(): void
 }
 
+type NearItNotificationHistoryUpdateListener = () => void
+
 const NearItSdk = NativeModules.RNNearIt
+const NearItUI = NativeModules.RNNearItUI
 
 export class NearItManager {
   static constants: NearItConstants = {
@@ -104,7 +108,9 @@ export class NearItManager {
     NearItSdk.sendTracking(trackingInfo, status)
   }
 
-  static sendFeedback (feedbackId: string, rating: NearItRating, comment: string = ''): Promise<null> {
+  // Feedback related methods
+
+  static sendFeedback (feedbackId: string, rating: NearItRating, comment: ?string): Promise<null> {
     return NearItSdk.sendFeedback(feedbackId, rating, comment)
   }
 
@@ -132,6 +138,9 @@ export class NearItManager {
     NearItSdk.setUserData(key, value)
   }
 
+  static getUserData (): Promise<any> {
+    return NearItSdk.getUserData()
+  }
 
   // Opt-out related methods
 
@@ -139,49 +148,77 @@ export class NearItManager {
     return NearItSdk.optOut()
   }
 
-  static checkNotificationPermission (): Promise<boolean | null> {
-    return NearItSdk.checkNotificationPermission()
+  // In-app events related methods
+
+  static triggerInAppEvent (eventKey: string) {
+    NearItSdk.triggerInAppEvent(eventKey)
   }
 
-  static requestNotificationPermission (): Promise<boolean> {
-    return NearItSdk.requestNotificationPermission()
-  }
-
-  static checkLocationPermission (): Promise<boolean | null> {
-    return NearItSdk.checkLocationPermission()
-  }
-
-  static requestLocationPermission (): Promise<boolean> {
-    return new Promise(function (resolve, reject) {
-      const locationSubscription = NearItManager._eventSource.addListener(NearItSdk.NativePermissionsTopic, event => {
-        if (event[NearItSdk.EventContent.type] === NearItSdk.Events.PermissionStatus) {
-          if (event[NearItSdk.EventContent.status] === NearItSdk.Permissions.LocationGranted) {
-            resolve(true)
-          } else if (event[NearItSdk.EventContent.status] === NearItSdk.Permissions.LocationDenied) {
-            resolve(false)
-          }
-
-          locationSubscription.remove()
-        }
-      })
-
-      NearItSdk.requestLocationPermission()
-        .then(locationGranted => {
-          if (typeof (locationGranted) !== 'undefined' && locationGranted != null) {
-            locationSubscription.remove()
-            resolve(locationGranted)
-          }
-        })
-    })
-  }
-
-  static triggerEvent (eventKey: string): Promise<null> {
-    return NearItSdk.triggerEvent(eventKey)
-  }
+  // Coupon related methods
 
   static getCoupons (): Promise<NearItCoupon[]> {
     return NearItSdk.getCoupons()
   }
-}
 
+  static showCouponList (): Promise<null> {
+    return NearItUI.showCouponList()
+  }
+
+  // Notification history related methods
+
+  // TODO: return type
+  static getNotificationHistory (): Promise<null> {
+    return NearItSdk.getNotificationHistory()
+  }
+
+  static showNotificationHistory (): Promise<null> {
+    return NearItUI.showNotificationHistory()
+  }
+
+  static setNotificationHistoryUpdateListener (listener: NearItNotificationHistoryUpdateListener): EmitterSubscription {
+    const subscription = NearItManager._eventSource.addListener(NearItSdk.NativeNotificationHistoryTopic, listener)
+    NearItSdk.notificationHistoryListenerRegistered()
+    return subscription
+  }
+
+  static removeNotificationHistoryUpdateListener (subscription: EmitterSubscription) {
+    NearItSdk.notificationHistoryListenerUnregistered()
+      .then(res => {
+        subscription.remove()
+      })
+  }
+
+  static markNotificationHistoryAsOld (): Promise<null> {
+    return NearItSdk.markNotificationHistoryAsOld()
+  }
+
+  // Permissions related methods
+
+  static requestPermissions (explanation: ?string): Promise<null> {
+    return NearItUI.requestPermissions(explanation)
+  }
+
+  static isBluetoothEnabled (): Promise<boolean> {
+    return NearItSdk.isBluetoothEnabled()
+  }
+
+  static areLocationServicesOn (): Promise<boolean> {
+    return NearItSdk.areLocationServicesOn()
+  }
+
+  static isLocationGranted (): Promise<boolean> {
+    return NearItSdk.isLocationGranted()
+  }
+
+  static isNotificationGranted (): Promise<boolean> {
+    return NearItSdk.isNotificationGranted()
+  }
+
+  // Content related methods
+
+  // TODO: param type
+  static showContent (content: any): Promise<null> {
+    return NearItUI.showContent()
+  }
+}
 export const constants = NearItManager.constants
