@@ -332,3 +332,8 @@ android/proguard-rules.pro
 
 # Generated JS files
 lib/
+android/\.classpath
+
+android/\.settings/
+
+android/\.project
