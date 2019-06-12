@@ -10,9 +10,13 @@
 		3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */; };
 		303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */; };
 		380DC25422AFF66C006047E7 /* RNNearItConsts.m in Sources */ = {isa = PBXBuildFile; fileRef = 380DC25322AFF66C006047E7 /* RNNearItConsts.m */; };
+		380DC42A22B12949006047E7 /* RNNearItConsts.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 380DC25222AFF66C006047E7 /* RNNearItConsts.h */; };
+		380DC42B22B12949006047E7 /* RNNearItUtils.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 3894AFF522AEB1370001CA25 /* RNNearItUtils.h */; };
+		380DC42C22B12949006047E7 /* RNNotificationsQueue.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */; };
+		380DC42D22B12949006047E7 /* RNNearItBackgroundQueue.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 3008FF0B1F838526006CA738 /* RNNearItBackgroundQueue.h */; };
+		380DC42E22B12949006047E7 /* RNNearIt.h in Copy Files */ = {isa = PBXBuildFile; fileRef = B3E7B5881CC2AC0600A0062D /* RNNearIt.h */; };
 		3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */; };
 		38D7ED5C2136E8D7008F1212 /* NearITResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38500944202B04C00076609B /* NearITResources.bundle */; };
-		38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 307D9F851F9F7D7A00BFBA46 /* libNearIT.a */; };
 		B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNNearIt.m */; };
 /* End PBXBuildFile section */
 
@@ -21,8 +25,13 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 7;
+			dstSubfolderSpec = 16;
 			files = (
+				380DC42A22B12949006047E7 /* RNNearItConsts.h in Copy Files */,
+				380DC42B22B12949006047E7 /* RNNearItUtils.h in Copy Files */,
+				380DC42C22B12949006047E7 /* RNNotificationsQueue.h in Copy Files */,
+				380DC42D22B12949006047E7 /* RNNearItBackgroundQueue.h in Copy Files */,
+				380DC42E22B12949006047E7 /* RNNearIt.h in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -35,7 +44,6 @@
 		3008FF0B1F838526006CA738 /* RNNearItBackgroundQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNearItBackgroundQueue.h; sourceTree = "<group>"; };
 		303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotificationsQueue.m; sourceTree = "<group>"; };
 		303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotificationsQueue.h; sourceTree = "<group>"; };
-		307D9F851F9F7D7A00BFBA46 /* libNearIT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNearIT.a; path = NearITSDK/libNearIT.a; sourceTree = "<group>"; };
 		380DC25222AFF66C006047E7 /* RNNearItConsts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNearItConsts.h; sourceTree = "<group>"; };
 		380DC25322AFF66C006047E7 /* RNNearItConsts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNearItConsts.m; sourceTree = "<group>"; };
 		38500944202B04C00076609B /* NearITResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = NearITResources.bundle; path = NearITSDK/NearITResources.bundle; sourceTree = "<group>"; };
@@ -50,7 +58,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -82,7 +89,6 @@
 				38500944202B04C00076609B /* NearITResources.bundle */,
 				303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */,
 				303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */,
-				307D9F851F9F7D7A00BFBA46 /* libNearIT.a */,
 				3008FF0B1F838526006CA738 /* RNNearItBackgroundQueue.h */,
 				3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */,
 				B3E7B5881CC2AC0600A0062D /* RNNearIt.h */,
@@ -261,12 +267,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/NearITSDK/**",
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/NearITSDK",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNNearIt;
 				SKIP_INSTALL = YES;
@@ -279,12 +283,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/NearITSDK/**",
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/NearITSDK",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNNearIt;
 				SKIP_INSTALL = YES;
