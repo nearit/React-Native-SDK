@@ -470,7 +470,7 @@ public class RNNearItUtils {
         return map;
     }
 
-    private static Map<String, Object> toMap(ReadableMap readableMap) {
+    static Map<String, Object> toMap(ReadableMap readableMap) {
         Map<String, Object> map = new HashMap<String, Object>();
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
 

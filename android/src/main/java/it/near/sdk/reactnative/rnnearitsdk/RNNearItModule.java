@@ -359,7 +359,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
             NearMultipleChoiceDataPoint multiChoiceData = null;
             HashMap<String, Boolean> data = new HashMap<String, Boolean>();
             if (userData != null) {
-                for (Map.Entry<String, Object> entry : userData.toHashMap().entrySet()) {
+                for (Map.Entry<String, Object> entry : RNNearItUtils.toMap(userData).entrySet()) {
                     if(entry.getValue() instanceof Boolean){
                         data.put(entry.getKey(), (Boolean) entry.getValue());
                     }
