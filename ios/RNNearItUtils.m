@@ -12,7 +12,7 @@
 
 @implementation RNNearItUtils
 
-- (NITCoupon*)unbundleNITCoupon:(NSDictionary* _Nonnull)bundledCoupon
++ (NITCoupon* _Nullable)unbundleNITCoupon:(NSDictionary* _Nonnull)bundledCoupon
 {
     NSString* couponString = [bundledCoupon objectForKey:@"couponData"];
     NSData* couponData = [[NSData alloc] initWithBase64EncodedString:couponString
@@ -21,7 +21,7 @@
     return coupon;
 }
 
-- (NSDictionary*)bundleNITCoupon:(NITCoupon* _Nonnull) coupon
++ (NSDictionary* _Nullable)bundleNITCoupon:(NITCoupon* _Nonnull) coupon
 {
     NSMutableDictionary* couponDictionary = [[NSMutableDictionary alloc] init];
     [couponDictionary setObject:(coupon.title ? coupon.title : [NSNull null])
@@ -54,7 +54,7 @@
     return couponDictionary;
 }
 
-- (NSDictionary*)bundleNITHistoryItem:(NITHistoryItem* _Nonnull) item
++ (NSDictionary* _Nullable)bundleNITHistoryItem:(NITHistoryItem* _Nonnull) item
 {
     NSMutableDictionary* historyDictionary = [[NSMutableDictionary alloc] init];
     
@@ -110,7 +110,7 @@
     return historyDictionary;
 }
 
-- (NITContent*)unbundleNITContent:(NSDictionary * _Nonnull)bundledContent
++ (NITContent* _Nullable)unbundleNITContent:(NSDictionary * _Nonnull)bundledContent
 {
     NITContent* content = [[NITContent alloc] init];
     content.title = [bundledContent objectForKey:@"title"];
@@ -120,7 +120,7 @@
     return content;
 }
 
-- (NSDictionary*)bundleNITContent:(NITContent * _Nonnull) content
++ (NSDictionary* _Nullable)bundleNITContent:(NITContent * _Nonnull) content
 {
     NSString* title = [content title];
     if (!title) {
@@ -155,7 +155,7 @@
     return bundledContent;
 }
 
-- (NITFeedback*)unbundleNITFeedback:(NSDictionary * _Nonnull) bundledFeedback
++ (NITFeedback* _Nullable)unbundleNITFeedback:(NSDictionary * _Nonnull) bundledFeedback
 {
     NSString* feedbackId = [bundledFeedback objectForKey:@"feedbackId"];
     NSData* feedbackData = [[NSData alloc] initWithBase64EncodedString:feedbackId
@@ -166,7 +166,7 @@
     return feedback;
 }
 
-- (NSDictionary*)bundleNITFeedback:(NITFeedback * _Nonnull) feedback
++ (NSDictionary* _Nullable)bundleNITFeedback:(NITFeedback * _Nonnull) feedback
 {
     NSData* feedbackData = [NSKeyedArchiver archivedDataWithRootObject:feedback];
     NSString* feedbackB64 = [feedbackData base64EncodedStringWithOptions:0];
@@ -178,7 +178,7 @@
     return bundledFeedback;
 }
 
-- (NSDictionary*)bundleNITCustomJSON:(NITCustomJSON* _Nonnull) custom
++ (NSDictionary* _Nullable)bundleNITCustomJSON:(NITCustomJSON* _Nonnull) custom
 {
     NSDictionary* customJson = @{
                                  @"data": [custom content]};
@@ -186,7 +186,7 @@
     return customJson;
 }
 
-- (NITImage*)unbundleNITImage:(NSDictionary* _Nonnull)bundledImage
++ (NITImage* _Nullable)unbundleNITImage:(NSDictionary* _Nonnull)bundledImage
 {
     NITImage* image = [[NITImage alloc] init];
     if ([bundledImage objectForKey:@"imageData"]) {
@@ -197,7 +197,7 @@
     return image;
 }
 
-- (NSDictionary*)bundleNITImage:(NITImage* _Nonnull)image
++ (NSDictionary* _Nullable)bundleNITImage:(NITImage* _Nonnull)image
 {
     NSData* imageData = [NSKeyedArchiver archivedDataWithRootObject:image];
     NSString* imageB64 = [imageData base64EncodedStringWithOptions:0];
@@ -208,7 +208,7 @@
              };
 }
 
-- (NSDictionary*)bundleNITContentLink:(NITContentLink* _Nonnull)cta
++ (NSDictionary* _Nullable)bundleNITContentLink:(NITContentLink* _Nonnull)cta
 {
     return @{
              @"label": cta.label,
@@ -216,7 +216,7 @@
              };
 }
 
-- (NITTrackingInfo*)unbundleTrackingInfo:(NSString * _Nullable)bundledTrackingInfo
++ (NITTrackingInfo* _Nullable)unbundleTrackingInfo:(NSString * _Nullable)bundledTrackingInfo
 {
     NSData* trackingInfoData = [[NSData alloc] initWithBase64EncodedString:bundledTrackingInfo
                                                                    options:NSDataBase64DecodingIgnoreUnknownCharacters];
@@ -225,7 +225,7 @@
     return trackingInfo;
 }
 
-- (NSString*)bundleTrackingInfo:(NITTrackingInfo* _Nullable) trackingInfo
++ (NSString* _Nullable)bundleTrackingInfo:(NITTrackingInfo* _Nullable) trackingInfo
 {
     NSString* trackingInfoB64;
     if (trackingInfo) {

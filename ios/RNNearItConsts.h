@@ -6,6 +6,8 @@
 //  Copyright © 2019 Facebook. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 @interface RNNearItConsts : NSObject
 
 extern NSString* EVENT_TYPE_SIMPLE;
