@@ -102,7 +102,7 @@ declare module 'react-native-nearit' {
 
       // In-app events related methods
 
-      static triggerEvent(eventKey: string)
+      static triggerInAppEvent(eventKey: string)
 
       // Coupon related methods
       
