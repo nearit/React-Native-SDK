@@ -6,7 +6,7 @@
 //  Copyright © 2019 NearIT. All rights reserved.
 //
 
-#import <NearIT/NearIT.h>
+#import <NearITSDK/NearITSDK.h>
 #import "RNNearItConsts.h"
 
 @interface RNNearItUtils : NSObject
