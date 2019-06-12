@@ -1,6 +1,5 @@
 var postlinks = [
     require('./postlink.ios')
-    //require('./postlink.android')
   ]
   
   // run them sequentially
