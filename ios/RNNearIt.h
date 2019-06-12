@@ -13,7 +13,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 #import <CoreLocation/CoreLocation.h>
-#import <NearIT/NearIT.h>
+#import <NearITSDK/NearITSDK.h>
 
 #import "RNNearItUtils.h"
 #import "RNNearItConsts.h"

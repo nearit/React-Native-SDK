@@ -246,7 +246,7 @@ RCT_EXPORT_METHOD(stopRadar)
     [[NITManager defaultManager] stop];
 }
 
-// MARK: NearIT Trackings
+// MARK: Trackings related methods
 
 RCT_EXPORT_METHOD(sendTracking: (NSString* _Nonnull) trackingInfoB64
                   status: (NSString* _Nonnull) status)
