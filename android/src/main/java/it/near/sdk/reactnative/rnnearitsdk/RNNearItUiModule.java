@@ -133,6 +133,7 @@ public class RNNearItUiModule extends ReactContextBaseJavaModule implements Acti
     @ReactMethod
     public void showCouponList(String activityTitle) {
         CouponListIntentBuilder builder = NearITUIBindings.getInstance(getReactApplicationContext()).couponListIntentBuilder();
+        builder.jaggedBorders();
         if (activityTitle != null) {
             builder.setTitle(activityTitle);
         }
