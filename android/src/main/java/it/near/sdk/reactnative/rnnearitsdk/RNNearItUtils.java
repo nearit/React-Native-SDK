@@ -282,7 +282,7 @@ public class RNNearItUtils {
         return bundledCustomJson;
     }
 
-    private static String feedbackToB64(final Feedback feedback) throws Exception {
+    static String feedbackToB64(final Feedback feedback) throws Exception {
         String base64;
 
         final Parcel parcel = Parcel.obtain();

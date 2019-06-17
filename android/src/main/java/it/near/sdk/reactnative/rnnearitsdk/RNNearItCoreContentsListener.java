@@ -119,7 +119,7 @@ public class RNNearItCoreContentsListener implements ContentsListener {
             final WritableMap contentMap = new WritableNativeMap();
             contentMap.putString(EVENT_CONTENT_MESSAGE, feedback.notificationMessage);
             contentMap.putString(EVENT_CONTENT_QUESTION, feedback.question);
-            contentMap.putMap(EVENT_CONTENT_FEEDBACK, RNNearItUtils.bundleFeedback(feedback));
+            contentMap.putString(EVENT_CONTENT_FEEDBACK, RNNearItUtils.feedbackToB64(feedback));
 
             // Notify JS
             sendEventWithContent(EVENT_TYPE_FEEDBACK, contentMap, trackingInfo);
