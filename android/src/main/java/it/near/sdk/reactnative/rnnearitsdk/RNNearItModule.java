@@ -34,8 +34,6 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.nearit.ui_bindings.utils.PermissionsUtils;
 
-import org.json.JSONObject;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -382,8 +380,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
         NearItManager.getInstance().getUserData(new ProfileUserDataListener() {
             @Override
             public void onUserData(Map<String, Object> userData) {
-                JSONObject result = new JSONObject(userData);
-                promise.resolve(result);
+                promise.resolve(RNNearItUtils.toWritableMap(userData));
             }
 
             @Override
