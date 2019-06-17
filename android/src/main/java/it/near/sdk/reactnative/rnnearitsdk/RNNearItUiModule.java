@@ -63,17 +63,15 @@ public class RNNearItUiModule extends ReactContextBaseJavaModule implements Acti
             if (permissionsPromise != null) {
                 try {
                     boolean location = PermissionsUtils.checkLocationPermission(getReactApplicationContext());
-                    boolean notifications = PermissionsUtils.areNotificationsEnabled(getReactApplicationContext());
 
                     Map<String, Object> res = new HashMap<String,Object>();
                     res.put("location", location ? "always" : "denied");
-                    res.put("notifications", notifications ? "always" : "denied");
+                    res.put("notifications", PermissionsUtils.areNotificationsEnabled(getReactApplicationContext()));
                     res.put("bluetooth", PermissionsUtils.checkBluetooth(activity));
                     res.put("locationServices", PermissionsUtils.checkLocationServices(activity));
-                    JSONObject result = new JSONObject(res);
-                    permissionsPromise.resolve(result);
+                    permissionsPromise.resolve(RNNearItUtils.toWritableMap(res));
                 } catch (Exception e) {
-                    Log.e(MODULE_NAME, "NITManager :: Could handle permissions request callback", e);
+                    Log.e(MODULE_NAME, "NITManager :: Could NOT handle permissions request callback", e);
                 }
             }
         }
