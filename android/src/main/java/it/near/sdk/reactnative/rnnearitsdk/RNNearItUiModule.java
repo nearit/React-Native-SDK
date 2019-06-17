@@ -149,7 +149,7 @@ public class RNNearItUiModule extends ReactContextBaseJavaModule implements Acti
             if (explanation != null) {
                 builder.setExplanation(explanation);
             }
-            currentActivity.startActivityForResult(builder.build().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), RNNEARIT_PERM_REQ);
+            getReactApplicationContext().startActivityForResult(builder.build(), RNNEARIT_PERM_REQ, null);
         }
     }
 }
