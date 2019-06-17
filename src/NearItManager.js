@@ -160,8 +160,8 @@ export class NearItManager {
     return NearItSdk.getCoupons()
   }
 
-  static showCouponList (): Promise<null> {
-    return NearItUI.showCouponList()
+  static showCouponList (title: ?string): Promise<null> {
+    return NearItUI.showCouponList(title)
   }
 
   // Notification history related methods
@@ -171,8 +171,8 @@ export class NearItManager {
     return NearItSdk.getNotificationHistory()
   }
 
-  static showNotificationHistory (): Promise<null> {
-    return NearItUI.showNotificationHistory()
+  static showNotificationHistory (title: ?string): Promise<null> {
+    return NearItUI.showNotificationHistory(title)
   }
 
   static setNotificationHistoryUpdateListener (listener: NearItNotificationHistoryUpdateListener): EmitterSubscription {
