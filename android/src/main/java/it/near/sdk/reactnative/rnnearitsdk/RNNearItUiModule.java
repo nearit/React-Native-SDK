@@ -85,15 +85,33 @@ public class RNNearItUiModule extends ReactContextBaseJavaModule implements Acti
     }
 
     private void showContentDialog(@NonNull Content content, @NonNull TrackingInfo trackingInfo) {
-        getReactApplicationContext().startActivity(NearITUIBindings.getInstance(getReactApplicationContext()).contentIntentBuilder(content, trackingInfo).build());
+        getReactApplicationContext()
+            .startActivity(
+                    NearITUIBindings.getInstance(getReactApplicationContext())
+                            .contentIntentBuilder(content, trackingInfo)
+                            .build()
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            );
     }
 
     private void showFeedbackDialog(@NonNull Feedback feedback) {
-        getReactApplicationContext().startActivity(NearITUIBindings.getInstance(getReactApplicationContext()).feedbackIntentBuilder(feedback).build());
+        getReactApplicationContext()
+                .startActivity(
+                        NearITUIBindings.getInstance(getReactApplicationContext())
+                                .feedbackIntentBuilder(feedback)
+                                .build()
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                );
     }
 
     private void showCouponDialog(@NonNull Coupon coupon) {
-        getReactApplicationContext().startActivity(NearITUIBindings.getInstance(getReactApplicationContext()).couponIntentBuilder(coupon).build());
+        getReactApplicationContext()
+                .startActivity(
+                        NearITUIBindings.getInstance(getReactApplicationContext())
+                                .couponIntentBuilder(coupon)
+                                .build()
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                );
     }
 
     @ReactMethod
@@ -109,7 +127,7 @@ public class RNNearItUiModule extends ReactContextBaseJavaModule implements Acti
         if (activityTitle != null) {
             builder.setTitle(activityTitle);
         }
-        getReactApplicationContext().startActivity(builder.build());
+        getReactApplicationContext().startActivity(builder.build().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     @ReactMethod
@@ -118,7 +136,7 @@ public class RNNearItUiModule extends ReactContextBaseJavaModule implements Acti
         if (activityTitle != null) {
             builder.setTitle(activityTitle);
         }
-        getReactApplicationContext().startActivity(builder.build());
+        getReactApplicationContext().startActivity(builder.build().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     @ReactMethod
@@ -130,7 +148,7 @@ public class RNNearItUiModule extends ReactContextBaseJavaModule implements Acti
             if (explanation != null) {
                 builder.setExplanation(explanation);
             }
-            currentActivity.startActivityForResult(builder.build(), RNNEARIT_PERM_REQ);
+            currentActivity.startActivityForResult(builder.build().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), RNNEARIT_PERM_REQ);
         }
     }
 }
