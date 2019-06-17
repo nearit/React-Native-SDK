@@ -43,7 +43,8 @@ import java.util.Map;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.communication.OptOutNotifier;
-import it.near.sdk.operation.NearItUserProfile;
+import it.near.sdk.operation.ProfileFetchListener;
+import it.near.sdk.operation.ProfileUserDataListener;
 import it.near.sdk.operation.values.NearMultipleChoiceDataPoint;
 import it.near.sdk.reactions.couponplugin.CouponListener;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -281,8 +282,8 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
     // Trackings related methods
 
     @ReactMethod
-    public void sendTracking(final String trackinInfoData, final String status) {
-        NearItManager.getInstance().sendTracking(RNNearItUtils.unbundleTrackingInfo(trackinInfoData), status);
+    public void sendTracking(final String trackingInfoData, final String status) {
+        NearItManager.getInstance().sendTracking(RNNearItUtils.unbundleTrackingInfo(trackingInfoData), status);
     }
 
     // Feedback related methods
@@ -313,14 +314,14 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
 
     @ReactMethod
     public void getProfileId(final Promise promise) {
-        NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
+        NearItManager.getInstance().getProfileId(new ProfileFetchListener() {
             @Override
             public void onProfileId(String profileId) {
                 promise.resolve(profileId);
             }
 
             @Override
-            public void onError(String error) {
+            public void onProfileError(String error) {
                 promise.reject(E_PROFILE_ID_GET_ERROR, error);
             }
         });
@@ -333,14 +334,14 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
 
     @ReactMethod
     public void resetProfileId(final Promise promise) {
-        NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
+        NearItManager.getInstance().resetProfileId(new ProfileFetchListener() {
             @Override
             public void onProfileId(String profileId) {
                 promise.resolve(profileId);
             }
 
             @Override
-            public void onError(String error) {
+            public void onProfileError(String error) {
                 promise.reject(E_PROFILE_ID_RESET_ERROR, error);
             }
         });
@@ -378,7 +379,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
 
     @ReactMethod
     public void getUserData(final Promise promise) {
-        NearItManager.getInstance().getUserData(new NearItUserProfile.ProfileUserDataListener() {
+        NearItManager.getInstance().getUserData(new ProfileUserDataListener() {
             @Override
             public void onUserData(Map<String, Object> userData) {
                 JSONObject result = new JSONObject(userData);
@@ -386,7 +387,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule implements Lifecy
             }
 
             @Override
-            public void onError(String error) {
+            public void onUserDataError(String error) {
                 promise.reject(E_PROFILE_GET_USER_DATA_ERROR, "Could not get user profile Id", new Throwable(error));
             }
         });
