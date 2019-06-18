@@ -45,6 +45,6 @@ android {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
-    api 'it.near.sdk:nearit:2.12.1'
+    api 'it.near.sdk:nearit:2.12.2'
     api 'it.near.sdk:nearit-ui:2.11.9'
 }
