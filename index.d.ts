@@ -9,6 +9,17 @@ declare module 'react-native-nearit' {
     Events: NearItEvents
     EventContent: NearItEventContent
     Statuses: NearItStatuses
+    Permissions: NearItPermissions
+  }
+
+  interface NearItPermissions {
+    location: string,
+    notifications: string,
+    bluetooth: string,
+    locationServices: string,
+    always: string,
+    whenInUse: string,
+    denied: string
   }
 
   interface NearItEvents {
@@ -21,9 +32,32 @@ declare module 'react-native-nearit' {
 
   interface NearItEventContent {
     type: string
+    trackingInfo: string
+    message: string
     content: string
     fromUserAction: string
-    trackingInfo: string
+    status: string
+    title: string
+    image: string
+    fullSize: string
+    squareSize: string
+    text: string
+    cta: string
+    label: string
+    url: string
+    description: string
+    value: string
+    expiresAt: string
+    redeemableFrom: string
+    serial: string
+    claimedAt: string
+    redeemedAt: string
+    question: string
+    feedbackId: string
+    read: string
+    timestamp: string
+    isNew: string
+    notificationContent: string
   }
 
   interface NearItStatuses {
@@ -32,29 +66,58 @@ declare module 'react-native-nearit' {
   }
 
   interface NearItEvent {
-    type: string,
-    content?: Map<string, any>,
-    fromUserAction?: boolean,
-    trackingInfo?: string,
-    status?: string
+    type: string
   }
 
   interface NearItImage {
-    fullSize?: string,
+    fullSize?: string
     squareSize?: string
   }
 
+  interface NearItCta {
+    label: string
+    url: string
+  }
+
   interface NearItCoupon {
-    title: string,
-    description: string,
-    image?: NearItImage,
-    value: string,
-    expiresAt: string,
-    redeemableFrom: string,
-    serial?: string,
-    claimedAt?: string,
+    title: string
+    description?: string
+    image?: NearItImage
+    value: string
+    expiresAt?: string
+    redeemableFrom?: string
+    serial: string
+    claimedAt?: string
     redeemedAt?: string
   }
+
+  interface NearItContent {
+    title?: string
+    text?: string
+    image?: NearItImage
+    cta?: NearItCta
+  }
+
+  interface NearItFeedback {
+    question: string
+    feedbackId?: string
+  }
+
+  interface NearItHistoryItem {
+    read: boolean
+    timestamp: string
+    isNew: boolean
+    notificationContent: any
+  }
+
+  interface NearItPermissionsResult {
+    bluetooth: boolean
+    location: LocationPermissionStatus
+    locationServices: boolean
+    notifications: boolean
+  }
+
+  type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
 
   type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
 
@@ -64,19 +127,21 @@ declare module 'react-native-nearit' {
 
     static constants: NearItConstants
 
+    static onDeviceReady(): void
+
     static addContentsListener (listener: (event: NearItEvent) => void): EmitterSubscription
 
     static removeContentsListener (subscription: EmitterSubscription): void
 
     // Radar related methods
 
-    static startRadar()
+    static startRadar(): void
 
-    static stopRadar()
+    static stopRadar(): void
 
     // Trackings related methods
 
-    static sendTracking(trackingInfo: string, status: string)
+    static sendTracking(trackingInfo: string, status: string): void
     
     // Feedback related methods
 
@@ -85,15 +150,15 @@ declare module 'react-native-nearit' {
     // ProfileId related methods
     static getProfileId(): Promise<string>
 
-    static setProfileId(profileId: string)
+    static setProfileId(profileId: string): void
 
     static resetProfileId(): Promise<string>
 
     // User data related methods
 
-    static setUserData(key: string, value?: string)
+    static setUserData(key: string, value?: string): void
 
-    static setMultiChoiceUserData(key: string, userDataObject: { [key: string]: boolean })
+    static setMultiChoiceUserData(key: string, userDataObject: { [key: string]: boolean }): void
 
     static getUserData(): Promise<any>
 
@@ -103,28 +168,29 @@ declare module 'react-native-nearit' {
 
     // In-app events related methods
 
-    static triggerInAppEvent(eventKey: string)
+    static triggerInAppEvent(eventKey: string): void
 
     // Coupon related methods
     
     static getCoupons(): Promise<NearItCoupon[]>
 
-    static showCouponList(title?: string): Promise<null>
+    static showCouponList(title?: string): void
 
     // Notification history related methods
 
-    // TODO: return type
-    static getNotificationHistory(): Promise<null>
+    static getNotificationHistory(): Promise<NearItHistoryItem[]>
 
-    static showNotificationHistory(title?: string): Promise<null>
+    static showNotificationHistory(title?: string): void
 
-    static setNotificationHistoryUpdateListener (listener: (event: any) => void): EmitterSubscription
+    static addNotificationHistoryUpdateListener (listener: (event: NearItHistoryItem[]) => void): EmitterSubscription
 
-    static markNotificatinHistoryAsOld(): Promise<null>
+    static removeNotificationHistoryUpdateListener (subscription: EmitterSubscription): void
+
+    static markNotificationHistoryAsOld(): void
 
     // Permissions related methods
 
-    static requestPermissions(expanation?: string): Promise<null>
+    static requestPermissions(expanation?: string): Promise<NearItPermissionsResult>
 
     static isBluetoothEnabled(): Promise<boolean>
 
@@ -136,8 +202,13 @@ declare module 'react-native-nearit' {
 
     // Content related methods
 
-    // TODO: param type
-    static showContent(content: any): Promise<null>
+    static showContent(event: NearItEvent): void
+
+    static disableDefaultRangingNotifications(): void
+
+    static addProximityListener (listener: (event: NearItEvent) => void): EmitterSubscription
+
+    static removeProximityListener (subscription: EmitterSubscription): void
 
   }
 

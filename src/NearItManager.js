@@ -10,6 +10,23 @@
 // @flow
 import { NativeEventEmitter, NativeModules } from 'react-native'
 
+type NearItConstants = {
+  Events: NearItEvents,
+  EventContent: NearItEventContent,
+  Statuses: NearItStatuses,
+  Permissions: NearItPermissions
+}
+
+type NearItPermissions = {
+  location: string,
+  notifications: string,
+  bluetooth: string,
+  locationServices: string,
+  always: string,
+  whenInUse: string,
+  denied: string
+}
+
 type NearItEvents = {
   SimpleNotification: string,
   Content: string,
@@ -20,9 +37,32 @@ type NearItEvents = {
 
 type NearItEventContent = {
   type: string,
-  content: string,
-  fromUserAction: string,
-  trackingInfo: string
+    trackingInfo: string,
+    message: string,
+    content: string,
+    fromUserAction: string,
+    status: string,
+    title: string,
+    image: string,
+    fullSize: string,
+    squareSize: string,
+    text: string,
+    cta: string,
+    label: string,
+    url: string,
+    description: string,
+    value: string,
+    expiresAt: string,
+    redeemableFrom: string,
+    serial: string,
+    claimedAt: string,
+    redeemedAt: string,
+    question: string,
+    feedbackId: string,
+    read: string,
+    timestamp: string,
+    isNew: string,
+    notificationContent: string
 }
 
 type NearItStatuses = {
@@ -30,34 +70,59 @@ type NearItStatuses = {
   opened: string
 }
 
-type NearItConstants = {
-  Events: NearItEvents,
-  EventContent: NearItEventContent,
-  Statuses: NearItStatuses
-}
-
 type NearItEvent = {
-  'type': string
+  type: string
 }
-
-type NearItContentsListener = (event: NearItEvent) => void
 
 type NearItImage = {
-  'fullSize': ?string,
-  'squareSize': ?string
+  fullSize: ?string,
+  squareSize: ?string
+}
+
+interface NearItCta {
+  label: string
+  url: string
 }
 
 type NearItCoupon = {
-  'title': string,
-  'description': string,
-  'image': ?NearItImage,
-  'value': string,
-  'expiresAt': string,
-  'redeemableFrom': string,
-  'serial': ?string,
-  'claimedAt': ?string,
-  'redeemedAt': ?string
+  title: string,
+  description: ?string,
+  image: ?NearItImage,
+  value: string,
+  expiresAt: ?string,
+  redeemableFrom: ?string,
+  serial: string,
+  claimedAt: ?string,
+  redeemedAt: ?string
 }
+
+interface NearItContent {
+  title: ?string,
+  text: ?string,
+  image: ?NearItImage,
+  cta: ?NearItCta
+}
+
+interface NearItFeedback {
+  question: string,
+  feedbackId: ?string
+}
+
+interface NearItHistoryItem {
+  read: boolean,
+  timestamp: string,
+  isNew: boolean,
+  notificationContent: any
+}
+
+type NearItPermissionsResult = {
+  bluetooth: boolean,
+  location: LocationPermissionStatus,
+  locationServices: boolean,
+  notifications: boolean,
+}
+
+type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
 
 type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
 
@@ -65,7 +130,9 @@ type EmitterSubscription = {
   remove(): void
 }
 
-type NearItNotificationHistoryUpdateListener = () => void
+type NearItContentsListener = (event: NearItEvent) => void
+
+type NearItNotificationHistoryUpdateListener = (history: NearItHistoryItem[]) => void
 
 const NearItSdk = NativeModules.RNNearIt
 const NearItUI = NativeModules.RNNearItUI
@@ -74,7 +141,12 @@ export class NearItManager {
   static constants: NearItConstants = {
     Events: NearItSdk.Events,
     EventContent: NearItSdk.EventContent,
-    Statuses: NearItSdk.Statuses
+    Statuses: NearItSdk.Statuses,
+    Permissions: NearItSdk.Permissions
+  }
+
+  static onDeviceReady() {
+    NearItSdk.onDeviceReady()
   }
 
   static _eventSource = new NativeEventEmitter(NearItSdk)
@@ -160,22 +232,22 @@ export class NearItManager {
     return NearItSdk.getCoupons()
   }
 
-  static showCouponList (title: ?string): Promise<null> {
+  static showCouponList (title: ?string) {
     return NearItUI.showCouponList(title)
   }
 
   // Notification history related methods
 
   // TODO: return type
-  static getNotificationHistory (): Promise<null> {
+  static getNotificationHistory (): Promise<NearItHistoryItem[]> {
     return NearItSdk.getNotificationHistory()
   }
 
-  static showNotificationHistory (title: ?string): Promise<null> {
+  static showNotificationHistory (title: ?string) {
     return NearItUI.showNotificationHistory(title)
   }
 
-  static setNotificationHistoryUpdateListener (listener: NearItNotificationHistoryUpdateListener): EmitterSubscription {
+  static addNotificationHistoryUpdateListener (listener: NearItNotificationHistoryUpdateListener): EmitterSubscription {
     const subscription = NearItManager._eventSource.addListener(NearItSdk.NativeNotificationHistoryTopic, listener)
     NearItSdk.notificationHistoryListenerRegistered()
     return subscription
@@ -188,13 +260,13 @@ export class NearItManager {
       })
   }
 
-  static markNotificationHistoryAsOld (): Promise<null> {
-    return NearItSdk.markNotificationHistoryAsOld()
+  static markNotificationHistoryAsOld () {
+    NearItSdk.markNotificationHistoryAsOld()
   }
 
   // Permissions related methods
 
-  static requestPermissions (explanation: ?string): Promise<null> {
+  static requestPermissions (explanation: ?string): Promise<NearItPermissionsResult> {
     return NearItUI.requestPermissions(explanation)
   }
 
@@ -216,9 +288,25 @@ export class NearItManager {
 
   // Content related methods
 
-  // TODO: param type
-  static showContent (content: any): Promise<null> {
-    return NearItUI.showContent()
+  static showContent (event: NearItEvent) {
+    return NearItUI.showContent(content)
+  }
+
+  static disableDefaultRangingNotifications() {
+    NearItSdk.disableDefaultRangingNotifications()
+  }
+
+  static addProximityListener (listener: NearItContentsListener): EmitterSubscription {
+    const subscription = NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+    NearItSdk.listenerRegistered()
+    return subscription
+  }
+
+  static removeProximityListener (subscription: EmitterSubscription) {
+    NearItSdk.listenerUnregistered()
+      .then(res => {
+        subscription.remove()
+      })
   }
 }
 export const constants = NearItManager.constants
