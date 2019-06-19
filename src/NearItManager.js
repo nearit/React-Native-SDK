@@ -10,13 +10,6 @@
 // @flow
 import { NativeEventEmitter, NativeModules } from 'react-native'
 
-type NearItConstants = {
-  Events: NearItEvents,
-  EventContent: NearItEventContent,
-  Statuses: NearItStatuses,
-  Permissions: NearItPermissions
-}
-
 type NearItPermissions = {
   location: string,
   notifications: string,
@@ -70,6 +63,13 @@ type NearItStatuses = {
   opened: string
 }
 
+type NearItConstants = {
+  Events: NearItEvents,
+  EventContent: NearItEventContent,
+  Statuses: NearItStatuses,
+  Permissions: NearItPermissions
+}
+
 type NearItEvent = {
   type: string
 }
@@ -115,14 +115,14 @@ interface NearItHistoryItem {
   notificationContent: any
 }
 
+type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
+
 type NearItPermissionsResult = {
   bluetooth: boolean,
   location: LocationPermissionStatus,
   locationServices: boolean,
-  notifications: boolean,
+  notifications: boolean
 }
-
-type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
 
 type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
 
