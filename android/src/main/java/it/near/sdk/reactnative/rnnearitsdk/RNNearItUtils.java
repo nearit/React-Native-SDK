@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.google.gson.Gson;
 
@@ -41,7 +42,6 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.contentplugin.model.ContentLink;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
@@ -53,8 +53,12 @@ import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.inbox.model.HistoryItem;
 import it.near.sdk.trackings.TrackingInfo;
 
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItConstants.*;
+
 @SuppressWarnings({"CharsetObjectCanBeUsed", "Convert2Diamond"})
-public class RNNearItUtils {
+class RNNearItUtils {
+
+    private static final String TAG = "RNNearItUtils";
 
     static String bundleTrackingInfo(final TrackingInfo trackingInfo) throws Exception {
         // JSONify trackingInfo
@@ -71,7 +75,7 @@ public class RNNearItUtils {
             final String trackingInfoJsonString = new String(Base64.decode(trackingInfoBase64, Base64.DEFAULT), "UTF-8");
             return new Gson().fromJson(trackingInfoJsonString, TrackingInfo.class);
         } catch (UnsupportedEncodingException e) {
-            Log.e("RNNearItUtils", "error while decoding trackingInfo");
+            Log.e(TAG, "error while decoding trackingInfo");
         }
 
         return null;
@@ -80,180 +84,201 @@ public class RNNearItUtils {
     static WritableMap bundleCoupon(final Coupon coupon) {
         final WritableMap couponMap = new WritableNativeMap();
 
-        couponMap.putString("title", coupon.getTitle());
-        couponMap.putString("description", coupon.description);
-        couponMap.putString("value", coupon.value);
-        couponMap.putString("expiresAt", coupon.expires_at);
-        couponMap.putString("redeemableFrom", coupon.redeemable_from);
-        couponMap.putString("serial", coupon.getSerial());
-        couponMap.putString("claimedAt", coupon.getClaimedAt());
-        couponMap.putString("redeemedAt", coupon.getRedeemedAt());
+        couponMap.putString(EVENT_CONTENT_TITLE, coupon.getTitle());
+        couponMap.putString(EVENT_COUPON_DESCRIPTION, coupon.description);
+        couponMap.putString(EVENT_COUPON_VALUE, coupon.value);
+        couponMap.putString(EVENT_COUPON_EXPIRES_AT, coupon.expires_at);
+        couponMap.putString(EVENT_COUPON_REDEEMABLE_FROM, coupon.redeemable_from);
+        couponMap.putString(EVENT_COUPON_SERIAL, coupon.getSerial());
+        couponMap.putString(EVENT_COUPON_CLAIMED_AT, coupon.getClaimedAt());
+        couponMap.putString(EVENT_COUPON_REDEEMED_AT, coupon.getRedeemedAt());
 
         // Coupon icon handling
         if (coupon.getIconSet() != null) {
-            couponMap.putMap("image", bundleImageSet(coupon.getIconSet()));
+            couponMap.putMap(EVENT_IMAGE, bundleImageSet(coupon.getIconSet()));
         }
 
         return couponMap;
     }
 
-    public static Coupon unbundleCoupon(final WritableMap bundledCoupon) {
+    static Coupon unbundleCoupon(final ReadableMap bundledCoupon) {
         Coupon coupon = new Coupon();
-        coupon.name = getNullableField(bundledCoupon, "title");
-        coupon.description = getNullableField(bundledCoupon, "description");
-        coupon.value = getNullableField(bundledCoupon, "value");
-        coupon.expires_at = getNullableField(bundledCoupon, "expiresAt");
-        coupon.redeemable_from = getNullableField(bundledCoupon, "redeemableFrom");
+        coupon.name = getNullableField(bundledCoupon, EVENT_CONTENT_TITLE);
+        coupon.description = getNullableField(bundledCoupon, EVENT_COUPON_DESCRIPTION);
+        coupon.value = getNullableField(bundledCoupon, EVENT_COUPON_VALUE);
+        coupon.expires_at = getNullableField(bundledCoupon, EVENT_COUPON_EXPIRES_AT);
+        coupon.redeemable_from = getNullableField(bundledCoupon, EVENT_COUPON_REDEEMABLE_FROM);
         List<Claim> claims = new ArrayList<Claim>();
         Claim claim = new Claim();
-        claim.serial_number = getNullableField(bundledCoupon, "serial");
-        claim.claimed_at = getNullableField(bundledCoupon, "claimedAt");
-        claim.redeemed_at = getNullableField(bundledCoupon, "redeemedAt");
+        claim.serial_number = getNullableField(bundledCoupon, EVENT_COUPON_SERIAL);
+        claim.claimed_at = getNullableField(bundledCoupon, EVENT_COUPON_CLAIMED_AT);
+        claim.redeemed_at = getNullableField(bundledCoupon, EVENT_COUPON_REDEEMED_AT);
         claims.add(claim);
         coupon.claims = claims;
-        if (bundledCoupon.hasKey("image")) {
-            WritableMap imageSet = new Gson().fromJson(bundledCoupon.getString("image"), WritableMap.class);
+        if (bundledCoupon.hasKey(EVENT_IMAGE)) {
+            ReadableMap imageSet = bundledCoupon.getMap(EVENT_IMAGE);
             coupon.setIconSet(unbundleImageSet(imageSet));
         }
         return coupon;
     }
 
-    public static WritableMap bundleContent(final Content content) {
+    static WritableMap bundleContent(final Content content) {
         final WritableMap bundledContent = new WritableNativeMap();
 
-        String title = content.title;
-        if (title == null) {
-            title = "";
-        }
-        bundledContent.putString("title", title);
+        bundledContent.putString(EVENT_CONTENT_TITLE, content.title);
+        bundledContent.putString(EVENT_CONTENT_TEXT, content.contentString);
 
-        String text = content.contentString;
-        if (text == null) {
-            text = "";
-        }
-        bundledContent.putString("text", text);
-
-        WritableMap image = null;
         if (content.getImageLink() != null) {
-            image = bundleImageSet(content.getImageLink());
+            bundledContent.putMap(EVENT_IMAGE, bundleImageSet(content.getImageLink()));
         }
-        bundledContent.putMap("image", image);
 
-        WritableMap cta = null;
         if (content.getCta() != null) {
-            cta = bundleContentLink(content.getCta());
+            bundledContent.putMap(EVENT_CONTENT_CTA, bundleContentLink(content.getCta()));
         }
-        bundledContent.putMap("cta", cta);
 
         return bundledContent;
     }
 
-    public static Content unbundleContent(final WritableMap bundledContent) {
+    static Content unbundleContent(final ReadableMap bundledContent) {
         final Content content = new Content();
-        content.title = getNullableField(bundledContent, "title");
-        content.contentString = getNullableField(bundledContent, "text");
-        final List<ImageSet> images = new ArrayList<ImageSet>();
-        WritableMap imageSet = new Gson().fromJson(bundledContent.getString("image"), WritableMap.class);
-        images.add(unbundleImageSet(imageSet));
-        content.setImages_links(images);
-        WritableMap bundledCta = new Gson().fromJson(bundledContent.getString("cta"), WritableMap.class);
-        content.setCta(unbundleContentLink(bundledCta));
+        content.title = getNullableField(bundledContent, EVENT_CONTENT_TITLE);
+        content.contentString = getNullableField(bundledContent, EVENT_CONTENT_TEXT);
+        if (bundledContent.hasKey(EVENT_IMAGE)) {
+            final List<ImageSet> images = new ArrayList<ImageSet>();
+            ReadableMap imageSet = bundledContent.getMap(EVENT_IMAGE);
+            images.add(unbundleImageSet(imageSet));
+            content.setImages_links(images);
+        }
+        if (bundledContent.hasKey(EVENT_CONTENT_CTA)) {
+            ReadableMap bundledCta = bundledContent.getMap(EVENT_CONTENT_CTA);
+            if (bundledCta != null) {
+                content.setCta(unbundleContentLink(bundledCta));
+            }
+        }
         return content;
     }
 
-    public static WritableMap bundleHistoryItem(final HistoryItem item) {
+    static WritableArray bundleNotificationHistory(final List<HistoryItem> history) {
+        final WritableArray bundledHistory = new WritableNativeArray();
+
+        for (HistoryItem item : history) {
+            final WritableMap bundledItem = bundleHistoryItem(item);
+            bundledHistory.pushMap(bundledItem);
+        }
+
+        return bundledHistory;
+    }
+
+    static WritableMap bundleFeedback(final Feedback feedback) {
+        final WritableMap bundledFeedback = new WritableNativeMap();
+
+        bundledFeedback.putString(EVENT_FEEDBACK_QUESTION, feedback.question);
+
+        String feedbackB64 = null;
+        try {
+            feedbackB64 = feedbackToB64(feedback);
+        } catch (Exception e) {
+            Log.e(TAG, "feedback encoding error", e);
+        }
+        if (feedbackB64 != null) {
+            bundledFeedback.putString(EVENT_FEEDBACK_ID, feedbackB64);
+        }
+
+        return bundledFeedback;
+    }
+
+    @Nullable
+    static Feedback unbundleFeedback(final ReadableMap bundledFeedback) {
+        Feedback feedback = null;
+        if (bundledFeedback.hasKey(EVENT_FEEDBACK_ID)) {
+            try {
+                feedback = feedbackFromB64(bundledFeedback.getString(EVENT_FEEDBACK_ID));
+            } catch (Exception e) {
+                Log.e(TAG, "Could NOT parse Feedback");
+            }
+        } else {
+            Log.e(TAG, "Could NOT parse Feedback");
+        }
+        return feedback;
+    }
+
+    static WritableMap bundleCustomJson(final CustomJSON customJson) {
+        return toWritableMap(customJson.content);
+    }
+
+    private static WritableMap bundleHistoryItem(final HistoryItem item) {
         final WritableMap itemMap = new WritableNativeMap();
 
-        itemMap.putBoolean("read", item.read);
-        itemMap.putDouble("timestamp", item.timestamp);
-        itemMap.putBoolean("isNew", item.isNew);
+        itemMap.putBoolean(NOTIFICATION_HISTORY_READ, item.read);
+        itemMap.putDouble(NOTIFICATION_HISTORY_TIMESTAMP, item.timestamp);
+        itemMap.putBoolean(NOTIFICATION_HISTORY_IS_NEW, item.isNew);
 
         try {
-            itemMap.putString("trackingInfo", bundleTrackingInfo(item.trackingInfo));
+            itemMap.putString(EVENT_TRACKING_INFO, bundleTrackingInfo(item.trackingInfo));
         } catch (Exception e) {
-            NearLog.d("RNNearItUtils", "historyItem encoding error", e);
+            Log.e(TAG, "historyItem encoding error", e);
         }
-        itemMap.putString("message", item.reaction.notificationMessage);
+        itemMap.putString(EVENT_CONTENT_MESSAGE, item.reaction.notificationMessage);
 
         if (item.reaction instanceof SimpleNotification) {
-            itemMap.putString("type", RNNearItModule.EVENT_TYPE_SIMPLE);
+            itemMap.putString(EVENT_TYPE, EVENT_TYPE_SIMPLE);
         } else if (item.reaction instanceof Content) {
             Content content = (Content) item.reaction;
-            itemMap.putMap("notificationContent", bundleContent(content));
-            itemMap.putString("type", RNNearItModule.EVENT_TYPE_CONTENT);
+            itemMap.putMap(NOTIFICATION_HISTORY_CONTENT, bundleContent(content));
+            itemMap.putString(EVENT_TYPE, EVENT_TYPE_CONTENT);
         } else if (item.reaction instanceof Feedback) {
             Feedback feedback = (Feedback) item.reaction;
-            itemMap.putMap("notificationContent", bundleFeedback(feedback));
-            itemMap.putString("type", RNNearItModule.EVENT_TYPE_FEEDBACK);
+            itemMap.putMap(NOTIFICATION_HISTORY_CONTENT, bundleFeedback(feedback));
+            itemMap.putString(EVENT_TYPE, EVENT_TYPE_FEEDBACK);
         } else if (item.reaction instanceof Coupon) {
             Coupon coupon = (Coupon) item.reaction;
-            itemMap.putMap("notificationContent", bundleCoupon(coupon));
-            itemMap.putString("type", RNNearItModule.EVENT_TYPE_COUPON);
+            itemMap.putMap(NOTIFICATION_HISTORY_CONTENT, bundleCoupon(coupon));
+            itemMap.putString(EVENT_TYPE, EVENT_TYPE_COUPON);
         } else if (item.reaction instanceof CustomJSON) {
             CustomJSON customJson = (CustomJSON) item.reaction;
-            itemMap.putMap("notificationContent", bundleCustomJson(customJson));
-            itemMap.putString("type", RNNearItModule.EVENT_TYPE_CUSTOM_JSON);
+            itemMap.putMap(NOTIFICATION_HISTORY_CONTENT, bundleCustomJson(customJson));
+            itemMap.putString(EVENT_TYPE, EVENT_TYPE_CUSTOM_JSON);
         }
 
         return itemMap;
     }
 
-    static WritableMap bundleImageSet(ImageSet imageSet) {
+    private static WritableMap bundleImageSet(final ImageSet imageSet) {
         final WritableMap image = new WritableNativeMap();
-        image.putString("fullSize", imageSet.getFullSize());
-        image.putString("squareSize", imageSet.getSmallSize());
+        image.putString(EVENT_IMAGE_FULL_SIZE, imageSet.getFullSize());
+        image.putString(EVENT_IMAGE_SQUARE_SIZE, imageSet.getSmallSize());
 
         return image;
     }
 
-    private static ImageSet unbundleImageSet(WritableMap bundledImage) {
+    private static ImageSet unbundleImageSet(final ReadableMap bundledImage) {
         final ImageSet imageSet = new ImageSet();
-        imageSet.setFullSize(getNullableField(bundledImage, "fullSize"));
-        imageSet.setSmallSize(getNullableField(bundledImage, "squareSize"));
+        imageSet.setFullSize(getNullableField(bundledImage, EVENT_IMAGE_FULL_SIZE));
+        imageSet.setSmallSize(getNullableField(bundledImage, EVENT_IMAGE_SQUARE_SIZE));
         return imageSet;
     }
 
-    static WritableMap bundleContentLink(ContentLink cta) {
+    private static WritableMap bundleContentLink(final ContentLink cta) {
         final WritableMap contentLink = new WritableNativeMap();
-        contentLink.putString("label", cta.label);
-        contentLink.putString("url", cta.url);
+        contentLink.putString(EVENT_CONTENT_CTA_LABEL, cta.label);
+        contentLink.putString(EVENT_CONTENT_CTA_URL, cta.url);
         return contentLink;
     }
 
-    private static ContentLink unbundleContentLink(WritableMap bundledCta) {
-        return new ContentLink(getNullableField(bundledCta, "label"), getNullableField(bundledCta, "url"));
+    private static ContentLink unbundleContentLink(final ReadableMap bundledCta) {
+        return new ContentLink(
+                getNullableField(bundledCta, EVENT_CONTENT_CTA_LABEL),
+                getNullableField(bundledCta, EVENT_CONTENT_CTA_URL));
     }
 
-    private static String getNullableField(WritableMap map, String key) {
+    private static String getNullableField(final ReadableMap map, final String key) {
         if (map.hasKey(key) && map.getString(key) != null) {
             return map.getString(key);
         }
         return null;
     }
 
-    static WritableMap bundleFeedback(final Feedback feedback) {
-        final WritableMap bundledFeedback = new WritableNativeMap();
-
-        String question = feedback.question;
-        if (question == null) {
-            question = "";
-        }
-        bundledFeedback.putString("feedbackQuestion", question);
-
-        String feedbackB64 = null;
-        try {
-            feedbackB64 = feedbackToB64(feedback);
-        } catch (Exception e) {
-            NearLog.d("RNNearItUtils", "feedback encoding error", e);
-        }
-        if (feedbackB64 != null) {
-            bundledFeedback.putString("feedbackId", feedbackB64);
-        }
-
-        return bundledFeedback;
-    }
-
-    static Feedback unbundleFeedback(final String base64) throws Exception {
+    private static Feedback feedbackFromB64(final String base64) throws Exception {
         Feedback feedback;
         final Parcel parcel = Parcel.obtain();
         try {
@@ -276,13 +301,7 @@ public class RNNearItUtils {
         return feedback;
     }
 
-    static WritableMap bundleCustomJson(final CustomJSON customJson) {
-        final WritableMap bundledCustomJson = new WritableNativeMap();
-        bundledCustomJson.putMap("data", toWritableMap(customJson.content));
-        return bundledCustomJson;
-    }
-
-    static String feedbackToB64(final Feedback feedback) throws Exception {
+    private static String feedbackToB64(final Feedback feedback) throws Exception {
         String base64;
 
         final Parcel parcel = Parcel.obtain();
@@ -301,7 +320,7 @@ public class RNNearItUtils {
     }
 
     // ReadableArray Utils
-    private static JSONArray toJSONArray(ReadableArray readableArray) throws JSONException {
+    private static JSONArray toJSONArray(final ReadableArray readableArray) throws JSONException {
         JSONArray jsonArray = new JSONArray();
 
         for (int i = 0; i < readableArray.size(); i++) {
@@ -332,7 +351,7 @@ public class RNNearItUtils {
         return jsonArray;
     }
 
-    private static Object[] toArray(JSONArray jsonArray) throws JSONException {
+    private static Object[] toArray(final JSONArray jsonArray) throws JSONException {
         Object[] array = new Object[jsonArray.length()];
 
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -351,7 +370,7 @@ public class RNNearItUtils {
         return array;
     }
 
-    private static Object[] toArray(ReadableArray readableArray) {
+    private static Object[] toArray(final ReadableArray readableArray) {
         Object[] array = new Object[readableArray.size()];
 
         for (int i = 0; i < readableArray.size(); i++) {
@@ -382,7 +401,7 @@ public class RNNearItUtils {
         return array;
     }
 
-    private static WritableArray toWritableArray(Object[] array) {
+    private static WritableArray toWritableArray(final Object[] array) {
         WritableArray writableArray = Arguments.createArray();
 
         for (int i = 0; i < array.length; i++) {
@@ -415,7 +434,7 @@ public class RNNearItUtils {
     }
 
     // ReactNative Map Utils
-    static JSONObject toJSONObject(ReadableMap readableMap) throws JSONException {
+    static JSONObject toJSONObject(final ReadableMap readableMap) throws JSONException {
         JSONObject jsonObject = new JSONObject();
 
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
@@ -449,7 +468,7 @@ public class RNNearItUtils {
         return jsonObject;
     }
 
-    static Map<String, Object> toMap(JSONObject jsonObject) throws JSONException {
+    static Map<String, Object> toMap(final JSONObject jsonObject) throws JSONException {
         Map<String, Object> map = new HashMap<String, Object>();
         Iterator<String> iterator = jsonObject.keys();
 
@@ -470,7 +489,7 @@ public class RNNearItUtils {
         return map;
     }
 
-    static Map<String, Object> toMap(ReadableMap readableMap) {
+    static Map<String, Object> toMap(final ReadableMap readableMap) {
         Map<String, Object> map = new HashMap<String, Object>();
         ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
 
@@ -503,7 +522,7 @@ public class RNNearItUtils {
         return map;
     }
 
-    static WritableMap toWritableMap(Map<String, Object> map) {
+    static WritableMap toWritableMap(final Map<String, Object> map) {
         WritableMap writableMap = Arguments.createMap();
 
         for (Object o : map.entrySet()) {
@@ -522,7 +541,7 @@ public class RNNearItUtils {
                 writableMap.putString((String) pair.getKey(), (String) value);
             } else if (value instanceof Map) {
                 writableMap.putMap((String) pair.getKey(), toWritableMap((Map<String, Object>) value));
-            } else if (value.getClass() != null && value.getClass().isArray()) {
+            } else if (value.getClass().isArray()) {
                 writableMap.putArray((String) pair.getKey(), toWritableArray((Object[]) value));
             }
 
