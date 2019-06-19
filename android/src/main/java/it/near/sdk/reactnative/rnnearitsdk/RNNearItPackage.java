@@ -20,6 +20,7 @@ import java.util.List;
 
 import it.near.sdk.NearItManager;
 
+@SuppressWarnings({"unused", "Convert2Diamond"})
 public class RNNearItPackage implements ReactPackage {
 
     @Override
