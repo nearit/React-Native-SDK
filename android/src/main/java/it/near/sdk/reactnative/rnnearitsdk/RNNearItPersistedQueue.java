@@ -27,9 +27,9 @@ class RNNearItPersistedQueue {
     private static final String SP_LAST_READ_NOTIFICATION_INDEX = "LastReadNotificationIndex";
 
     private static RNNearItPersistedQueue defaultInstance;
-    private AtomicInteger _listeners;
+    private AtomicInteger listeners;
 
-    public static synchronized RNNearItPersistedQueue defaultQueue() {
+    static synchronized RNNearItPersistedQueue defaultQueue() {
         if (defaultInstance == null) {
             defaultInstance = new RNNearItPersistedQueue();
         }
@@ -37,27 +37,27 @@ class RNNearItPersistedQueue {
     }
 
     private RNNearItPersistedQueue() {
-        _listeners = new AtomicInteger(0);
+        listeners = new AtomicInteger(0);
 
     }
 
     boolean hasListeners() {
-        return _listeners.get() > 0;
+        return listeners.get() > 0;
     }
 
     int registerListener() {
-        return _listeners.incrementAndGet();
+        return listeners.incrementAndGet();
     }
 
     int unregisterListener() {
-        if (_listeners.get() > 0) {
-            return _listeners.decrementAndGet();
+        if (listeners.get() > 0) {
+            return listeners.decrementAndGet();
         }
         return 0;
     }
 
     void resetListeners() {
-        _listeners.set(0);
+        listeners.set(0);
     }
 
     static void addNotification(final Context context, final WritableMap notification) {
