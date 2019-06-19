@@ -98,7 +98,7 @@ interface NearItHistoryItem {
   notificationContent: any
 }
 
-type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
+type LocationPermissionStatus = "always" | "denied" | "whenInUse"
 
 type NearItPermissionsResult = {
   bluetooth: boolean,
