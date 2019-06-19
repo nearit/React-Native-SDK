@@ -80,7 +80,7 @@ type NearItImage = {
 }
 
 interface NearItCta {
-  label: string
+  label: string,
   url: string
 }
 
