@@ -16,7 +16,6 @@ class RNNearItConstants {
     static final String EVENT_TYPE_COUPON = "NearIt.Events.Coupon";
     static final String EVENT_TYPE_CONTENT = "NearIt.Events.Content";
     static final String EVENT_TYPE_FEEDBACK = "NearIt.Events.Feedback";
-    static final String EVENT_TYPE_NOTIFICATION_HISTORY_UPDATE = "NearIt.Events.NotificationsUpdate";
 
     // Events content
     static final String EVENT_TYPE = "type";
@@ -59,6 +58,15 @@ class RNNearItConstants {
     static final String NOTIFICATION_HISTORY_TIMESTAMP = "timestamp";
     static final String NOTIFICATION_HISTORY_IS_NEW = "isNew";
     static final String NOTIFICATION_HISTORY_CONTENT = "notificationContent";
+
+    // Permissions
+    static final String PERMISSIONS_LOCATION_PERMISSION = "location";
+    static final String PERMISSIONS_NOTIFICATIONS_PERMISSION = "notifications";
+    static final String PERMISSIONS_BLUETOOTH = "bluetooth";
+    static final String PERMISSIONS_LOCATION_SERVICES = "locationServices";
+    static final String PERMISSIONS_LOCATION_ALWAYS = "always";
+    static final String PERMISSIONS_LOCATION_DENIED = "denied";
+    static final String PERMISSIONS_LOCATION_WHEN_IN_USE = "whenInUse";
 
     // Error codes
     static final String E_SEND_FEEDBACK_ERROR = "E_SEND_FEEDBACK_ERROR";
