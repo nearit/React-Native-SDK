@@ -96,18 +96,6 @@ type NearItCoupon = {
   redeemedAt: ?string
 }
 
-interface NearItContent {
-  title: ?string,
-  text: ?string,
-  image: ?NearItImage,
-  cta: ?NearItCta
-}
-
-interface NearItFeedback {
-  question: string,
-  feedbackId: ?string
-}
-
 interface NearItHistoryItem {
   read: boolean,
   timestamp: string,

@@ -5,13 +5,6 @@
 
 declare module 'react-native-nearit' {
 
-  interface NearItConstants {
-    Events: NearItEvents
-    EventContent: NearItEventContent
-    Statuses: NearItStatuses
-    Permissions: NearItPermissions
-  }
-
   interface NearItPermissions {
     location: string,
     notifications: string,
@@ -23,46 +16,53 @@ declare module 'react-native-nearit' {
   }
 
   interface NearItEvents {
-    SimpleNotification: string
-    Content: string
-    Feedback: string
-    Coupon: string
+    SimpleNotification: string,
+    Content: string,
+    Feedback: string,
+    Coupon: string,
     CustomJson: string
   }
 
   interface NearItEventContent {
-    type: string
-    trackingInfo: string
-    message: string
-    content: string
-    fromUserAction: string
-    status: string
-    title: string
-    image: string
-    fullSize: string
-    squareSize: string
-    text: string
-    cta: string
-    label: string
-    url: string
-    description: string
-    value: string
-    expiresAt: string
-    redeemableFrom: string
-    serial: string
-    claimedAt: string
-    redeemedAt: string
-    question: string
-    feedbackId: string
-    read: string
-    timestamp: string
-    isNew: string
+    type: string,
+    trackingInfo: string,
+    message: string,
+    content: string,
+    fromUserAction: string,
+    status: string,
+    title: string,
+    image: string,
+    fullSize: string,
+    squareSize: string,
+    text: string,
+    cta: string,
+    label: string,
+    url: string,
+    description: string,
+    value: string,
+    expiresAt: string,
+    redeemableFrom: string,
+    serial: string,
+    claimedAt: string,
+    redeemedAt: string,
+    question: string,
+    feedbackId: string,
+    read: string,
+    timestamp: string,
+    isNew: string,
     notificationContent: string
   }
 
   interface NearItStatuses {
-    received: string
+    received: string,
     opened: string
+  }
+
+  interface NearItConstants {
+    Events: NearItEvents,
+    EventContent: NearItEventContent,
+    Statuses: NearItStatuses,
+    Permissions: NearItPermissions
   }
 
   interface NearItEvent {
@@ -70,54 +70,42 @@ declare module 'react-native-nearit' {
   }
 
   interface NearItImage {
-    fullSize?: string
+    fullSize?: string,
     squareSize?: string
   }
 
   interface NearItCta {
-    label: string
+    label: string,
     url: string
   }
 
   interface NearItCoupon {
-    title: string
-    description?: string
-    image?: NearItImage
-    value: string
-    expiresAt?: string
-    redeemableFrom?: string
-    serial: string
-    claimedAt?: string
+    title: string,
+    description?: string,
+    image?: NearItImage,
+    value: string,
+    expiresAt?: string,
+    redeemableFrom?: string,
+    serial: string,
+    claimedAt?: string,
     redeemedAt?: string
   }
 
-  interface NearItContent {
-    title?: string
-    text?: string
-    image?: NearItImage
-    cta?: NearItCta
-  }
-
-  interface NearItFeedback {
-    question: string
-    feedbackId?: string
-  }
-
   interface NearItHistoryItem {
-    read: boolean
-    timestamp: string
-    isNew: boolean
+    read: boolean,
+    timestamp: string,
+    isNew: boolean,
     notificationContent: any
   }
 
+  type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
+
   interface NearItPermissionsResult {
-    bluetooth: boolean
-    location: LocationPermissionStatus
-    locationServices: boolean
+    bluetooth: boolean,
+    location: LocationPermissionStatus,
+    locationServices: boolean,
     notifications: boolean
   }
-
-  type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
 
   type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
 
