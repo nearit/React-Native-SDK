@@ -79,11 +79,6 @@ type NearItImage = {
   squareSize: ?string
 }
 
-interface NearItCta {
-  label: string,
-  url: string
-}
-
 type NearItCoupon = {
   title: string,
   description: ?string,
