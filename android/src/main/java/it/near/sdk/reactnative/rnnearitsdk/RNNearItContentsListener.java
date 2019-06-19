@@ -26,37 +26,20 @@ import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.ContentsListener;
 
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_COUPON;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_CTA;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_DATA;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_FEEDBACK;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_IMAGE;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_MESSAGE;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_QUESTION;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_TEXT;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_CONTENT_TITLE;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_FROM_USER_ACTION;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TRACKING_INFO;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_CONTENT;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_COUPON;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_CUSTOM_JSON;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_FEEDBACK;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.EVENT_TYPE_SIMPLE;
-import static it.near.sdk.reactnative.rnnearitsdk.RNNearItModule.NATIVE_EVENTS_TOPIC;
+import static it.near.sdk.reactnative.rnnearitsdk.RNNearItConstants.*;
 
 
-public class RNNearItCoreContentsListener implements ContentsListener {
+public class RNNearItContentsListener implements ContentsListener {
 
     private static final String TAG = "RNNearItCoreContents";
 
     private Context context;
+    @Nullable
     private DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter;
     private boolean fromUserAction;
 
 
-    RNNearItCoreContentsListener(@NonNull Context context, @Nullable DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
+    RNNearItContentsListener(@NonNull Context context, @Nullable DeviceEventManagerModule.RCTDeviceEventEmitter eventEmitter, boolean fromUserAction) {
         this.context = context;
         this.eventEmitter = eventEmitter;
         this.fromUserAction = fromUserAction;
@@ -67,14 +50,7 @@ public class RNNearItCoreContentsListener implements ContentsListener {
         // Create EventContent map
         final WritableMap contentMap = new WritableNativeMap();
         contentMap.putString(EVENT_CONTENT_MESSAGE, content.notificationMessage);
-        contentMap.putString(EVENT_CONTENT_TITLE, (content.title != null ? content.title : ""));
-        contentMap.putString(EVENT_CONTENT_TEXT, (content.contentString != null ? content.contentString : ""));
-        if (content.getImageLink() != null) {
-            contentMap.putMap(EVENT_CONTENT_IMAGE, RNNearItUtils.bundleImageSet(content.getImageLink()));
-        }
-        if (content.getCta() != null) {
-            contentMap.putMap(EVENT_CONTENT_CTA, RNNearItUtils.bundleContentLink(content.getCta()));
-        }
+        contentMap.merge(RNNearItUtils.bundleContent(content));
 
         // Notify JS
         sendEventWithContent(EVENT_TYPE_CONTENT, contentMap, trackingInfo);
@@ -85,7 +61,7 @@ public class RNNearItCoreContentsListener implements ContentsListener {
         // Create EventContent map
         final WritableMap contentMap = new WritableNativeMap();
         contentMap.putString(EVENT_CONTENT_MESSAGE, coupon.notificationMessage);
-        contentMap.putMap(EVENT_CONTENT_COUPON, RNNearItUtils.bundleCoupon(coupon));
+        contentMap.merge(RNNearItUtils.bundleCoupon(coupon));
 
         // Notify JS
         sendEventWithContent(EVENT_TYPE_COUPON, contentMap, trackingInfo);
@@ -96,7 +72,7 @@ public class RNNearItCoreContentsListener implements ContentsListener {
         // Create EventContent map
         final WritableMap contentMap = new WritableNativeMap();
         contentMap.putString(EVENT_CONTENT_MESSAGE, customJSON.notificationMessage);
-        contentMap.putMap(EVENT_CONTENT_DATA, RNNearItUtils.bundleCustomJson(customJSON));
+        contentMap.merge(RNNearItUtils.bundleCustomJson(customJSON));
 
         // Notify JS
         sendEventWithContent(EVENT_TYPE_CUSTOM_JSON, contentMap, trackingInfo);
@@ -118,8 +94,7 @@ public class RNNearItCoreContentsListener implements ContentsListener {
             // Create EventContent map
             final WritableMap contentMap = new WritableNativeMap();
             contentMap.putString(EVENT_CONTENT_MESSAGE, feedback.notificationMessage);
-            contentMap.putString(EVENT_CONTENT_QUESTION, feedback.question);
-            contentMap.putString(EVENT_CONTENT_FEEDBACK, RNNearItUtils.feedbackToB64(feedback));
+            contentMap.merge(RNNearItUtils.bundleFeedback(feedback));
 
             // Notify JS
             sendEventWithContent(EVENT_TYPE_FEEDBACK, contentMap, trackingInfo);
@@ -130,7 +105,7 @@ public class RNNearItCoreContentsListener implements ContentsListener {
 
     // Private methods
     private void sendEventWithContent(final String eventType, @Nullable WritableMap contentMap, final TrackingInfo trackingInfo) {
-        Log.d(TAG, String.format("sendEventWithContent: (eventType: %s)", eventType));
+        Log.e(TAG, String.format("sendEventWithContent: (eventType: %s)", eventType));
         try {
             // Encode TrackingInfo
             final String trackingInfoData = RNNearItUtils.bundleTrackingInfo(trackingInfo);
@@ -146,11 +121,11 @@ public class RNNearItCoreContentsListener implements ContentsListener {
 
             if (eventEmitter != null && RNNearItPersistedQueue.defaultQueue().hasListeners()) {
                 // Send event to JS
-                Log.d(TAG, "Listeners available, will send notification to JS now");
+                Log.e(TAG, "Listeners available, will send notification to JS now");
                 this.eventEmitter.emit(NATIVE_EVENTS_TOPIC, eventMap);
             } else {
                 // Defer event notification when at least a listener is available
-                Log.d(TAG, "Listeners NOT available, will defer notification using RNNearItPersistedQueue");
+                Log.e(TAG, "Listeners NOT available, will defer notification using RNNearItPersistedQueue");
                 RNNearItPersistedQueue.addNotification(context, eventMap);
             }
         } catch (Exception e) {
