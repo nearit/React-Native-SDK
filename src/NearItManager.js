@@ -145,7 +145,7 @@ export class NearItManager {
     Permissions: NearItSdk.Permissions
   }
 
-  static onDeviceReady() {
+  static onDeviceReady () {
     NearItSdk.onDeviceReady()
   }
 
@@ -289,10 +289,10 @@ export class NearItManager {
   // Content related methods
 
   static showContent (event: NearItEvent) {
-    return NearItUI.showContent(content)
+    return NearItUI.showContent(event)
   }
 
-  static disableDefaultRangingNotifications() {
+  static disableDefaultRangingNotifications () {
     NearItSdk.disableDefaultRangingNotifications()
   }
 

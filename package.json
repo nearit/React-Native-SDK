@@ -29,14 +29,14 @@
     "glob": "^7.1.2"
   },
   "devDependencies": {
-    "react-native": ">=0.45",
-    "babel-eslint": "10.0.1",
+    "react-native": "0.59.9",
+    "babel-eslint": "^7.0.0",
     "flow-bin": "0.100.0",
     "flow-copy-source": "2.0.6",
     "flow-remove-types": "2.101.0",
     "npm-run-all": "4.1.5",
     "rimraf": "2.6.3",
-    "snazzy": "8.0.0",
+    "snazzy": "^7.0.0",
     "standard": "*"
   },
   "scripts": {
