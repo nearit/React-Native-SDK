@@ -74,11 +74,6 @@ declare module 'react-native-nearit' {
     squareSize?: string
   }
 
-  interface NearItCta {
-    label: string,
-    url: string
-  }
-
   interface NearItCoupon {
     title: string,
     description?: string,
