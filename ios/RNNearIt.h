@@ -7,9 +7,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTUtils.h>
+#elif __has_include("RCTBridgeModule.h")
+#import "RCTBridgeModule.h"
+#import "RCTEventEmitter.h"
+#import "RCTUtils.h"
+#endif
 
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <CoreLocation/CoreLocation.h>
