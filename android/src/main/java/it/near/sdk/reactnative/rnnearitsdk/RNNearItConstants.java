@@ -54,6 +54,7 @@ class RNNearItConstants {
     static final String EVENT_FEEDBACK_ID = "feedbackId";
 
     // Notification History
+    static final String NOTIFICATION_HISTORY = "notificationHistory";
     static final String NOTIFICATION_HISTORY_READ = "read";
     static final String NOTIFICATION_HISTORY_TIMESTAMP = "timestamp";
     static final String NOTIFICATION_HISTORY_IS_NEW = "isNew";

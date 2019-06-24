@@ -26,6 +26,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import com.nearit.ui_bindings.utils.PermissionsUtils;
@@ -134,6 +135,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule
                         put("question", EVENT_FEEDBACK_QUESTION);
                         put("feedbackId", EVENT_FEEDBACK_ID);
                         // Notification History Item
+                        put("notificationHistory", NOTIFICATION_HISTORY);
                         put("read", NOTIFICATION_HISTORY_READ);
                         put("timestamp", NOTIFICATION_HISTORY_TIMESTAMP);
                         put("isNew", NOTIFICATION_HISTORY_IS_NEW);
@@ -407,7 +409,7 @@ public class RNNearItModule extends ReactContextBaseJavaModule
         });
     }
 
-    // NearIT Permissions request
+    // Permissions related methods
 
     @SuppressWarnings("unused")
     @ReactMethod
@@ -479,8 +481,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule
         NearItManager.getInstance().getHistory(new NotificationHistoryManager.OnNotificationHistoryListener() {
             @Override
             public void onNotifications(@NonNull List<HistoryItem> historyItemList) {
-                final WritableArray history = RNNearItUtils.bundleNotificationHistory(historyItemList);
-                promise.resolve(history);
+                WritableMap event = new WritableNativeMap();
+                event.putArray(NOTIFICATION_HISTORY, RNNearItUtils.bundleNotificationHistory(historyItemList));
+                promise.resolve(event);
             }
 
             @Override
@@ -514,8 +517,9 @@ public class RNNearItModule extends ReactContextBaseJavaModule
     public void onNotificationHistoryUpdated(List<HistoryItem> items) {
         Log.i(MODULE_NAME, "Dispatching notification history update");
         if (getRCTDeviceEventEmitter() != null) {
-            WritableArray history = RNNearItUtils.bundleNotificationHistory(items);
-            getRCTDeviceEventEmitter().emit(NATIVE_NOTIFICATION_HISTORY_TOPIC, history);
+            WritableMap event = new WritableNativeMap();
+            event.putArray(NOTIFICATION_HISTORY, RNNearItUtils.bundleNotificationHistory(items));
+            getRCTDeviceEventEmitter().emit(NATIVE_NOTIFICATION_HISTORY_TOPIC, event);
         } else {
             Log.e(MODULE_NAME, "Error dispatching notification history update");
         }
