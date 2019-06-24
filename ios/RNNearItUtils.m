@@ -82,12 +82,12 @@
 
 + (NSDictionary* _Nullable)bundleNITContent:(NITContent * _Nonnull) content
 {
-    NSString* title = [content title];
+    NSObject* title = [content title];
     if (!title) {
         title = [NSNull null];
     }
     
-    NSString* text = [content content];
+    NSObject* text = [content content];
     if (!text) {
         text = [NSNull null];
     }
@@ -156,12 +156,12 @@
 
 + (NSDictionary* _Nullable)bundleNITCustomJSON:(NITCustomJSON* _Nonnull) custom
 {
-    return @{[custom content]};;
+    return [custom content];
 }
 
 // NITImage
 
-- (NSDictionary* _Nullable)bundleNITImage:(NITImage* _Nonnull)image
++ (NSDictionary* _Nullable)bundleNITImage:(NITImage* _Nonnull)image
 {
     NSData* imageData = [NSKeyedArchiver archivedDataWithRootObject:image];
     NSString* imageB64 = [imageData base64EncodedStringWithOptions:0];
@@ -172,7 +172,7 @@
              };
 }
 
-- (NITImage* _Nullable)unbundleNITImage:(NSDictionary* _Nonnull)bundledImage
++ (NITImage* _Nullable)unbundleNITImage:(NSDictionary* _Nonnull)bundledImage
 {
     NITImage* image = [[NITImage alloc] init];
     if ([bundledImage objectForKey:@"imageData"]) {
@@ -185,7 +185,7 @@
 
 // NITContentLink
 
-- (NSDictionary* _Nullable)bundleNITContentLink:(NITContentLink* _Nonnull)cta
++ (NSDictionary* _Nullable)bundleNITContentLink:(NITContentLink* _Nonnull)cta
 {
     return @{
              EVENT_CONTENT_CTA_LABEL: cta.label,
@@ -193,14 +193,20 @@
              };
 }
 
-- (NITContentLink* _Nullable)unbundleNITContentLink:(NSDictionary* _Nonnull)bundledCta
+// NITHistory
+
++ (NSArray* _Nullable)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history
 {
-    
+    NSMutableArray* bundledHistory;
+    for (NITHistoryItem item in history) {
+        [bundledHistory addObject:[self bundleNITHistoryItem:item]];
+    }
+    return bundledHistory;
 }
 
 // NITHistoryItem
 
-- (NSDictionary* _Nullable)bundleNITHistoryItem:(NITHistoryItem* _Nonnull) item
++ (NSDictionary* _Nullable)bundleNITHistoryItem:(NITHistoryItem* _Nonnull) item
 {
     NSMutableDictionary* historyDictionary = [[NSMutableDictionary alloc] init];
     
