@@ -14,17 +14,21 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.NearItManager;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "Convert2Diamond"})
 public class RNNearItPackage implements ReactPackage {
 
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Collections.<NativeModule>singletonList(new RNNearItModule(reactContext));
+        List<NativeModule> modules = new ArrayList<NativeModule>();
+        modules.add(new RNNearItModule(reactContext));
+        modules.add(new RNNearItUiModule(reactContext));
+        return Collections.unmodifiableList(modules);
     }
 
     // Deprecated. Kept for backward-compatibility

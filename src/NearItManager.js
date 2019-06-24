@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017 Mattia Panzeri <mattia.panzeri93@gmail.com>
+ * Last changes by Federico Boschini <federico@nearit.com>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,6 +9,16 @@
 
 // @flow
 import { NativeEventEmitter, NativeModules } from 'react-native'
+
+type NearItPermissions = {
+  location: string,
+  notifications: string,
+  bluetooth: string,
+  locationServices: string,
+  always: string,
+  whenInUse: string,
+  denied: string
+}
 
 type NearItEvents = {
   SimpleNotification: string,
@@ -19,9 +30,32 @@ type NearItEvents = {
 
 type NearItEventContent = {
   type: string,
-  content: string,
-  fromUserAction: string,
-  trackingInfo: string
+    trackingInfo: string,
+    message: string,
+    content: string,
+    fromUserAction: string,
+    status: string,
+    title: string,
+    image: string,
+    fullSize: string,
+    squareSize: string,
+    text: string,
+    cta: string,
+    label: string,
+    url: string,
+    description: string,
+    value: string,
+    expiresAt: string,
+    redeemableFrom: string,
+    serial: string,
+    claimedAt: string,
+    redeemedAt: string,
+    question: string,
+    feedbackId: string,
+    read: string,
+    timestamp: string,
+    isNew: string,
+    notificationContent: string
 }
 
 type NearItStatuses = {
@@ -32,30 +66,45 @@ type NearItStatuses = {
 type NearItConstants = {
   Events: NearItEvents,
   EventContent: NearItEventContent,
-  Statuses: NearItStatuses
+  Statuses: NearItStatuses,
+  Permissions: NearItPermissions
 }
 
 type NearItEvent = {
-  'type': string
+  type: string
 }
 
-type NearItContentsListener = (event: NearItEvent) => void
-
 type NearItImage = {
-  'fullSize': ?string,
-  'squareSize': ?string
+  fullSize: ?string,
+  squareSize: ?string
 }
 
 type NearItCoupon = {
-  'title': string,
-  'description': string,
-  'image': ?NearItImage,
-  'value': string,
-  'expiresAt': string,
-  'redeemableFrom': string,
-  'serial': ?string,
-  'claimedAt': ?string,
-  'redeemedAt': ?string
+  title: string,
+  description: ?string,
+  image: ?NearItImage,
+  value: string,
+  expiresAt: ?string,
+  redeemableFrom: ?string,
+  serial: string,
+  claimedAt: ?string,
+  redeemedAt: ?string
+}
+
+interface NearItHistoryItem {
+  read: boolean,
+  timestamp: string,
+  isNew: boolean,
+  notificationContent: any
+}
+
+type LocationPermissionStatus = "always" | "denied" | "whenInUse"
+
+type NearItPermissionsResult = {
+  bluetooth: boolean,
+  location: LocationPermissionStatus,
+  locationServices: boolean,
+  notifications: boolean
 }
 
 type NearItRating = 0 | 1 | 2 | 3 | 4 | 5
@@ -64,13 +113,23 @@ type EmitterSubscription = {
   remove(): void
 }
 
+type NearItContentsListener = (event: NearItEvent) => void
+
+type NearItNotificationHistoryUpdateListener = (history: NearItHistoryItem[]) => void
+
 const NearItSdk = NativeModules.RNNearIt
+const NearItUI = NativeModules.RNNearItUI
 
 export class NearItManager {
   static constants: NearItConstants = {
     Events: NearItSdk.Events,
     EventContent: NearItSdk.EventContent,
-    Statuses: NearItSdk.Statuses
+    Statuses: NearItSdk.Statuses,
+    Permissions: NearItSdk.Permissions
+  }
+
+  static onDeviceReady () {
+    NearItSdk.onDeviceReady()
   }
 
   static _eventSource = new NativeEventEmitter(NearItSdk)
@@ -88,89 +147,149 @@ export class NearItManager {
       })
   }
 
-  static startRadar (): Promise<null> {
-    return NearItSdk.startRadar()
+  // Radar related methods
+
+  static startRadar () {
+    NearItSdk.startRadar()
   }
 
-  static stopRadar (): Promise<null> {
-    return NearItSdk.stopRadar()
+  static stopRadar () {
+    NearItSdk.stopRadar()
   }
 
-  static sendTracking (trackingInfo: string, status: string): Promise<null> {
-    return NearItSdk.sendTracking(trackingInfo, status)
+  // Trackings related methods
+
+  static sendTracking (trackingInfo: string, status: string) {
+    NearItSdk.sendTracking(trackingInfo, status)
   }
 
-  static sendFeedback (feedbackId: string, rating: NearItRating, comment: string = ''): Promise<null> {
+  // Feedback related methods
+
+  static sendFeedback (feedbackId: string, rating: NearItRating, comment: ?string): Promise<null> {
     return NearItSdk.sendFeedback(feedbackId, rating, comment)
   }
 
-  static getUserProfileId (): Promise<string> {
-    return NearItSdk.getUserProfileId()
+  // ProfileId related methods
+
+  static getProfileId (): Promise<string> {
+    return NearItSdk.getProfileId()
   }
 
-  static setUserProfileId (profileId: string): Promise<string> {
-    return NearItSdk.setUserProfileId(profileId)
+  static setProfileId (profileId: string) {
+    NearItSdk.setProfileId(profileId)
   }
 
-  static resetUserProfile (): Promise<string> {
-    return NearItSdk.resetUserProfile()
+  static resetProfileId (): Promise<string> {
+    return NearItSdk.resetProfileId()
   }
 
-  static setMultiChoiceUserData (key: String, userDataObject: { [string]: boolean }): Promise<null> {
-    return NearItSdk.setMultiChoiceUserData(key, userDataObject)
+  // User data related methods
+
+  static setMultiChoiceUserData (key: String, userDataObject: { [string]: boolean }) {
+    NearItSdk.setMultiChoiceUserData(key, userDataObject)
   }
 
-  static setUserData (key: string, value: string): Promise<null> {
-    return NearItSdk.setUserData(key, value)
+  static setUserData (key: string, value: ?string) {
+    NearItSdk.setUserData(key, value)
   }
+
+  static getUserData (): Promise<any> {
+    return NearItSdk.getUserData()
+  }
+
+  // Opt-out related methods
 
   static optOut (): Promise<null> {
     return NearItSdk.optOut()
   }
 
-  static checkNotificationPermission (): Promise<boolean | null> {
-    return NearItSdk.checkNotificationPermission()
+  // In-app events related methods
+
+  static triggerInAppEvent (eventKey: string) {
+    NearItSdk.triggerInAppEvent(eventKey)
   }
 
-  static requestNotificationPermission (): Promise<boolean> {
-    return NearItSdk.requestNotificationPermission()
-  }
-
-  static checkLocationPermission (): Promise<boolean | null> {
-    return NearItSdk.checkLocationPermission()
-  }
-
-  static requestLocationPermission (): Promise<boolean> {
-    return new Promise(function (resolve, reject) {
-      const locationSubscription = NearItManager._eventSource.addListener(NearItSdk.NativePermissionsTopic, event => {
-        if (event[NearItSdk.EventContent.type] === NearItSdk.Events.PermissionStatus) {
-          if (event[NearItSdk.EventContent.status] === NearItSdk.Permissions.LocationGranted) {
-            resolve(true)
-          } else if (event[NearItSdk.EventContent.status] === NearItSdk.Permissions.LocationDenied) {
-            resolve(false)
-          }
-
-          locationSubscription.remove()
-        }
-      })
-
-      NearItSdk.requestLocationPermission()
-        .then(locationGranted => {
-          if (typeof (locationGranted) !== 'undefined' && locationGranted != null) {
-            locationSubscription.remove()
-            resolve(locationGranted)
-          }
-        })
-    })
-  }
-
-  static triggerEvent (eventKey: string): Promise<null> {
-    return NearItSdk.triggerEvent(eventKey)
-  }
+  // Coupon related methods
 
   static getCoupons (): Promise<NearItCoupon[]> {
     return NearItSdk.getCoupons()
   }
-}
 
+  static showCouponList (title: ?string) {
+    return NearItUI.showCouponList(title)
+  }
+
+  // Notification history related methods
+
+  // TODO: return type
+  static getNotificationHistory (): Promise<NearItHistoryItem[]> {
+    return NearItSdk.getNotificationHistory()
+  }
+
+  static showNotificationHistory (title: ?string) {
+    return NearItUI.showNotificationHistory(title)
+  }
+
+  static addNotificationHistoryUpdateListener (listener: NearItNotificationHistoryUpdateListener): EmitterSubscription {
+    const subscription = NearItManager._eventSource.addListener(NearItSdk.NativeNotificationHistoryTopic, listener)
+    NearItSdk.notificationHistoryListenerRegistered()
+    return subscription
+  }
+
+  static removeNotificationHistoryUpdateListener (subscription: EmitterSubscription) {
+    NearItSdk.notificationHistoryListenerUnregistered()
+      .then(res => {
+        subscription.remove()
+      })
+  }
+
+  static markNotificationHistoryAsOld () {
+    NearItSdk.markNotificationHistoryAsOld()
+  }
+
+  // Permissions related methods
+
+  static requestPermissions (explanation: ?string): Promise<NearItPermissionsResult> {
+    return NearItUI.requestPermissions(explanation)
+  }
+
+  static isBluetoothEnabled (): Promise<boolean> {
+    return NearItSdk.isBluetoothEnabled()
+  }
+
+  static areLocationServicesOn (): Promise<boolean> {
+    return NearItSdk.areLocationServicesOn()
+  }
+
+  static isLocationGranted (): Promise<boolean> {
+    return NearItSdk.isLocationGranted()
+  }
+
+  static isNotificationGranted (): Promise<boolean> {
+    return NearItSdk.isNotificationGranted()
+  }
+
+  // Content related methods
+
+  static showContent (event: NearItEvent) {
+    return NearItUI.showContent(event)
+  }
+
+  static disableDefaultRangingNotifications () {
+    NearItSdk.disableDefaultRangingNotifications()
+  }
+
+  static addProximityListener (listener: NearItContentsListener): EmitterSubscription {
+    const subscription = NearItManager._eventSource.addListener(NearItSdk.NativeEventsTopic, listener)
+    NearItSdk.listenerRegistered()
+    return subscription
+  }
+
+  static removeProximityListener (subscription: EmitterSubscription) {
+    NearItSdk.listenerUnregistered()
+      .then(res => {
+        subscription.remove()
+      })
+  }
+}
 export const constants = NearItManager.constants
