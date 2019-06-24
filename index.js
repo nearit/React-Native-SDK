@@ -8,4 +8,3 @@
  */
 
 export { NearItManager as default, constants as NearItConstants } from './lib/NearItManager'
-export { NearITPermissions } from './lib/permissions'

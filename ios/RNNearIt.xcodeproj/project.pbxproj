@@ -8,14 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */; };
-		303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */; };
-		3817F1A321382E5C0019F552 /* RNNNotificationPermission.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F19D21382E5C0019F552 /* RNNNotificationPermission.m */; };
-		3817F1A421382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */; };
-		3817F1A521382E5C0019F552 /* RNNLocationPermission.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F1A021382E5C0019F552 /* RNNLocationPermission.m */; };
-		3817F1A621382E5C0019F552 /* RNNPermissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3817F1A221382E5C0019F552 /* RNNPermissions.m */; };
-		38D7ED5C2136E8D7008F1212 /* NearITResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 38500944202B04C00076609B /* NearITResources.bundle */; };
-		38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 307D9F851F9F7D7A00BFBA46 /* libNearIT.a */; };
-		B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNNearIt.m */; };
+		380DC25422AFF66C006047E7 /* RNNearItConsts.m in Sources */ = {isa = PBXBuildFile; fileRef = 380DC25322AFF66C006047E7 /* RNNearItConsts.m */; };
+		380DC42A22B12949006047E7 /* RNNearItConsts.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 380DC25222AFF66C006047E7 /* RNNearItConsts.h */; };
+		380DC42B22B12949006047E7 /* RNNearItUtils.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 3894AFF522AEB1370001CA25 /* RNNearItUtils.h */; };
+		380DC42D22B12949006047E7 /* RNNearItBackgroundQueue.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 3008FF0B1F838526006CA738 /* RNNearItBackgroundQueue.h */; };
+		380DC56022B159C6006047E7 /* RNNearItUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 380DC55F22B159C6006047E7 /* RNNearItUI.m */; };
+		380DC56122B16184006047E7 /* RNNearItUI.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 380DC55E22B158D0006047E7 /* RNNearItUI.h */; };
+		380DC5E722BCC928006047E7 /* RNNearIt.m in Sources */ = {isa = PBXBuildFile; fileRef = 380DC5E622BCC927006047E7 /* RNNearIt.m */; };
+		380DC5E922C0D86A006047E7 /* RNNearIt.h in Copy Files */ = {isa = PBXBuildFile; fileRef = 380DC5E822BCC986006047E7 /* RNNearIt.h */; };
+		3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +24,13 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 7;
+			dstSubfolderSpec = 16;
 			files = (
+				380DC5E922C0D86A006047E7 /* RNNearIt.h in Copy Files */,
+				380DC56122B16184006047E7 /* RNNearItUI.h in Copy Files */,
+				380DC42A22B12949006047E7 /* RNNearItConsts.h in Copy Files */,
+				380DC42B22B12949006047E7 /* RNNearItUtils.h in Copy Files */,
+				380DC42D22B12949006047E7 /* RNNearItBackgroundQueue.h in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -35,20 +41,14 @@
 		134814201AA4EA6300B7C361 /* libRNNearIt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNNearIt.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNearItBackgroundQueue.m; sourceTree = "<group>"; };
 		3008FF0B1F838526006CA738 /* RNNearItBackgroundQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNearItBackgroundQueue.h; sourceTree = "<group>"; };
-		303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotificationsQueue.m; sourceTree = "<group>"; };
-		303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotificationsQueue.h; sourceTree = "<group>"; };
-		307D9F851F9F7D7A00BFBA46 /* libNearIT.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNearIT.a; path = NearITSDK/libNearIT.a; sourceTree = "<group>"; };
-		3817F19B21382E5C0019F552 /* RNNNotificationPermission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNNotificationPermission.h; path = Permissions/RNNNotificationPermission.h; sourceTree = "<group>"; };
-		3817F19C21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+RNNPermissionStatus.h"; path = "Permissions/RCTConvert+RNNPermissionStatus.h"; sourceTree = "<group>"; };
-		3817F19D21382E5C0019F552 /* RNNNotificationPermission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNNotificationPermission.m; path = Permissions/RNNNotificationPermission.m; sourceTree = "<group>"; };
-		3817F19E21382E5C0019F552 /* RNNLocationPermission.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNLocationPermission.h; path = Permissions/RNNLocationPermission.h; sourceTree = "<group>"; };
-		3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RCTConvert+RNNPermissionStatus.m"; path = "Permissions/RCTConvert+RNNPermissionStatus.m"; sourceTree = "<group>"; };
-		3817F1A021382E5C0019F552 /* RNNLocationPermission.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNLocationPermission.m; path = Permissions/RNNLocationPermission.m; sourceTree = "<group>"; };
-		3817F1A121382E5C0019F552 /* RNNPermissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNNPermissions.h; path = Permissions/RNNPermissions.h; sourceTree = "<group>"; };
-		3817F1A221382E5C0019F552 /* RNNPermissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNNPermissions.m; path = Permissions/RNNPermissions.m; sourceTree = "<group>"; };
-		38500944202B04C00076609B /* NearITResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = NearITResources.bundle; path = NearITSDK/NearITResources.bundle; sourceTree = "<group>"; };
-		B3E7B5881CC2AC0600A0062D /* RNNearIt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNearIt.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* RNNearIt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNearIt.m; sourceTree = "<group>"; };
+		380DC25222AFF66C006047E7 /* RNNearItConsts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNearItConsts.h; sourceTree = "<group>"; };
+		380DC25322AFF66C006047E7 /* RNNearItConsts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNearItConsts.m; sourceTree = "<group>"; };
+		380DC55E22B158D0006047E7 /* RNNearItUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNearItUI.h; sourceTree = "<group>"; };
+		380DC55F22B159C6006047E7 /* RNNearItUI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNearItUI.m; sourceTree = "<group>"; };
+		380DC5E622BCC927006047E7 /* RNNearIt.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNearIt.m; sourceTree = "<group>"; };
+		380DC5E822BCC986006047E7 /* RNNearIt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNearIt.h; sourceTree = "<group>"; };
+		3894AFF522AEB1370001CA25 /* RNNearItUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNNearItUtils.h; sourceTree = "<group>"; };
+		3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNNearItUtils.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +56,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38E31BFE21130F510058EE9D /* libNearIT.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,22 +80,16 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				3817F19C21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.h */,
-				3817F19F21382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m */,
-				3817F19E21382E5C0019F552 /* RNNLocationPermission.h */,
-				3817F1A021382E5C0019F552 /* RNNLocationPermission.m */,
-				3817F19B21382E5C0019F552 /* RNNNotificationPermission.h */,
-				3817F19D21382E5C0019F552 /* RNNNotificationPermission.m */,
-				3817F1A121382E5C0019F552 /* RNNPermissions.h */,
-				3817F1A221382E5C0019F552 /* RNNPermissions.m */,
-				38500944202B04C00076609B /* NearITResources.bundle */,
-				303C4C5C1FCC4E590060F04B /* RNNotificationsQueue.h */,
-				303C4C5B1FCC4E590060F04B /* RNNotificationsQueue.m */,
-				307D9F851F9F7D7A00BFBA46 /* libNearIT.a */,
+				380DC5E822BCC986006047E7 /* RNNearIt.h */,
+				380DC5E622BCC927006047E7 /* RNNearIt.m */,
+				380DC55F22B159C6006047E7 /* RNNearItUI.m */,
+				380DC55E22B158D0006047E7 /* RNNearItUI.h */,
+				380DC25222AFF66C006047E7 /* RNNearItConsts.h */,
+				380DC25322AFF66C006047E7 /* RNNearItConsts.m */,
+				3894AFF622AEB1DD0001CA25 /* RNNearItUtils.m */,
+				3894AFF522AEB1370001CA25 /* RNNearItUtils.h */,
 				3008FF0B1F838526006CA738 /* RNNearItBackgroundQueue.h */,
 				3008FF0A1F838526006CA738 /* RNNearItBackgroundQueue.m */,
-				B3E7B5881CC2AC0600A0062D /* RNNearIt.h */,
-				B3E7B5891CC2AC0600A0062D /* RNNearIt.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
 				38E31BFD21130F510058EE9D /* Frameworks */,
 			);
@@ -142,6 +135,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -159,7 +153,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				38D7ED5C2136E8D7008F1212 /* NearITResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -170,13 +163,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3817F1A321382E5C0019F552 /* RNNNotificationPermission.m in Sources */,
-				3817F1A421382E5C0019F552 /* RCTConvert+RNNPermissionStatus.m in Sources */,
-				3817F1A521382E5C0019F552 /* RNNLocationPermission.m in Sources */,
+				380DC5E722BCC928006047E7 /* RNNearIt.m in Sources */,
+				380DC56022B159C6006047E7 /* RNNearItUI.m in Sources */,
+				380DC25422AFF66C006047E7 /* RNNearItConsts.m in Sources */,
+				3894AFF722AEB1DD0001CA25 /* RNNearItUtils.m in Sources */,
 				3008FF0C1F838526006CA738 /* RNNearItBackgroundQueue.m in Sources */,
-				B3E7B58A1CC2AC0600A0062D /* RNNearIt.m in Sources */,
-				303C4C5D1FCC4E5A0060F04B /* RNNotificationsQueue.m in Sources */,
-				3817F1A621382E5C0019F552 /* RNNPermissions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,7 +211,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -258,7 +249,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -272,12 +263,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/NearITSDK/**",
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/NearITSDK",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNNearIt;
 				SKIP_INSTALL = YES;
@@ -290,12 +279,10 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(PROJECT_DIR)/NearITSDK/**",
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/NearITSDK",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNNearIt;
 				SKIP_INSTALL = YES;

@@ -2,8 +2,11 @@
     package="it.near.sdk.reactnative.rnnearitsdk">
 
     <application>
+
         <meta-data
             android:name="near_api_key"
             android:value="@string/nearit_api_key" />
+
     </application>
+
 </manifest>

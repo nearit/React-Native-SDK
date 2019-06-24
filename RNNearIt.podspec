@@ -1,0 +1,1 @@
+ios/RNNearIt.podspec
