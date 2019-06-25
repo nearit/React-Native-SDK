@@ -8,11 +8,9 @@
 
 #if __has_include(<React/RCTBridgeModule.h>)
 #import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
 #import <React/RCTUtils.h>
 #elif __has_include("RCTBridgeModule.h")
 #import "RCTBridgeModule.h"
-#import "RCTEventEmitter.h"
 #import "RCTUtils.h"
 #endif
 
@@ -30,7 +28,7 @@
 #import "RNNearItUtils.h"
 #import "RNNearItConsts.h"
 
-@interface RNNearItUI : RCTEventEmitter <RCTBridgeModule, NITPermissionsViewControllerDelegate>
+@interface RNNearItUI : NSObject <RCTBridgeModule, NITPermissionsViewControllerDelegate>
 
 @property RCTPromiseResolveBlock permissionsResolve;
 

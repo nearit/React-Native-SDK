@@ -121,6 +121,7 @@ const NearItSdk = NativeModules.RNNearIt
 const NearItUI = NativeModules.RNNearItUI
 
 export class NearItManager {
+  console.log("modules: ", { NativeModules });
   static constants: NearItConstants = {
     Events: NearItSdk.Events,
     EventContent: NearItSdk.EventContent,

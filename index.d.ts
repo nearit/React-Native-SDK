@@ -93,7 +93,7 @@ declare module 'react-native-nearit' {
     notificationContent: any
   }
 
-  type LocationPermissionStatus = NearItPermissions.always | NearItPermissions.denied | NearItPermissions.whenInUse
+  type LocationPermissionStatus = "always" | "denied" | "whenInUse"
 
   interface NearItPermissionsResult {
     bluetooth: boolean,
