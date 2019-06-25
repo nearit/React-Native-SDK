@@ -22,7 +22,10 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
     self = [super init];
-    defaultManager = self;
+    if (self != nil) {
+        defaultManager = self;
+        [self loadConfig];
+    }
     return self;
 }
 
@@ -159,13 +162,6 @@ RCT_EXPORT_MODULE()
 /*
  * Native API
  */
-
-// DidFinishLaunchingWithOptions
-
-- (void)application:(UIApplication* _Nonnull)application didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions
-{
-    [self loadConfig];
-}
 
 // Background fetch
 

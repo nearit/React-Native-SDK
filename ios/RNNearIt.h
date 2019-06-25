@@ -39,8 +39,6 @@
 
 + (RNNearIt* _Nullable)defaultManager;
 
-- (void)application:(UIApplication* _Nonnull)application didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions;
-
 // Background fetch
 - (void)application:(UIApplication* _Nonnull)application performFetchWithCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler;
 
