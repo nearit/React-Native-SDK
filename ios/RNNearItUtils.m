@@ -198,7 +198,7 @@
 + (NSArray* _Nullable)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history
 {
     NSMutableArray* bundledHistory;
-    for (NITHistoryItem item in history) {
+    for (id item in history) {
         [bundledHistory addObject:[self bundleNITHistoryItem:item]];
     }
     return bundledHistory;
@@ -220,7 +220,7 @@
     [historyDictionary setObject:isNew forKey:NOTIFICATION_HISTORY_IS_NEW];
     [historyDictionary setObject:(bundledTrackingInfo ? bundledTrackingInfo : [NSNull null]) forKey:EVENT_TRACKING_INFO];
     
-    NSString* message = item.reactionBundle.notificationMessage;
+    NSObject* message = item.reactionBundle.notificationMessage;
     if (!message) {
         message = [NSNull null];
     }

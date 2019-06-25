@@ -34,7 +34,7 @@ RCT_EXPORT_MODULE()
 
 - (void)dialogClosedWithLocationGranted:(BOOL)locationGranted notificationsGranted:(BOOL)notificationsGranted {
     if (self.permissionsResolve) {
-        NSDictionary* result = [self getPermissionsStatus];
+        NSDictionary* result = [self getPermissionsStatus:notificationsGranted];
         self.permissionsResolve(result);
     }
 }
@@ -129,17 +129,16 @@ RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) content)
  *  Private methods
  */
 
-- (NSDictionary*)getPermissionsStatus
+- (NSDictionary*)getPermissionsStatus:(BOOL)notificationGranted
 {
     BOOL locationServicesOn = [CLLocationManager locationServicesEnabled];
-    BOOL notificationGranted = [self isNotificationGranted];
     BOOL locationGranted = [self isLocationGranted];
     // TODO: bluetooth
     return @{
-             PERMISSIONS_LOCATION_PERMISSION: locationGranted,
-             PERMISSIONS_NOTIFICATIONS_PERMISSION: notificationGranted,
-             PERMISSIONS_BLUETOOTH: NO,
-             PERMISSIONS_LOCATION_SERVICES: locationServicesOn
+             PERMISSIONS_LOCATION_PERMISSION: @(locationGranted),
+             PERMISSIONS_NOTIFICATIONS_PERMISSION: @(notificationGranted),
+             PERMISSIONS_BLUETOOTH: @NO,
+             PERMISSIONS_LOCATION_SERVICES: @(locationServicesOn)
              };
 }
 
@@ -155,32 +154,6 @@ RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) content)
             return locationPermission;
             break;
         }
-    }
-}
-
-- (BOOL)isNotificationGranted
-{
-    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        UIUserNotificationSettings* notificationSettings = [RCTSharedApplication() currentUserNotificationSettings];
-        BOOL notificationAuthorized = notificationSettings != UIUserNotificationTypeNone;
-        return notificationAuthorized;
-    } else {
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-        [[UNUserNotificationCenter currentNotificationCenter]getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
-            
-            switch (settings.authorizationStatus) {
-                case UNAuthorizationStatusNotDetermined:
-                    return NO;
-                    break;
-                    
-                default: {
-                    BOOL notificationPermission = settings.authorizationStatus == UNAuthorizationStatusAuthorized;
-                    return notificationPermission;
-                    break;
-                }
-            }
-        }];
-#endif
     }
 }
 
