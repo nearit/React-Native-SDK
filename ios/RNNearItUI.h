@@ -32,8 +32,9 @@
 
 @interface RNNearItUI : RCTEventEmitter <RCTBridgeModule, NITPermissionsViewControllerDelegate>
 
-- (NSDictionary*)getPermissionsStatus;
-- (BOOL)isNotificationGranted;
+@property RCTPromiseResolveBlock permissionsResolve;
+
+- (NSDictionary*)getPermissionsStatus:(BOOL)notificationGranted;
 - (BOOL)isLocationGranted;
 
 @end

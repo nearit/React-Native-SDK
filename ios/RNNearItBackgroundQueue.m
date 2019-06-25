@@ -18,7 +18,7 @@ NSMutableArray<NSDictionary *>* _Nullable backgroundQueue;
     dispatch_once(&onceToken, ^{
         sharedInstance = [self new];
     });
-
+    
     return sharedInstance;
 }
 
