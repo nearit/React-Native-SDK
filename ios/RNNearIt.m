@@ -13,9 +13,23 @@
 
 #define IS_EMPTY(v) (v == nil || [v length] <= 0)
 
+static RNNearIt* defaultManager;
+
 @implementation RNNearIt
 
 RCT_EXPORT_MODULE()
+
+- (instancetype)init
+{
+    self = [super init];
+    defaultManager = self;
+    return self;
+}
+
++ (RNNearIt* _Nullable)defaultManager
+{
+    return defaultManager;
+}
 
 - (NSDictionary *)constantsToExport
 {
@@ -53,6 +67,7 @@ RCT_EXPORT_MODULE()
                      @"redeemedAt": EVENT_COUPON_REDEEMED_AT,
                      @"question": EVENT_FEEDBACK_QUESTION,
                      @"feedbackId": EVENT_FEEDBACK_ID,
+                     @"notificationHistory": NOTIFICATION_HISTORY,
                      @"read": NOTIFICATION_HISTORY_READ,
                      @"timestamp": NOTIFICATION_HISTORY_TIMESTAMP,
                      @"isNew": NOTIFICATION_HISTORY_IS_NEW,
@@ -100,14 +115,14 @@ RCT_EXPORT_MODULE()
 - (void)centralManagerDidUpdateState:(CBCentralManager*)manager
 {
     switch (manager.state) {
-        case CBCentralManagerPoweredOn:
+            case CBCentralManagerStatePoweredOn:
             if (self.bluetoothResolve) {
-                self.bluetoothResolve(true);
+                self.bluetoothResolve(@YES);
             }
             break;
         default:
             if (self.bluetoothResolve) {
-                self.bluetoothResolve(false);
+                self.bluetoothResolve(@NO);
             }
             break;
     }
@@ -147,14 +162,14 @@ RCT_EXPORT_MODULE()
 
 // DidFinishLaunchingWithOptions
 
-+ (void)application:(UIApplication* _Nonnull)application didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions
+- (void)application:(UIApplication* _Nonnull)application didFinishLaunchingWithOptions:(NSDictionary* _Nullable)launchOptions
 {
     [self loadConfig];
 }
 
 // Background fetch
 
-+ (void)application:(UIApplication* _Nonnull)application performFetchWithCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler
+- (void)application:(UIApplication* _Nonnull)application performFetchWithCompletionHandler:(void (^_Nonnull)(UIBackgroundFetchResult))completionHandler
 {
     [[NITManager defaultManager] application:application performFetchWithCompletionHandler:^(UIBackgroundFetchResult result) {
         completionHandler(result);
@@ -163,19 +178,19 @@ RCT_EXPORT_MODULE()
 
 // Test devices
 
-+ (BOOL)application:(UIApplication* _Nonnull)app openUrl:(NSURL* _Nonnull)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id>* _Nullable)options
+- (BOOL)application:(UIApplication* _Nonnull)app openUrl:(NSURL* _Nonnull)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id>* _Nullable)options
 {
     return [[NITManager defaultManager] application:app openURL:url options:options];
 }
 
 // Notifications
 
-+ (void)userNotificationCenter:(UNUserNotificationCenter* _Nonnull)center willPresentNotification:(UNNotification* _Nonnull)notification withCompletionHandler:(void (^_Nonnull)(UNNotificationPresentationOptions))completionHandler
+- (void)userNotificationCenter:(UNUserNotificationCenter* _Nonnull)center willPresentNotification:(UNNotification* _Nonnull)notification withCompletionHandler:(void (^_Nonnull)(UNNotificationPresentationOptions))completionHandler
 {
     [[NITManager defaultManager] userNotificationCenter:center willPresent:notification withCompletionHandler:completionHandler];
 }
 
-+ (BOOL)userNotificationCenter:(UNUserNotificationCenter* _Nonnull)center didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull)response withCompletionHandler:(void (^_Nonnull)(void))completionHandler
+- (BOOL)userNotificationCenter:(UNUserNotificationCenter* _Nonnull)center didReceiveNotificationResponse:(UNNotificationResponse* _Nonnull)response withCompletionHandler:(void (^_Nonnull)(void))completionHandler
 {
     BOOL isNearNotification = [[NITManager defaultManager] getContentFrom:response completion:^(NITReactionBundle* _Nullable content, NITTrackingInfo* _Nullable trackingInfo, NSError* _Nullable error) {
         if (content) {
@@ -186,19 +201,19 @@ RCT_EXPORT_MODULE()
     return isNearNotification;
 }
 
-+ (void)application:(UIApplication* _Nonnull)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData* _Nullable)deviceToken
+- (void)application:(UIApplication* _Nonnull)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData* _Nullable)deviceToken
 {
     [[NITManager defaultManager] setDeviceTokenWithData:deviceToken];
 }
 
 // Notificactions iOS9
 
-+ (BOOL)application:(UIApplication* _Nonnull)application didReceiveRemoteNotification:(NSDictionary* _Nonnull)userInfo
+- (BOOL)application:(UIApplication* _Nonnull)application didReceiveRemoteNotification:(NSDictionary* _Nonnull)userInfo
 {
     return [self didReceiveNotification:userInfo fromUserAction:YES];
 }
 
-+ (BOOL)application:(UIApplication* _Nonnull)application didReceiveLocalNotification:(UILocalNotification* _Nonnull)notification
+- (BOOL)application:(UIApplication* _Nonnull)application didReceiveLocalNotification:(UILocalNotification* _Nonnull)notification
 {
     return [self didReceiveNotification:notification.userInfo fromUserAction:YES];
 }
@@ -211,7 +226,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(onDeviceReady)
 {
-    [[RNNearItBackgroundQueue defaultQueue] dispatchNotificationQueue:^(NSDictionary* notification) {
+    [[RNNearItBackgroundQueue defaultQueue] dispatchNotificationsQueue:^(NSDictionary * _Nonnull notification) {
         [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC body:notification];
     }];
 }
@@ -237,7 +252,7 @@ RCT_EXPORT_METHOD(listenerRegistered:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
     _listeners++;
-    [[RNNearItBackgroundQueue defaultQueue] dispatchNotificationQueue:^(NSDictionary* notification) {
+    [[RNNearItBackgroundQueue defaultQueue] dispatchNotificationsQueue:^(NSDictionary * _Nonnull notification) {
         [self sendEventWithName:RN_NATIVE_EVENTS_TOPIC body:notification];
     }];
     resolve([NSNull null]);
@@ -277,30 +292,25 @@ RCT_EXPORT_METHOD(sendTracking:(NSString* _Nonnull)bundledTrackingInfo status:(N
 
 // MARK: Feedback related methods
 
-RCT_EXPORT_METHOD(sendFeedback:(NSString* _Nonnull)bundledFeedback
+RCT_EXPORT_METHOD(sendFeedback:(NSDictionary* _Nonnull)bundledFeedback
                   rating:(NSInteger)rating
                   comment:(NSString* _Nullable)comment
                   resolution:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
-    if (IS_EMPTY(bundledFeedback)) {
-        reject(E_SEND_FEEDBACK_ERROR, @"Missing feedback parameter", nil);
-        NITLogE(TAG, @"Bundled feedback is empty");
+    NITFeedback* feedback = [RNNearItUtils unbundleNITFeedback:bundledFeedback];
+    if (feedback == nil) {
+        reject(E_SEND_FEEDBACK_ERROR, @"Feedback unbundling failed", nil);
+        NITLogE(TAG, @"NITFeedback from unbundling process is nil");
     } else {
-        NITFeedback* feedback = [RNNearItUtils unbundleNITFeedback:bundledFeedback];
-        if (feedback == nil) {
-            reject(E_SEND_FEEDBACK_ERROR, @"Feedback unbundling failed", nil);
-            NITLogE(TAG, @"NITFeedback from unbundling process is nil");
-        } else {
-            NITFeedbackEvent* feedbackEvent = [[NITFeedbackEvent alloc] initWithFeedback:feedback rating:rating comment:comment];
-            [[NITManager defaultManager] sendEventWithEvent:feedbackEvent completionHandler:^(NSError* _Nullable error) {
-                if (error != nil) {
-                    reject(E_SEND_FEEDBACK_ERROR, @"Failed to send feedback to NearIT", error);
-                } else {
-                    resolve([NSNull null]);
-                }
-            }];
-        }
+        NITFeedbackEvent* feedbackEvent = [[NITFeedbackEvent alloc] initWithFeedback:feedback rating:rating comment:comment];
+        [[NITManager defaultManager] sendEventWithEvent:feedbackEvent completionHandler:^(NSError* _Nullable error) {
+            if (error != nil) {
+                reject(E_SEND_FEEDBACK_ERROR, @"Failed to send feedback to NearIT", error);
+            } else {
+                resolve([NSNull null]);
+            }
+        }];
     }
 }
 
@@ -387,7 +397,7 @@ RCT_EXPORT_METHOD(isLocationGranted:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
     switch (CLLocationManager.authorizationStatus) {
-        case kCLAuthorizationStatusNotDetermined:
+            case kCLAuthorizationStatusNotDetermined:
             resolve([NSNull null]);
             break;
             
@@ -409,9 +419,8 @@ RCT_EXPORT_METHOD(isNotificationGranted:(RCTPromiseResolveBlock)resolve
     } else {
 #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
         [[UNUserNotificationCenter currentNotificationCenter]getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
-            
             switch (settings.authorizationStatus) {
-                case UNAuthorizationStatusNotDetermined:
+                    case UNAuthorizationStatusNotDetermined:
                     resolve([NSNull null]);
                     break;
                     
@@ -430,7 +439,7 @@ RCT_EXPORT_METHOD(areLocationServicesOn:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
     BOOL locationServicesOn = [CLLocationManager locationServicesEnabled];
-    resolve(locationServicesOn);
+    resolve(@(locationServicesOn));
 }
 
 RCT_EXPORT_METHOD(isBluetoothEnabled:(RCTPromiseResolveBlock)resolve
@@ -439,7 +448,7 @@ RCT_EXPORT_METHOD(isBluetoothEnabled:(RCTPromiseResolveBlock)resolve
     self.bluetoothResolve = resolve;
     
     if (!self.bluetoothManager) {
-        NSDictionary* options = @{CBCentralManagerOptionShowPowerAlertKey:NO};
+        NSDictionary* options = @{CBCentralManagerOptionShowPowerAlertKey:@NO};
         self.bluetoothManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:options];
     }
     [self centralManagerDidUpdateState:self.bluetoothManager];
@@ -476,14 +485,12 @@ RCT_EXPORT_METHOD(getCoupons:(RCTPromiseResolveBlock)resolve
 RCT_EXPORT_METHOD(getNotificationHistory:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
-    NSMutableArray* bundledHistory = [[NSMutableArray alloc] init];
     
     [[NITManager defaultManager] historyWithCompletion:^(NSArray<NITHistoryItem*>* _Nullable history, NSError* _Nullable error) {
         if (error != nil) {
             reject(E_NOTIFICATION_HISTORY_RETRIEVAL_ERROR, @"Could NOT fetch user notification history", error);
         } else {
-            bundledHistory = [RNNearItUtils bundleNITHistory:history];
-            resolve(bundledHistory);
+            resolve([RNNearItUtils bundleNITHistory:history]);
         }
     }];
 }
@@ -497,14 +504,14 @@ RCT_EXPORT_METHOD(notificationHistoryListenerRegistered:(RCTPromiseResolveBlock)
                   rejection:(RCTPromiseRejectBlock)reject)
 {
     [NITManager defaultManager].notificationDelegate = self;
-    resolve(true);
+    resolve(@YES);
 }
 
 RCT_EXPORT_METHOD(notificationHistoryListenerUnregistered:(RCTPromiseResolveBlock)resolve
                   rejection:(RCTPromiseRejectBlock)reject)
 {
     [NITManager defaultManager].notificationDelegate = nil;
-    resolve(true);
+    resolve(@YES);
 }
 
 
@@ -515,7 +522,7 @@ RCT_EXPORT_METHOD(notificationHistoryListenerUnregistered:(RCTPromiseResolveBloc
 
 - (BOOL)didReceiveNotification:(NSDictionary* _Nonnull)userInfo fromUserAction:(BOOL)fromUserAction
 {
-    BOOL isNearNotification = [[NITManager defaultManager] processRecipeWithUserINfo:userInfo completion:^(NITReactionBundle* _Nullable content, NITTrackingInfo* _Nullable trackingInfo, NSError* _Nullable error) {
+    BOOL isNearNotification = [[NITManager defaultManager] processRecipeWithUserInfo:userInfo completion:^(NITReactionBundle* _Nullable content, NITTrackingInfo* _Nullable trackingInfo, NSError* _Nullable error) {
         if (content) {
             [self handleNearContent:content trackingInfo:trackingInfo fromUserAction:YES];
         }
@@ -531,25 +538,25 @@ RCT_EXPORT_METHOD(notificationHistoryListenerUnregistered:(RCTPromiseResolveBloc
         [self sendEventWithContent:eventContent NITEventType:EVENT_TYPE_SIMPLE trackingInfo: trackingInfo fromUserAction:fromUserAction];
     } else if ([content isKindOfClass:[NITContent class]]) {
         NITContent* nitContent = (NITContent*)content;
-        NSMutableDictionary* eventContent = @{EVENT_CONTENT_MESSAGE: [nitContent notificationMessage]};
+        NSMutableDictionary* eventContent = [NSMutableDictionary dictionaryWithDictionary:@{EVENT_CONTENT_MESSAGE: [nitContent notificationMessage]}];
         NSDictionary* bundledContent = [RNNearItUtils bundleNITContent:nitContent];
         [eventContent addEntriesFromDictionary:bundledContent];
         [self sendEventWithContent:eventContent NITEventType:EVENT_TYPE_CONTENT trackingInfo: trackingInfo fromUserAction:fromUserAction];
     } else if ([content isKindOfClass:[NITFeedback class]]) {
         NITFeedback* feedback = (NITFeedback*)content;
-        NSDictionary* eventContent = @{EVENT_CONTENT_MESSAGE: [feedback notificationMessage]};
+        NSMutableDictionary* eventContent = [NSMutableDictionary dictionaryWithDictionary:@{EVENT_CONTENT_MESSAGE: [feedback notificationMessage]}];
         NSDictionary* bundledFeedback = [RNNearItUtils bundleNITFeedback:feedback];
         [eventContent addEntriesFromDictionary:bundledFeedback];
         [self sendEventWithContent:eventContent NITEventType:EVENT_TYPE_FEEDBACK trackingInfo: trackingInfo fromUserAction:fromUserAction];
     } else if ([content isKindOfClass:[NITCoupon class]]) {
         NITCoupon* coupon = (NITCoupon*)content;
-        NSDictionary* eventContent = @{EVENT_CONTENT_MESSAGE: [coupon notificationMessage]};
+        NSMutableDictionary* eventContent = [NSMutableDictionary dictionaryWithDictionary:@{EVENT_CONTENT_MESSAGE: [coupon notificationMessage]}];
         NSDictionary* bundledCoupon = [RNNearItUtils bundleNITCoupon:coupon];
         [eventContent addEntriesFromDictionary:bundledCoupon];
         [self sendEventWithContent:eventContent NITEventType:EVENT_TYPE_COUPON trackingInfo: trackingInfo fromUserAction:fromUserAction];
     } else if ([content isKindOfClass:[NITCustomJSON class]]) {
         NITCustomJSON* customJson = (NITCustomJSON*)content;
-        NSDictionary* eventContent = @{EVENT_CONTENT_MESSAGE: [customJson notificationMessage]};
+        NSMutableDictionary* eventContent = [NSMutableDictionary dictionaryWithDictionary:@{EVENT_CONTENT_MESSAGE: [customJson notificationMessage]}];
         NSDictionary* bundledCustomJson = [RNNearItUtils bundleNITCustomJSON:customJson];
         [eventContent addEntriesFromDictionary:bundledCustomJson];
         [self sendEventWithContent:eventContent NITEventType:EVENT_TYPE_CUSTOM_JSON trackingInfo: trackingInfo fromUserAction:fromUserAction];
