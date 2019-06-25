@@ -119,7 +119,6 @@ type NearItNotificationHistoryUpdateListener = (history: NearItHistoryItem[]) =>
 
 const NearItSdk = NativeModules.RNNearIt
 const NearItUI = NativeModules.RNNearItUI
-console.log('modules: ', { NativeModules })
 
 export class NearItManager {
   static constants: NearItConstants = {
