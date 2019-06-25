@@ -21,7 +21,11 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#if __has_include(<NearITSDK/NearITSDK.h>)
 #import <NearITSDK/NearITSDK.h>
+#elif __has_include("NearIT.h")
+#import "NearIT.h"
+#endif
 
 #import "RNNearItUtils.h"
 #import "RNNearItConsts.h"

@@ -6,7 +6,11 @@
 //  Copyright © 2019 NearIT. All rights reserved.
 //
 
+#if __has_include(<NearITSDK/NearITSDK.h>)
 #import <NearITSDK/NearITSDK.h>
+#elif __has_include("NearIT.h")
+#import "NearIT.h"
+#endif
 
 #import "RNNearItConsts.h"
 
