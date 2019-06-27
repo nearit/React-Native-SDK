@@ -221,7 +221,6 @@ export class NearItManager {
 
   // Notification history related methods
 
-  // TODO: return type
   static getNotificationHistory (): Promise<NearItHistoryItem[]> {
     return NearItSdk.getNotificationHistory()
   }
