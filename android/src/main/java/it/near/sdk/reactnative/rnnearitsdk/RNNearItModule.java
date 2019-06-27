@@ -175,12 +175,10 @@ public class RNNearItModule extends ReactContextBaseJavaModule
     // ReactApp Lifecycle methods
     @Override
     public void onHostResume() {
-        // TODO: remove this? -> this.dispatchNotificationQueue();
     }
 
     @Override
     public void onHostPause() {
-
     }
 
     @Override
