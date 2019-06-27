@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(showNotificationHistory: (NSString* _Nullable) title)
 
 // MARK: Coupon related methods
 
-RCT_EXPORT_METHOD(showCoupons: (NSString* _Nullable) title)
+RCT_EXPORT_METHOD(showCouponList: (NSString* _Nullable) title)
 {
     NITCouponListViewController *couponsVC = [[NITCouponListViewController alloc] init];
     if (title != nil) {
