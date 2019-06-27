@@ -40,11 +40,11 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)locationGranted:(BOOL)granted {
-    // TODO: nothing?
+    
 }
 
 - (void)notificationsGranted:(BOOL)granted {
-    // TODO: nothing?
+    
 }
 
 
@@ -138,7 +138,7 @@ RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) event)
     return @{
              PERMISSIONS_LOCATION_PERMISSION: @(locationGranted),
              PERMISSIONS_NOTIFICATIONS_PERMISSION: @(notificationGranted),
-             PERMISSIONS_BLUETOOTH: @NO,
+             PERMISSIONS_BLUETOOTH: @YES,
              PERMISSIONS_LOCATION_SERVICES: @(locationServicesOn)
              };
 }
