@@ -119,10 +119,31 @@
 + (NITContent* _Nullable)unbundleNITContent:(NSDictionary * _Nonnull)bundledContent
 {
     NITContent* content = [[NITContent alloc] init];
-    content.title = [bundledContent objectForKey:EVENT_CONTENT_TITLE];
-    content.content = [bundledContent objectForKey:EVENT_CONTENT_TEXT];
-    content.images = @[[self unbundleNITImage: [bundledContent objectForKey:EVENT_IMAGE]]];
-    content.internalLink = [bundledContent objectForKey:EVENT_CONTENT_CTA];
+    
+    NSObject* bundledTitle = [bundledContent objectForKey:EVENT_CONTENT_TITLE];
+    if ([bundledTitle isEqual:[NSNull null]]) {
+        content.title = nil;
+    } else {
+        content.title = [bundledContent objectForKey:EVENT_CONTENT_TITLE];
+    }
+    
+    NSObject* bundledText = [bundledContent objectForKey:EVENT_CONTENT_TEXT];
+    if ([bundledText isEqual:[NSNull null]]) {
+        content.content = nil;
+    } else {
+        content.content = [bundledContent objectForKey:EVENT_CONTENT_TEXT];
+    }
+    
+    NITImage* unbundledImage = [self unbundleNITImage: [bundledContent objectForKey:EVENT_IMAGE]];
+    if (unbundledImage) {
+        content.images = @[unbundledImage];
+    }
+    
+    NSObject* bundledCTA = [bundledContent objectForKey:EVENT_CONTENT_CTA];
+    if (![bundledCTA isEqual:[NSNull null]]) {
+        content.internalLink = [bundledContent objectForKey:EVENT_CONTENT_CTA];
+    }
+         
     return content;
 }
 
@@ -174,6 +195,9 @@
 
 + (NITImage* _Nullable)unbundleNITImage:(NSDictionary* _Nonnull)bundledImage
 {
+    if ([bundledImage isEqual:[NSNull null]]) {
+        return nil;
+    }
     NITImage* image = [[NITImage alloc] init];
     if ([bundledImage objectForKey:@"imageData"]) {
         NSData* imageData = [[NSData alloc] initWithBase64EncodedString:[bundledImage objectForKey:@"imageData"]
@@ -195,9 +219,9 @@
 
 // NITHistory
 
-+ (NSArray* _Nullable)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history
++ (NSArray* _Nonnull)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history
 {
-    NSMutableArray* bundledHistory;
+    NSMutableArray* bundledHistory = [NSMutableArray new];
     for (id item in history) {
         [bundledHistory addObject:[self bundleNITHistoryItem:item]];
     }

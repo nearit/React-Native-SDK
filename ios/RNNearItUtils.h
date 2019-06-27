@@ -25,7 +25,7 @@
 + (NSDictionary* _Nullable)bundleNITContent:(NITContent* _Nonnull)content;
 + (NITContent* _Nullable)unbundleNITContent:(NSDictionary* _Nonnull)bundledContent;
 
-+ (NSArray* _Nullable)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history;
++ (NSArray* _Nonnull)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history;
 
 + (NSDictionary* _Nullable)bundleNITFeedback:(NITFeedback* _Nonnull)feedback;
 + (NITFeedback* _Nullable)unbundleNITFeedback:(NSDictionary* _Nonnull)bundledFeedback;

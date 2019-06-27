@@ -234,12 +234,12 @@ RCT_EXPORT_METHOD(disableDefaultRangingNotifications)
 
 RCT_EXPORT_METHOD(addProximityListener)
 {
-    [NITManager defaultManager].delegate = self;
+    NITLogD(TAG, @"addProximityListener::method called but nothing to do on iOS");
 }
 
 RCT_EXPORT_METHOD(removeProximityListener)
 {
-    [NITManager defaultManager].delegate = nil;
+    NITLogD(TAG, @"removeProximityListener::method called but nothing to do on iOS");
 }
 
 // MARK: ReactNative listeners management
@@ -576,6 +576,8 @@ RCT_EXPORT_METHOD(notificationHistoryListenerUnregistered:(RCTPromiseResolveBloc
     
     // Set NearIT framework name
     [NITManager setFrameworkName:@"react-native"];
+
+    [NITManager defaultManager].delegate = self;
 }
 
 - (void)sendEventWithContent:(NSDictionary* _Nonnull)content NITEventType:(NSString* _Nonnull)eventType trackingInfo:(NITTrackingInfo* _Nullable)trackingInfo fromUserAction:(BOOL)fromUserAction

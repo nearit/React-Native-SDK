@@ -40,11 +40,11 @@ RCT_EXPORT_MODULE()
 }
 
 - (void)locationGranted:(BOOL)granted {
-    // TODO: nothing?
+    
 }
 
 - (void)notificationsGranted:(BOOL)granted {
-    // TODO: nothing?
+    
 }
 
 
@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(showNotificationHistory: (NSString* _Nullable) title)
 
 // MARK: Coupon related methods
 
-RCT_EXPORT_METHOD(showCoupons: (NSString* _Nullable) title)
+RCT_EXPORT_METHOD(showCouponList: (NSString* _Nullable) title)
 {
     NITCouponListViewController *couponsVC = [[NITCouponListViewController alloc] init];
     if (title != nil) {
@@ -96,13 +96,14 @@ RCT_EXPORT_METHOD(showCoupons: (NSString* _Nullable) title)
 
 // MARK: Content related methods
 
-RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) content)
+RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) event)
 {
-    if (content != nil) {
-        NSString* type = [content objectForKey:EVENT_TYPE];
+    if (event != nil) {
+        NSString* type = [event objectForKey:EVENT_TYPE];
+        NSDictionary* content = [event objectForKey:EVENT_CONTENT];
         if ([type isEqualToString:EVENT_TYPE_CONTENT]) {
             NITContent* nearContent = [RNNearItUtils unbundleNITContent:content];
-            NITTrackingInfo* trackingInfo = [RNNearItUtils unbundleTrackingInfo:[content objectForKey:EVENT_TRACKING_INFO]];
+            NITTrackingInfo* trackingInfo = [RNNearItUtils unbundleTrackingInfo:[event objectForKey:EVENT_TRACKING_INFO]];
             NITContentViewController *vc = [[NITContentViewController alloc] initWithContent:nearContent trackingInfo:trackingInfo];
             [vc show];
         } else if ([type isEqualToString:EVENT_TYPE_FEEDBACK]) {
@@ -137,7 +138,7 @@ RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) content)
     return @{
              PERMISSIONS_LOCATION_PERMISSION: @(locationGranted),
              PERMISSIONS_NOTIFICATIONS_PERMISSION: @(notificationGranted),
-             PERMISSIONS_BLUETOOTH: @NO,
+             PERMISSIONS_BLUETOOTH: @YES,
              PERMISSIONS_LOCATION_SERVICES: @(locationServicesOn)
              };
 }
