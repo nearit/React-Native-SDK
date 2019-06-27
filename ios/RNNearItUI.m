@@ -96,13 +96,14 @@ RCT_EXPORT_METHOD(showCouponList: (NSString* _Nullable) title)
 
 // MARK: Content related methods
 
-RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) content)
+RCT_EXPORT_METHOD(showContent: (NSDictionary* _Nullable) event)
 {
-    if (content != nil) {
-        NSString* type = [content objectForKey:EVENT_TYPE];
+    if (event != nil) {
+        NSString* type = [event objectForKey:EVENT_TYPE];
+        NSDictionary* content = [event objectForKey:EVENT_CONTENT];
         if ([type isEqualToString:EVENT_TYPE_CONTENT]) {
             NITContent* nearContent = [RNNearItUtils unbundleNITContent:content];
-            NITTrackingInfo* trackingInfo = [RNNearItUtils unbundleTrackingInfo:[content objectForKey:EVENT_TRACKING_INFO]];
+            NITTrackingInfo* trackingInfo = [RNNearItUtils unbundleTrackingInfo:[event objectForKey:EVENT_TRACKING_INFO]];
             NITContentViewController *vc = [[NITContentViewController alloc] initWithContent:nearContent trackingInfo:trackingInfo];
             [vc show];
         } else if ([type isEqualToString:EVENT_TYPE_FEEDBACK]) {
