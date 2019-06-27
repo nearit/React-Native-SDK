@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '9.0'
 
   s.dependency            'React'
-  s.dependency            'NearITSDK', '~> 2.12.0'
-  s.dependency            'NearITSDKSwift', '~> 2.12.0'
-  s.dependency            'NearUIBinding', '~> 2.12.0'
+  s.dependency            'NearITSDK', '~> 2.12.1'
+  s.dependency            'NearITSDKSwift', '~> 2.12.1'
+  s.dependency            'NearUIBinding', '~> 2.12.1'
 end
