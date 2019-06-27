@@ -195,9 +195,9 @@
 
 // NITHistory
 
-+ (NSArray* _Nullable)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history
++ (NSArray* _Nonnull)bundleNITHistory:(NSArray<NITHistoryItem*>* _Nonnull)history
 {
-    NSMutableArray* bundledHistory;
+    NSMutableArray* bundledHistory = [NSMutableArray new];
     for (id item in history) {
         [bundledHistory addObject:[self bundleNITHistoryItem:item]];
     }
